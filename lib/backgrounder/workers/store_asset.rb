@@ -1,0 +1,24 @@
+module CarrierWave
+  module Workers
+
+    class StoreAsset < Struct.new(:klass, :id, :column)
+  
+      def perform
+        record = klass.find id
+        if record.send :"#{column}_tmp"
+          cache_dir  = record.send(:"#{column}").root.join record.send(:"#{column}").cache_dir
+          cache_path = cache_dir.join record.send(:"#{column}_tmp")
+        
+          record.send :"process_upload=", true
+          record.send :"#{column}=", File.open(cache_path)
+          record.send :"#{column}_tmp=", nil
+          if record.save!
+            FileUtils.rm(cache_path)
+          end
+        end
+      end
+      
+    end # StoreAsset
+    
+  end # Workers
+end # Backgrounder

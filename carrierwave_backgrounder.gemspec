@@ -1,16 +1,15 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "carrierwave_backgrounder/version"
+require "backgrounder/version"
 
 Gem::Specification.new do |s|
   s.name        = "carrierwave_backgrounder"
   s.version     = CarrierwaveBackgrounder::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
+  s.authors     = ["Larry Sprock"]
+  s.email       = ["larry@lucidbleu.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Offload CarrierWave's image processing and storage to a background process using Delayed Job}
 
   s.rubyforge_project = "carrierwave_backgrounder"
 

@@ -1,1 +1,39 @@
-Build Process... give me a sec
+= CarrierWave Backgrounder
+
+I like CarrierWave. That being said, I don't like slowing down my users as well as tying up a instances waiting for images to process and upload to S3. Depending on the size of the file, this could take a while. This gem takes care of that. After the file has been uploaded and CarrierWave caches the initial file, it halts the process and queues a Delayed Job.
+
+== Installation
+
+These instructions assume you have previously set up {CarrierWave}[https://github.com/jnicklas/carrierwave] and {DelayedJob}[https://github.com/collectiveidea/delayed_job]
+
+In Rails, add the following your Gemfile:
+    
+    gem 'carrierwave_backgrounder'
+    
+== Getting Started
+
+Add a column to the model you wan to background which will store the temp file location:
+    
+    add_column :users, :avatar_tmp, :string
+
+In your CarrierWave uploader file:
+
+    require 'carrierwave/backgrounder'
+    
+    class AvatarUploader < CarrierWave::Uploader::Base
+      include ::CarrierWave::Backgrounder::DelayedStorage
+      
+      #ect...
+    end
+    
+In your model:
+    
+    mount_uploader :avatar, AvatarUploader
+    store_in_background :avatar #New
+
+
+== Word Of Caution
+
+Temp files are stored by default in the tmp directory. They are not guaranteed to be available when your workers process them! For instance, on Heroku, they get blown away on every deploy. If image upload is the main function of your app, I would store the tmp files in a non-volatile directory if you have the option.
+    
+
