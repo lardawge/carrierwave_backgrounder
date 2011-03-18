@@ -1,6 +1,6 @@
 = CarrierWave Backgrounder
 
-I like CarrierWave. That being said, I don't like slowing down my users as well as tying up a instances waiting for images to process and upload to S3. Depending on the size of the file, this could take a while. This gem takes care of that. After the file has been uploaded and CarrierWave caches the initial file, it halts the process and queues a Delayed Job.
+I like CarrierWave. That being said, I don't like tying up a instances waiting for images to process and upload to S3. Depending on the size of the file, this could take a while. This gem takes care of that. After the file has been uploaded and CarrierWave caches the initial file, it halts the process and queues a job to finish the process.
 
 == Installation
 
@@ -17,8 +17,6 @@ Add a column to the model you wan to background which will store the temp file l
     add_column :users, :avatar_tmp, :string
 
 In your CarrierWave uploader file:
-
-    require 'carrierwave/backgrounder'
     
     class AvatarUploader < CarrierWave::Uploader::Base
       include ::CarrierWave::Backgrounder::DelayedStorage
@@ -29,7 +27,7 @@ In your CarrierWave uploader file:
 In your model:
     
     mount_uploader :avatar, AvatarUploader
-    store_in_background :avatar #New
+    store_in_background :avatar
 
 
 == Word Of Caution
