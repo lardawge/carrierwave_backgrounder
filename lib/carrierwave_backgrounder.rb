@@ -1,0 +1,3 @@
+module CarrierwaveBackgrounder
+  # Your code goes here...
+end
