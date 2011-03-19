@@ -31,8 +31,8 @@ module CarrierWave
       private
       
       def enqueue_background_store
-        self.class.uploaders.each_pair do |column, uploader|
-          if respond_to? :"#{column}_tmp" && :"#{column}_tmp"
+        self.class.uploaders.keys.each do |column|
+          if respond_to?(:"#{column}_tmp") && send(:"#{column}_tmp")
             ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, column)
           end
         end
