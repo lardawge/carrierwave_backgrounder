@@ -1,6 +1,6 @@
 = CarrierWave Backgrounder
 
-I like CarrierWave. That being said, I don't like tying up a instances waiting for images to process and upload to S3. Depending on the size of the file, this could take a while. This gem takes care of that. After the file has been uploaded and CarrierWave caches the initial file, it halts the process and queues a job to finish the process.
+I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process and upload to S3. Depending on the size of the file, this could take a while sometimes timing out Heroku. This gem addresses that. After the file has been uploaded and CarrierWave caches the base file, it halts the process and queues a job.
 
 == Installation
 
@@ -19,7 +19,7 @@ Add a column to the model you wan to background which will store the temp file l
 In your CarrierWave uploader file:
     
     class AvatarUploader < CarrierWave::Uploader::Base
-      include ::CarrierWave::Backgrounder::DelayedStorage
+      include ::CarrierWave::Backgrounder::DelayStorage
       
       #ect...
     end
@@ -28,10 +28,44 @@ In your model:
     
     mount_uploader :avatar, AvatarUploader
     store_in_background :avatar
+    
+Currently ActiveRecord is the default orm and I have not tested this with others but it should work by adding the following to your carrierwave initializer:
 
+    DataMapper::Model.send(:include, ::CarrierWave::Backgrounder::ORM)
+    # or
+    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM)
+    # or
+    Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM)
+
+Note: Above has not been tested.
 
 == Word Of Caution
 
 Temp files are stored by default in the tmp directory. They are not guaranteed to be available when your workers process them! For instance, on Heroku, they get blown away on every deploy. If image upload is the main function of your app, I would store the tmp files in a non-volatile directory if you have the option.
-    
 
+== TODO
+
+Transfer tests from rails app.
+
+== License
+
+Copyright (c) 2011 Larry Sprock
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
