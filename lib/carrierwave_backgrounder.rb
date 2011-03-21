@@ -1,5 +1,5 @@
 module CarrierWave
   module Backgrounder
-    autoload :DelayedStorage, 'backgrounder/delayed_storage'
+    autoload :DelayStorage, 'backgrounder/delay_storage'
   end
 end
