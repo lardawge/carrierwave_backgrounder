@@ -1,28 +1,29 @@
-require 'backgrounder/orm/activerecord'
-
 module CarrierWave
   module Backgrounder
 
-    module DelayedStorage
+    module DelayStorage
       extend ActiveSupport::Concern
       
       included do
-        ::ActiveRecord::Base.send :include, ::CarrierWave::Backgrounder::ActiveRecord
-        send :halt_versioning!
+        send :carrierwave_uploader_overrides
       end
       
       module ClassMethods
  
-        def halt_versioning!
+        def carrierwave_uploader_overrides
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def cache_versions!(new_file)
-              super(new_file) if model.process_upload?
+              super(new_file) if proceed_with_versioning?
             end
           RUBY
         end
         
       end # ClassMethods
     end # DelayStorage
-  
+    
+    def proceed_with_versioning?
+      !model.respond_to?(:process_upload?) || model.process_upload?
+    end
+    
   end # Backgrounder
 end # CarrierWave
