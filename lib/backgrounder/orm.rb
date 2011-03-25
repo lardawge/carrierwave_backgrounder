@@ -24,7 +24,7 @@ module CarrierWave
             end
             
             def enqueue_#{column}_storage
-              if #{column}_tmp
+              if !process_upload && #{column}_tmp
                 ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, #{column}.mounted_as)
               end
             end
