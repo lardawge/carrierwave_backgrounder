@@ -37,6 +37,12 @@ Currently ActiveRecord is the default orm and I have not tested this with others
     # or
     Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM)
 
+== Usage
+
+If you need to process/store the upload immediately:
+
+    @user.process_upload = true 
+
 == Word Of Caution
 
 Temp files are stored by default in the tmp directory. They are not guaranteed to be available when your workers process them! For instance, on Heroku, they get blown away on every deploy. If image upload is the main function of your app, I would store the tmp files in a non-volatile directory if you have the option.
