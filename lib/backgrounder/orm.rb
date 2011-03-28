@@ -8,31 +8,32 @@ module CarrierWave
 
       module ClassMethods
         
-        def store_in_background(column, version=false)
+        def store_in_background(column, version=false, options={})
           send :after_save, :"enqueue_#{column}_storage"
-          
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
+
+          class_eval  do
             attr_accessor :process_upload
             
-            def write_#{column}_identifier
+            define_method :"write_#{column}_identifier" do
               super() and return if process_upload
-              self.#{column}_tmp = _mounter(:#{column}).cache_name
+              self.send(:"#{column}_tmp=", _mounter(column).cache_name)
             end
         
-            def store_#{column}!
+            define_method :"store_#{column}!" do
               super() if process_upload
             end
             
-            def enqueue_#{column}_storage
-              if !process_upload && #{column}_tmp
-                ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, #{column}.mounted_as)
+            define_method :"enqueue_#{column}_storage" do
+              options.merge!(:embedded_in_id => self.send(options[:embedded_in]).id) if options[:embedded_in]
+              if !process_upload && send(:"#{column}_tmp")
+                ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, send(column).mounted_as, options)
               end
             end
-          RUBY
+          end
         end
         
       end # ClassMethods
-    end # ActiveRecord
+    end # ORM
 
   end #Backgrounder
 end #CarrierWave
