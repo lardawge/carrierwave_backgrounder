@@ -6,8 +6,8 @@ module CarrierWave
       def perform
         record = klass.find id
         if record.send :"#{column}_tmp"
-          cache_dir  = record.send(:"#{column}").root.join(record.send(:"#{column}").cache_dir)
-          cache_path = cache_dir.join record.send(:"#{column}_tmp")
+          cache_dir  = [record.send(:"#{column}").root, record.send(:"#{column}").cache_dir].join("/")
+          cache_path = [cache_dir, record.send(:"#{column}_tmp")].join("/")
         
           record.send :"process_upload=", true
           record.send :"#{column}=", File.open(cache_path)
