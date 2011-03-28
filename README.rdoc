@@ -28,12 +28,29 @@ In your model:
     
     mount_uploader :avatar, AvatarUploader
     store_in_background :avatar
+
+If you're using Mongoid and you are working on an embedded collection, you must pass in information on the relation:
+    class User
+      include Mongoid::Document
+      embeds_many :photos
+      ...
+    end
+
+    class Photo
+      include Mongoid::Document
+      include CarrierWave::Backgrounder::ORM::Mongoid
+
+      ...
+      embedded_in :user, :inverse_of => :photos
+      mount_uploader :image, :PhotoUploader
+      store_in_background :image, false, { :embedded_in :user, :inverse_of => :photos }
+    end
     
 Currently ActiveRecord is the default orm and I have not tested this with others but it should work by adding the following to your carrierwave initializer:
 
     DataMapper::Model.send(:include, ::CarrierWave::Backgrounder::ORM)
     # or
-    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM)
+    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::Mongoid)
     # or
     Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM)
 
