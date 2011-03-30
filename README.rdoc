@@ -50,7 +50,7 @@ Currently ActiveRecord is the default orm and I have not tested this with others
 
     DataMapper::Model.send(:include, ::CarrierWave::Backgrounder::ORM)
     # or
-    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::Mongoid)
+    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM)
     # or
     Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM)
 
