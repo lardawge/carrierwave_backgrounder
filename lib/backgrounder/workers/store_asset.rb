@@ -12,7 +12,13 @@ module CarrierWave
                    # Find the parent record (tied to Rails/ActiveSupport right now)
                    parent = options[:embedded_in].to_s.classify.constantize.find parent_id
                    # Now find the actual record you want to process
-                   parent.send(options[:inverse_of]).find id
+                   # If it's an embeds_many...
+                   if options[:inverse_of]
+                     parent.send(options[:inverse_of]).find id
+                   # otherwise let's try an embeds_one
+                   elsif options[:embeds_one]
+                     parent.send(options[:embeds_one])
+                   end
                  else
                    klass.find id
                  end
