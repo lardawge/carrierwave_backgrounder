@@ -36,7 +36,7 @@ module CarrierWave
             end
             
             def enqueue_#{column}_background_job
-              if !process_upload && #{column}_tmp
+              unless process_upload
                 ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, #{column}.mounted_as)
               end
             end
