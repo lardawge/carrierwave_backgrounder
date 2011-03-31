@@ -18,7 +18,7 @@ module CarrierWave
         # What this allows is an override of pushing uploads
         # to a background process.
         # 
-        def store_in_background(column, background_store=true)
+        def store_in_background(column, background_store=true, worker=::CarrierWave::Workers::StoreAsset)
           send :after_save, :"enqueue_#{column}_background_job"
           
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
@@ -37,7 +37,7 @@ module CarrierWave
             
             def enqueue_#{column}_background_job
               unless process_upload
-                ::Delayed::Job.enqueue ::CarrierWave::Workers::StoreAsset.new(self.class, id, #{column}.mounted_as)
+                ::Delayed::Job.enqueue worker.new(self.class, id, #{column}.mounted_as)
               end
             end
           RUBY
