@@ -6,7 +6,9 @@ module CarrierWave
       def perform
         record = klass.find id
         record.process_upload = true
-        record.send(:"#{column}").recreate_versions!
+        if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+          record.update_attribute :"#{column}_processing", nil
+        end
       end
       
     end # ProcessAsset

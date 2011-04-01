@@ -30,12 +30,26 @@ module CarrierWave
         #     process_in_background :avatar, CustomWorker
         #   end
         #
+        # In addition you can also add a column to the database appended by _processing with a type of boolean
+        # which can be used to check if processing is complete.
+        #
+        #   def self.up
+        #     add_column :users, :avatar_processing, :boolean
+        #   end
+        #   
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
-          send :after_save, :"enqueue_#{column}_background_job"
+          send :after_save,  :"enqueue_#{column}_background_job"
+          send :before_save, :"mark_#{column}_for_processing"
           
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             attr_accessor :process_upload
             
+            def mark_#{column}_for_processing
+              if respond_to?(:#{column}_processing) && !process_upload
+                self.send(:#{column}_processing=, true)
+              end
+            end
+
             def enqueue_#{column}_background_job
               unless process_upload
                 ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as)
