@@ -45,7 +45,7 @@ module CarrierWave
             attr_accessor :process_upload
             
             def mark_#{column}_for_processing
-              if respond_to?(:#{column}_processing) && !process_upload
+              if self.send(:#{column}).cached?.present? && respond_to?(:#{column}_processing) && !process_upload
                 self.send(:#{column}_processing=, true)
               end
             end
