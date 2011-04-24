@@ -7,7 +7,7 @@ module CarrierWave
       end
       
       def proceed_with_versioning?
-        !model.respond_to?(:process_upload) || model.process_upload
+        !model.respond_to?(:"process_#{mounted_as}_upload") || model.send(:"process_#{mounted_as}_upload")
       end
     end # DelayStorage
     

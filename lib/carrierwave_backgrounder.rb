@@ -1,7 +1,10 @@
 module CarrierWave
   module Backgrounder
     autoload :DelayStorage, 'backgrounder/delay_storage'
-    autoload :ORM,          'backgrounder/orm'
+
+    module ORM
+      autoload :Base, 'backgrounder/orm/base'
+    end
   end
 end
 
@@ -11,7 +14,7 @@ if defined?(Rails)
       class Railtie < Rails::Railtie
         initializer "carrierwave_backgrounder.active_record" do
           ActiveSupport.on_load :active_record do
-            ::ActiveRecord::Base.send :include, ::CarrierWave::Backgrounder::ORM
+            require 'backgrounder/orm/activerecord'
           end
         end
       end
