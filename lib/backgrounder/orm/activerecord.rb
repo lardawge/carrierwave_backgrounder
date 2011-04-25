@@ -27,10 +27,10 @@ module CarrierWave
             end
           RUBY
         end
-      end #ActiveRecord
+      end # ActiveRecord
 
-    end #ORM
-  end #Backgrounder
-end #CarrierWave
+    end # ORM
+  end # Backgrounder
+end # CarrierWave
 
 ActiveRecord::Base.extend CarrierWave::Backgrounder::ORM::ActiveRecord
