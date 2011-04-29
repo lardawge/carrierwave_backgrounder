@@ -94,7 +94,7 @@ module CarrierWave
             end
 
             def store_#{column}!
-              super() if process_upload
+              super() if process_#{column}_upload
             end
 
             def enqueue_#{column}_background_job
