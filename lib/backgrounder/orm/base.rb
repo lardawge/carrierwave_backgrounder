@@ -68,14 +68,14 @@ module CarrierWave
         #   store_in_background :avatar
         # end
         #
-        # The above adds a User#process_<column> method which can be used at times when you want to bypass
+        # The above adds a User#process_<column>_upload method which can be used at times when you want to bypass
         # background storage and processing.
         #
-        #   @user.process_avatar = true
+        #   @user.process_avatar_upload = true
         #   @user.save
         #
         # You can also pass in your own workers using the second argument in case you need other things done
-        # durring processing.
+        # during processing.
         #
         #   class User < ActiveRecord::Base
         #     mount_uploader :avatar, AvatarUploader
@@ -89,7 +89,7 @@ module CarrierWave
             attr_accessor :process_#{column}_upload
 
             def write_#{column}_identifier
-              super() and return if process_upload
+              super() and return if process_#{column}_upload
               self.#{column}_tmp = _mounter(:#{column}).cache_name
             end
 
