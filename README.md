@@ -1,78 +1,92 @@
-= CarrierWave Backgrounder
+# CarrierWave Backgrounder
 
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process. This gem addresses that issue.
 
-== Background options
+## Background options
   
 There are currently two offerings for backgrounding upload tasks which are as follows;
 
-    Backgrounder::ORM::Base::process_in_background
+```ruby
+Backgrounder::ORM::Base::process_in_background
+```
 
 This method stores the original file and does no processing or versioning. Optionally you can add a column to the database which will be set to nil when the background processing is complete.
-  
-    Backgrounder::ORM::Base::store_in_background
-  
+
+```ruby
+Backgrounder::ORM::Base::store_in_background
+```
+
 This method does nothing to the file after it is cached which makes it super fast. It requires a column in the database which stores the cache location set by carrierwave. The drawback to using this method is the need for a central location to store the cached files. This leave heroku out. Heroku may deploy workers on separate servers from where your dyno cached the files. That being said, I only recommend using this method if you have full control over your temp storage directory.
 
-== Installation
+## Installation
 
-These instructions assume you have previously set up {CarrierWave}[https://github.com/jnicklas/carrierwave] and {DelayedJob}[https://github.com/collectiveidea/delayed_job]
+These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and [DelayedJob](https://github.com/collectiveidea/delayed_job)
 
 In Rails, add the following your Gemfile:
-    
-    gem 'carrierwave_backgrounder'
-    
-== Getting Started
 
-=== To use process_in_background
+```ruby
+gem 'carrierwave_backgrounder'
+```
+
+## Getting Started
+
+### To use process_in_background
     
 In your model:
     
-    mount_uploader :avatar, AvatarUploader
-    process_in_background :avatar
- 
-=== To use store_in_background
+```ruby
+mount_uploader :avatar, AvatarUploader
+process_in_background :avatar
+```
+
+### To use store_in_background
     
 In your model:
 
-    mount_uploader :avatar, AvatarUploader
-    process_in_background :avatar
+```ruby
+mount_uploader :avatar, AvatarUploader
+process_in_background :avatar
+```
 
 Add a column to the model you want to background which will store the temp file location:
 
-    add_column :users, :avatar_tmp, :string
+```ruby
+add_column :users, :avatar_tmp, :string
+```
 
 In your CarrierWave uploader file:
 
-    class AvatarUploader < CarrierWave::Uploader::Base
-      include ::CarrierWave::Backgrounder::DelayStorage
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include ::CarrierWave::Backgrounder::DelayStorage
 
-      #ect...
-    end
+  #ect...
+end
+```
 
-== Usage Tips
+## Usage Tips
 
 If you need to process/store the upload immediately:
 
-    @user.process_<column>_upload = true 
-    
-== ORM
+```ruby
+@user.process_<column>_upload = true 
+```
+
+## ORM
 
 Currently ActiveRecord is the default orm and I have not tested this with others but it should work by adding the following to your carrierwave initializer:
 
-    DataMapper::Model.send(:include, ::CarrierWave::Backgrounder::ORM::Base)
-    # or
-    Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::Base)
-    # or
-    Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM::Base)
-    
+```ruby
+DataMapper::Model.send(:include, ::CarrierWave::Backgrounder::ORM::Base)
+# or
+Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::Base)
+# or
+Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM::Base)
+```
+
 Contributions are gladly accepted from those who use these orms.
 
-== TODO
-
-More specs
-
-== License
+## License
 
 Copyright (c) 2011 Larry Sprock
 
