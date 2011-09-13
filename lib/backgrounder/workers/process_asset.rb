@@ -3,7 +3,12 @@ module CarrierWave
   module Workers
 
     class ProcessAsset < Struct.new(:klass, :id, :column)
-  
+      @queue = :process_asset
+
+      def self.perform(*args)
+        new(*args).perform
+      end
+
       def perform
         record = klass.find id
         record.send(:"process_#{column}_upload=", true)

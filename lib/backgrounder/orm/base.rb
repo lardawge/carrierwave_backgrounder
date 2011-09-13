@@ -50,7 +50,11 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as)
+              if defined? ::Delayed::Job
+                ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as)
+              elsif defined? ::Resque
+                ::Resque.enqueue #{worker}, self.class, id, #{column}.mounted_as
+              end
             end
 
             def trigger_#{column}_background_processing?
@@ -98,7 +102,11 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as)
+              if defined? ::Delayed::Job
+                ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as)
+              elsif defined? ::Resque
+                ::Resque.enqueue #{worker}, self.class, id, #{column}.mounted_as
+              end
             end
 
             def trigger_#{column}_background_storage?
