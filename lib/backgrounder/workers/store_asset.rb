@@ -3,7 +3,12 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-  
+      @queue = :store_asset
+
+      def self.perform(*args)
+        new(*args).perform
+      end
+
       def perform
         record = klass.find id
         if tmp = record.send(:"#{column}_tmp")
