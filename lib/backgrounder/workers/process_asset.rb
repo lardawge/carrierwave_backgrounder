@@ -10,7 +10,7 @@ module CarrierWave
       end
 
       def perform
-        record = klass.find id
+        record = klass.constantize.find id
         record.send(:"process_#{column}_upload=", true)
         if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
           record.update_attribute :"#{column}_processing", nil
