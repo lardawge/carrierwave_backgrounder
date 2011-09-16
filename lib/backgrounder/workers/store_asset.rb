@@ -10,7 +10,7 @@ module CarrierWave
       end
 
       def perform
-        record = klass.find id
+        record = klass.constantize.find id
         if tmp = record.send(:"#{column}_tmp")
           asset = record.send(:"#{column}")
           cache_dir  = [asset.root, asset.cache_dir].join("/")
