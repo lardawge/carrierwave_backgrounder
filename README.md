@@ -45,7 +45,7 @@ In your model:
 
 ```ruby
 mount_uploader :avatar, AvatarUploader
-process_in_background :avatar
+store_in_background :avatar
 ```
 
 Add a column to the model you want to background which will store the temp file location:
