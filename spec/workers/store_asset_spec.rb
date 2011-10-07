@@ -9,11 +9,11 @@ describe CarrierWave::Workers::StoreAsset do
 
   context "#perform" do
     it 'processes versions' do
-      FileUtils.expects(:rm).with(File.expand_path('../fixtures/test.jpg', __FILE__)).once
+      FileUtils.expects(:rm_r).with(File.expand_path('../fixtures/test.jpg', __FILE__),:force=>true).once
       user.expects(:find).with('22').once.returns(user)
       user.expects(:image_tmp).once.returns('test.jpg')
       user.expects(:image).once.returns(image)
-      image.expects(:root).once.returns(File.expand_path '..', __FILE__)
+      image.expects(:root).once.returns(File.expand_path('..', __FILE__))
       image.expects(:cache_dir).once.returns('fixtures')
       user.expects(:process_image_upload=).with(true).once
       user.expects(:image=).once
