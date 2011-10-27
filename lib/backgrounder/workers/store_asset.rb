@@ -3,9 +3,14 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-  
+      @queue = :store_asset
+
+      def self.perform(*args)
+        new(*args).perform
+      end
+
       def perform
-        record = klass.find id
+        record = klass.constantize.find id
         if tmp = record.send(:"#{column}_tmp")
           asset = record.send(:"#{column}")
           cache_dir  = [asset.root, asset.cache_dir].join("/")
