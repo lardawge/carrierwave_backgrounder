@@ -1,6 +1,9 @@
 # CarrierWave Backgrounder
 
-I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process. This gem addresses that issue.
+I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process. 
+
+This gem addresses that issue by disabling processing until a background process initiates it. 
+It supports both Delayed Job and Resque.
 
 ## Background options
   
@@ -20,7 +23,7 @@ This method does nothing to the file after it is cached which makes it super fas
 
 ## Installation
 
-These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and [DelayedJob](https://github.com/collectiveidea/delayed_job)
+These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and [DelayedJob](https://github.com/collectiveidea/delayed_job) or Resque
 
 In Rails, add the following your Gemfile:
 
