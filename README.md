@@ -1,12 +1,12 @@
 # CarrierWave Backgrounder
 
-I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process. 
+I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
-This gem addresses that issue by disabling processing until a background process initiates it. 
+This gem addresses that issue by disabling processing until a background process initiates it.
 It supports both Delayed Job and Resque.
 
 ## Background options
-  
+
 There are currently two offerings for backgrounding upload tasks which are as follows;
 
 ```ruby
@@ -34,21 +34,21 @@ gem 'carrierwave_backgrounder'
 ## Getting Started
 
 ### To use process_in_background
-    
+
 In your model:
-    
+
 ```ruby
 mount_uploader :avatar, AvatarUploader
 process_in_background :avatar
 ```
 
 ### To use store_in_background
-    
+
 In your model:
 
 ```ruby
 mount_uploader :avatar, AvatarUploader
-process_in_background :avatar
+store_in_background :avatar
 ```
 
 Add a column to the model you want to background which will store the temp file location:
@@ -72,7 +72,7 @@ end
 If you need to process/store the upload immediately:
 
 ```ruby
-@user.process_<column>_upload = true 
+@user.process_<column>_upload = true
 ```
 
 ## ORM
