@@ -21,3 +21,10 @@ if defined?(Rails)
     end
   end
 end
+
+if defined?(GirlFriday)
+  CARRIERWAVE_QUEUE = GirlFriday::WorkQueue.new(:carrierwave) do |msg|
+    worker = msg[:worker]
+    worker.perform
+  end
+end

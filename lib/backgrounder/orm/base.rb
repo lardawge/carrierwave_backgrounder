@@ -50,7 +50,9 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::Delayed::Job
+              if defined? ::GirlFriday
+                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
+              elsif defined? ::Delayed::Job
                 ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
               elsif defined? ::Resque
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
@@ -104,7 +106,9 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::Delayed::Job
+              if defined? ::GirlFriday
+                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
+              elsif defined? ::Delayed::Job
                 ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
               elsif defined? ::Resque
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
