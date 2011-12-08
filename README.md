@@ -1,4 +1,4 @@
-# CarrierWave Backgrounder
+# CarrierWave Backgrounder [![Build Status](https://secure.travis-ci.org/lardawge/carrierwave_backgrounder.png)](http://travis-ci.org/lardawge/carrierwave_backgrounder)
 
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
