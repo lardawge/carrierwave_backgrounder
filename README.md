@@ -3,7 +3,7 @@
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
 This gem addresses that issue by disabling processing until a background process initiates it.
-It supports both Delayed Job and Resque.
+It supports Delayed Job, Resque and Girl Friday.
 
 ## Background options
 
