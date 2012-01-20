@@ -54,6 +54,12 @@ mount_uploader :avatar, AvatarUploader
 process_in_background :avatar
 ```
 
+Optionally you can add a column to the database which will be set to nil when the background processing is complete.
+
+```ruby
+add_column :users, :avatar_processing, :boolean
+```
+
 ### To use store_in_background
 
 In your model:
