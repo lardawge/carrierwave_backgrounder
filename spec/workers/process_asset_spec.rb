@@ -21,7 +21,7 @@ describe CarrierWave::Workers::ProcessAsset do
   context "#perform" do
     it 'processes versions' do
       user.expects(:find).with('22').returns(user).once
-      user.expects(:image).once.returns(image)
+      user.expects(:image).twice.returns(image)
       user.expects(:process_image_upload=).with(true).once
 
       image.expects(:recreate_versions!).once.returns(true)
