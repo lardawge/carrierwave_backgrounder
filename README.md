@@ -33,6 +33,18 @@ gem 'carrierwave_backgrounder'
 
 ## Getting Started
 
+In your CarrierWave uploader file:
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include ::CarrierWave::Backgrounder::DelayStorage
+
+  #etc...
+end
+```
+
+(`DelayStorage` is required for **both** `process_in_background` and `store_in_background`.)
+
 ### To use process_in_background
 
 In your model:
@@ -40,6 +52,12 @@ In your model:
 ```ruby
 mount_uploader :avatar, AvatarUploader
 process_in_background :avatar
+```
+
+Optionally you can add a column to the database which will be set to nil when the background processing is complete.
+
+```ruby
+add_column :users, :avatar_processing, :boolean
 ```
 
 ### To use store_in_background
@@ -55,16 +73,6 @@ Add a column to the model you want to background which will store the temp file 
 
 ```ruby
 add_column :users, :avatar_tmp, :string
-```
-
-In your CarrierWave uploader file:
-
-```ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include ::CarrierWave::Backgrounder::DelayStorage
-
-  #ect...
-end
 ```
 
 ## Usage Tips
