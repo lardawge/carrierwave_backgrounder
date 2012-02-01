@@ -12,11 +12,17 @@ if defined?(Rails)
   module CarrierWave
     module Backgrounder
       class Railtie < Rails::Railtie
+
         initializer "carrierwave_backgrounder.active_record" do
           ActiveSupport.on_load :active_record do
             require 'backgrounder/orm/activerecord'
           end
         end
+
+        initializer "carrierwave_backgrounder.data_mapper", :before =>"data_mapper.add_to_prepare" do
+          require 'backgrounder/orm/data_mapper'
+        end
+
       end
     end
   end
