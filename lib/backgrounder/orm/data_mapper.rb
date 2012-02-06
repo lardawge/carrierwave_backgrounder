@@ -64,4 +64,4 @@ module CarrierWave
   end #Backgrounder
 end #CarrierWave
 
-DataMapper::Model.append_extensions ::CarrierWave::Backgrounder::ORM::DataMapper
+DataMapper::Model.append_extensions ::CarrierWave::Backgrounder::ORM::DataMapper if defined?(DataMapper)
