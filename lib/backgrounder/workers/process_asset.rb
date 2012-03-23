@@ -11,7 +11,7 @@ module CarrierWave
 
       def perform
         resource = klass.is_a?(String) ? klass.constantize : klass
-        record = resource.find_by_id id
+        record = resource.find id
 
         if record
           record.send(:"process_#{column}_upload=", true)
