@@ -95,7 +95,16 @@ module CarrierWave
 
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             attr_accessor :process_#{column}_upload
+            
+            def #{column}
+              return _mounter(:#{column}).uploader if self[:#{column}_tmp].blank?
 
+              uploader = _mounter(:#{column}).uploader.dup
+              uploader.retrieve_from_cache!(self[:#{column}_tmp])
+
+              uploader
+            end
+            
             def write_#{column}_identifier
               super() and return if process_#{column}_upload
               self.#{column}_tmp = _mounter(:#{column}).cache_name
