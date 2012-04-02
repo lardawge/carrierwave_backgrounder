@@ -1,6 +1,9 @@
 module CarrierWave
   module Backgrounder
-    autoload :DelayStorage, 'backgrounder/delay_storage'
+    Logger = Logger.new(STDOUT)
+
+    autoload :Delay, 'backgrounder/delay'
+    autoload :DelayStorage, 'backgrounder/delay'
 
     module ORM
       autoload :Base, 'backgrounder/orm/base'

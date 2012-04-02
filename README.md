@@ -37,13 +37,11 @@ In your CarrierWave uploader file:
 
 ```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
-  include ::CarrierWave::Backgrounder::DelayStorage
+  include ::CarrierWave::Backgrounder::Delay
 
   #etc...
 end
 ```
-
-(`DelayStorage` is required for **both** `process_in_background` and `store_in_background`.)
 
 ### To use process_in_background
 
