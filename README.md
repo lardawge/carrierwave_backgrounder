@@ -83,6 +83,13 @@ If you need to process/store the upload immediately:
 @user.process_<column>_upload = true
 ```
 
+To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
+second argument:
+
+```ruby
+process_in_background :avatar, MyAppsAwesomeProcessingWorker
+```
+
 ## ORM
 
 Currently ActiveRecord is the default orm and I have not tested this with others but it should work by adding the following to your carrierwave initializer:
