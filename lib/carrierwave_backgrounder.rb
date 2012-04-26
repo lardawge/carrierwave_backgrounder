@@ -26,6 +26,10 @@ if defined?(Rails)
           require 'backgrounder/orm/data_mapper' if defined?(DataMapper)
         end
 
+        initializer "carrierwave_backgrounder.mongoid" do
+          require 'backgrounder/orm/mongoid'
+        end
+
       end
     end
   end
