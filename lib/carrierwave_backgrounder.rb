@@ -27,7 +27,7 @@ if defined?(Rails)
         end
 
         initializer "carrierwave_backgrounder.mongoid" do
-          require 'backgrounder/orm/mongoid'
+          require 'backgrounder/orm/mongoid' if defined?(Mongoid)
         end
 
       end
