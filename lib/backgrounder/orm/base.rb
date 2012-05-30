@@ -53,7 +53,7 @@ module CarrierWave
               if defined? ::Delayed::Job
                 ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
               elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as if #{column}
               end
             end
 
@@ -105,7 +105,7 @@ module CarrierWave
               if defined? ::Delayed::Job
                 ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
               elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as if #{column}
               end
             end
 
