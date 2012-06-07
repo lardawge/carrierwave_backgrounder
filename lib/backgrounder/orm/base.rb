@@ -59,7 +59,7 @@ module CarrierWave
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::QC
-                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as
+                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as.to_s
               end
             end
 
@@ -117,7 +117,7 @@ module CarrierWave
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::QC
-                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as
+                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as.to_s
               end
             end
 
