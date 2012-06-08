@@ -5,6 +5,8 @@ module CarrierWave
     class ProcessAsset < Struct.new(:klass, :id, :column)
       @queue = :process_asset
 
+      include ::Sidekiq::Worker if defined?(::Sidekiq)
+
       def self.perform(*args)
         new(*args).perform
       end

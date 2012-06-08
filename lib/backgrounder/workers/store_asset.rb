@@ -5,6 +5,8 @@ module CarrierWave
     class StoreAsset < Struct.new(:klass, :id, :column)
       @queue = :store_asset
 
+      include ::Sidekiq::Worker if defined?(::Sidekiq)
+
       def self.perform(*args)
         new(*args).perform
       end
