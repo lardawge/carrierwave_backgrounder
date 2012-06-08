@@ -58,6 +58,9 @@ module CarrierWave
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+              elsif defined? ::Sidekiq
+                worker_class = worker.is_a?(String) ? worker.constantize : worker
+                worker_class.perform_in 5.seconds, self.class.name, id, #{column}.mounted_as
               end
             end
 
@@ -114,6 +117,9 @@ module CarrierWave
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+              elsif defined? ::Sidekiq
+                worker_class = worker.is_a?(String) ? worker.constantize : worker
+                worker_class.perform_in 15.seconds, self.class.name, id, #{column}.mounted_as
               end
             end
 

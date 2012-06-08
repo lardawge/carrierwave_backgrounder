@@ -102,6 +102,21 @@ Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM::Base)
 
 Contributions are gladly accepted from those who use these orms.
 
+
+## Sidekiq Considerations
+
+Sidekiq is a very fast messaging system, it will process the job as soon as it is given.
+Since the jobs are processed with almost 0 seconds delay, sometimes due to delays
+on the database level and image processing the sidekiq workers may not be able to 
+find the record on the database yielding ActiveRecord::RecordNotFound exceptions 
+
+For this reason image processing jobs are delayed 5 seconds and Storing jobs delayed 15 seconds.
+Assuming that processing does not take longer than 10 seconds.
+This issue needs to be addressed and fixed.
+
+
+
+
 ## License
 
 Copyright (c) 2011 Larry Sprock
