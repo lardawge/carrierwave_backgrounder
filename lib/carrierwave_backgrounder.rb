@@ -35,6 +35,10 @@ if defined?(Rails)
   end
 end
 
+if defined?(Sidekiq)
+  require 'sidekiq'
+end
+
 if defined?(GirlFriday)
   require 'girl_friday'
 
