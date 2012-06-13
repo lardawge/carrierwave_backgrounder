@@ -16,7 +16,8 @@ module CarrierWave
         if record
           record.send(:"process_#{column}_upload=", true)
           if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
-            record.update_attribute :"#{column}_processing", nil
+            record.send :"#{column}_processing=", nil
+            record.save!
           end
         end
       end

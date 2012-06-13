@@ -19,15 +19,27 @@ describe CarrierWave::Workers::ProcessAsset do
   end
 
   context "#perform" do
-    it 'processes versions' do
+    it 'processes versions with image_processing column' do
       user.expects(:find).with('22').returns(user).once
       user.expects(:image).once.returns(image)
       user.expects(:process_image_upload=).with(true).once
 
       image.expects(:recreate_versions!).once.returns(true)
       user.expects(:respond_to?).with(:image_processing).once.returns(true)
-      user.expects(:update_attribute).with(:image_processing, nil).once
+      user.expects(:image_processing=).with(nil).once
+      user.expects(:save!)
+      worker.perform
+    end
 
+    it 'processes versions without image_processing column' do
+      user.expects(:find).with('22').returns(user).once
+      user.expects(:image).once.returns(image)
+      user.expects(:process_image_upload=).with(true).once
+
+      image.expects(:recreate_versions!).once.returns(true)
+      user.expects(:respond_to?).with(:image_processing).once.returns(false)
+      user.expects(:image_processing=).never
+      user.expects(:save!).never
       worker.perform
     end
   end
