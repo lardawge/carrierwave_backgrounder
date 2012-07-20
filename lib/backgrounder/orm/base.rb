@@ -51,13 +51,13 @@ module CarrierWave
 
             def enqueue_#{column}_background_job
               if defined? ::GirlFriday
-                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
+                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id.to_s, #{column}.mounted_as) }
               elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
+                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id.to_s, #{column}.mounted_as)
               elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+                ::Resque.enqueue #{worker}, self.class.name, id.to_s, #{column}.mounted_as
               elsif defined? ::Qu
-                ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+                ::Qu.enqueue #{worker}, self.class.name, id.to_s, #{column}.mounted_as
               end
             end
 
