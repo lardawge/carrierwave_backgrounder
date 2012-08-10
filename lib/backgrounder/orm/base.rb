@@ -58,6 +58,8 @@ module CarrierWave
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+              elsif defined? ::Sidekiq
+                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               end
             end
 
@@ -114,6 +116,8 @@ module CarrierWave
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
                 ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
+              elsif defined? ::Sidekiq
+                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               end
             end
 
