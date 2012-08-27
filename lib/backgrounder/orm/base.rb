@@ -38,7 +38,7 @@ module CarrierWave
         #     add_column :users, :avatar_processing, :boolean
         #   end
         #
-        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
+        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset, queue = nil)
           send :before_save, :"set_#{column}_processing", :if => :"trigger_#{column}_background_processing?"
           send :after_save,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
 
@@ -53,7 +53,11 @@ module CarrierWave
               if defined? ::GirlFriday
                 CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
               elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
+                if !"#{queue}".empty?
+                  ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as), :queue => "#{queue}"
+                else
+                  ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
+                end
               elsif defined? ::Resque
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
