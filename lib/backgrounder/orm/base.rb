@@ -53,7 +53,11 @@ module CarrierWave
               if defined? ::GirlFriday
                 CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
               elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue (#{worker}.new(self.class.name, id, #{column}.mounted_as) , :queue => #{queue})
+                if !queue.nil?
+                  ::Delayed::Job.enqueue (#{worker}.new(self.class.name, id, #{column}.mounted_as) , :queue => #{queue})
+                else
+                  ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as
+                end
               elsif defined? ::Resque
                 ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
               elsif defined? ::Qu
