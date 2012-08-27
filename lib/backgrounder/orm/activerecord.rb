@@ -8,7 +8,7 @@ module CarrierWave
       module ActiveRecord
         include CarrierWave::Backgrounder::ORM::Base
 
-        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
+        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset, queue = nil)
           super
 
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
