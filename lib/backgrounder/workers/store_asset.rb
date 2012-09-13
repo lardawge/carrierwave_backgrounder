@@ -21,9 +21,10 @@ module CarrierWave
           tmp_dir = [cache_dir, tmp.split("/")[0]].join("/")
           record.send :"process_#{column}_upload=", true
           record.send :"#{column}_tmp=", nil
-          File.open(cache_path) { |f| record.send :"#{column}=", f }
+          the_file = ["#{Rails.root}/tmp/uploads",tmp].join("/")
+          File.open(the_file) { |f| record.send :"#{column}=", f }
           if record.save!
-            FileUtils.rm_r(tmp_dir, :force => true)
+            #FileUtils.rm_r(tmp_dir, :force => true)
           end
         end
       end
