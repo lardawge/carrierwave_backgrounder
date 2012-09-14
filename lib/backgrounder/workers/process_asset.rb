@@ -13,13 +13,13 @@ module CarrierWave
       def perform(*args)
         set_args(*args) unless args.empty?
         resource = klass.is_a?(String) ? klass.constantize : klass
-        record = resource.find id
+        @record = resource.find id
 
-        if record
-          record.send(:"process_#{column}_upload=", true)
-          if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
-            record.send :"#{column}_processing=", nil
-            record.save!
+        if @record
+          @record.send(:"process_#{column}_upload=", true)
+          if @record.send(:"#{column}").recreate_versions! && @record.respond_to?(:"#{column}_processing")
+            @record.send :"#{column}_processing=", nil
+            @record.save!
           end
         end
       end
