@@ -100,6 +100,44 @@ Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM:
 Sequel::Model.send(:extend, ::CarrierWave::Backgrounder::ORM::Base)
 ```
 
+## Callbacks
+
+Callbacks are supported for Delayed Job, and include all 6 callbacks which [DJ makes available](https://github.com/collectiveidea/delayed_job) (enqueue, before, after, success, error, failure):
+
+```ruby
+def enqueue(job)
+  if @record.respond_to?(:enqueue_callback)
+    @record.enqueue_callback(job)
+  end
+end
+def before(job)
+  #duplication
+end
+
+def after(job)
+  #duplication
+end
+```
+
+etc...
+
+To make use of these callbacks, just equip your model with methods named after the callbacks made to the job. IE. callback_enqueue, callback_before, etc...
+```ruby
+class Asset < ActiveRecord::Base
+  def callback_enqueue(job)
+    # do something interesting with the fact that DJ just told you that your job was just enqueued
+  end
+  def callback_before(job)
+    # cool code omitted
+  end
+
+  def callback_after(job)
+    # you know the drill
+  end
+end
+```
+
+
 Contributions are gladly accepted from those who use these orms.
 
 ## License
