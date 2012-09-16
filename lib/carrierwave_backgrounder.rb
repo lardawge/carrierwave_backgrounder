@@ -1,3 +1,5 @@
+require 'backgrounder/workers'
+
 module CarrierWave
   module Backgrounder
     Logger = Logger.new(STDOUT)
