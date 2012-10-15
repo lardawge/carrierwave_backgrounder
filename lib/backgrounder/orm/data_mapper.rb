@@ -20,7 +20,7 @@ module CarrierWave
 
             def enqueue_#{column}_background_job
               if trigger_#{column}_background_processing?
-                ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as) 
+                CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id, #{column}.mounted_as)
                 @#{column}_changed = false
               end
             end
@@ -55,7 +55,7 @@ module CarrierWave
 
             def enqueue_#{column}_background_job
               if trigger_#{column}_background_storage?
-                ::Delayed::Job.enqueue #{worker}.new(self.class, id, #{column}.mounted_as) 
+                CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id, #{column}.mounted_as)
                 @#{column}_changed = false
               end
             end
