@@ -50,19 +50,7 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::GirlFriday
-                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
-              elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
-              elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Qu
-                ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Sidekiq
-                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::QC
-                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as.to_s
-              end
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id, #{column}.mounted_as)
             end
 
             def trigger_#{column}_background_processing?
@@ -110,19 +98,7 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::GirlFriday
-                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
-              elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
-              elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Qu
-                ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Sidekiq
-                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::QC
-                ::QC.enqueue "#{worker}.perform", self.class.name, id, #{column}.mounted_as.to_s
-              end
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id, #{column}.mounted_as)
             end
 
             def trigger_#{column}_background_storage?
