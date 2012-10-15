@@ -57,6 +57,9 @@ module CarrierWave
               process_#{column}_upload != true
             end
 
+            def remove_previously_stored_#{column}
+              super() and return if process_#{column}_upload
+            end
           RUBY
         end
 
@@ -105,6 +108,9 @@ module CarrierWave
               process_#{column}_upload != true
             end
 
+            def remove_previously_stored_#{column}
+              super() and return if process_#{column}_upload
+            end
           RUBY
         end
 
