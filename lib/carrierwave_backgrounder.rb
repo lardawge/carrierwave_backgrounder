@@ -84,7 +84,7 @@ if defined?(Rails)
         initializer "carrierwave_backgrounder.active_record" do
           ActiveSupport.on_load :active_record do
             require 'backgrounder/orm/activemodel'
-            ActiveRecord::Base.extend CarrierWave::Backgrounder::ORM::ActiveModel
+            ::ActiveRecord::Base.extend CarrierWave::Backgrounder::ORM::ActiveModel
           end
         end
 
@@ -95,7 +95,7 @@ if defined?(Rails)
         initializer "carrierwave_backgrounder.mongoid" do
           if defined?(Mongoid)
             require 'backgrounder/orm/activemodel'
-            Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::ActiveModel)
+            ::Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::ActiveModel)
           end
         end
 
