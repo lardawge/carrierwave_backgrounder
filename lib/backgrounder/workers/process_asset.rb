@@ -7,6 +7,7 @@ module CarrierWave
 
       if defined?(::Sidekiq)
         include ::Sidekiq::Worker
+
         sidekiq_options :queue => @queue
       end
 
