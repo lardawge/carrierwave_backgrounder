@@ -3,8 +3,13 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-      include ::Sidekiq::Worker if defined?(::Sidekiq)
       @queue = :store_asset
+
+      if defined?(::Sidekiq)
+        include ::Sidekiq::Worker
+
+        sidekiq_options :queue => @queue
+      end
 
       def self.perform(*args)
         new(*args).perform
@@ -27,12 +32,12 @@ module CarrierWave
           end
         end
       end
-      
+
       def set_args(klass, id, column)
         self.klass, self.id, self.column = klass, id, column
       end
 
     end # StoreAsset
-    
+
   end # Workers
 end # Backgrounder

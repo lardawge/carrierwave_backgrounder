@@ -16,6 +16,14 @@ end
 
 module Sidekiq
   module Worker
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      def sidekiq_options(opts = {})
+      end
+    end
   end
 end
 
