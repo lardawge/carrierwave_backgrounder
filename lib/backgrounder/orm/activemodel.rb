@@ -14,7 +14,7 @@ module CarrierWave
           include mod
           mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def trigger_#{column}_background_processing?
-              super && (#{column}_changed? || remote_#{column}_url.present?)
+              super && (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present?)
             end
           RUBY
         end
@@ -26,7 +26,7 @@ module CarrierWave
           include mod
           mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def trigger_#{column}_background_storage?
-              super && (#{column}_changed? || remote_#{column}_url.present?)
+              super && (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present?)
             end
           RUBY
         end
