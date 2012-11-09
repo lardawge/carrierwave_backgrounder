@@ -6,7 +6,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
   before do
     @mock_class = Class.new do
       def self.before_save(method, opts); nil; end
-      def self.after_save(method, opts); nil; end
+      def self.after_commit(method, opts); nil; end
       def avatar_changed?; nil;  end
       def remote_avatar_url; OpenStruct.new(:present? => true); end
     end

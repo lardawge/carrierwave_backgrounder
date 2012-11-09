@@ -40,7 +40,7 @@ module CarrierWave
         #
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           send :before_save, :"set_#{column}_processing", :if => :"trigger_#{column}_background_processing?"
-          send :after_save,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
+          send :after_commit,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
           send :attr_accessor, :"process_#{column}_upload"
 
           mod = Module.new
@@ -86,7 +86,7 @@ module CarrierWave
         #   end
         #
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
-          send :after_save, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
+          send :after_commit, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
           send :attr_accessor, :"process_#{column}_upload"
 
           mod = Module.new

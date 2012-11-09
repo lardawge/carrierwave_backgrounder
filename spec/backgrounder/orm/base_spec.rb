@@ -5,7 +5,7 @@ describe CarrierWave::Backgrounder::ORM::Base do
   before do
     @mock_class = Class.new do
       def self.before_save(method, opts); nil; end
-      def self.after_save(method, opts); nil; end
+      def self.after_commit(method, opts); nil; end
     end
 
     @mock_class.extend CarrierWave::Backgrounder::ORM::Base
@@ -26,7 +26,7 @@ describe CarrierWave::Backgrounder::ORM::Base do
       end
 
       it 'creates an after_save hook' do
-        @mock_class.expects(:after_save).with(:enqueue_avatar_background_job, :if => :trigger_avatar_background_processing?)
+        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :trigger_avatar_background_processing?)
         @mock_class.process_in_background :avatar
       end
 
@@ -64,7 +64,7 @@ describe CarrierWave::Backgrounder::ORM::Base do
     describe 'setting up callbacks' do
 
       it 'creates an after_save hook' do
-        @mock_class.expects(:after_save).with(:enqueue_avatar_background_job, :if => :trigger_avatar_background_storage?)
+        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :trigger_avatar_background_storage?)
         @mock_class.store_in_background :avatar
       end
 
