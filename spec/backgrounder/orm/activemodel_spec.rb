@@ -9,6 +9,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
       def self.after_commit(method, opts); nil; end
       def avatar_changed?; nil;  end
       def remote_avatar_url; OpenStruct.new(:present? => true); end
+      def previous_changes; {}; end
     end
 
     @mock_class.extend CarrierWave::Backgrounder::ORM::ActiveModel
