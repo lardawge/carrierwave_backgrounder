@@ -1,6 +1,4 @@
 # encoding: utf-8
-require 'backgrounder/workers'
-
 module CarrierWave
   module Backgrounder
     module ORM
