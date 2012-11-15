@@ -33,6 +33,15 @@ gem 'carrierwave_backgrounder'
 
 ## Getting Started
 
+In an initializer:
+
+```ruby
+CarrierWave::Backgrounder.configure do |c|
+  # :delayed_job, :girl_friday, :sidekiq, :qu, :resque, or :qc
+  c.backend = :delayed_job 
+end
+```
+
 In your CarrierWave uploader file:
 
 ```ruby

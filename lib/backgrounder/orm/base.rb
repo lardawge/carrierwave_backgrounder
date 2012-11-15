@@ -40,27 +40,24 @@ module CarrierWave
         #
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           send :before_save, :"set_#{column}_processing", :if => :"trigger_#{column}_background_processing?"
-          send :after_save,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
+          if self.respond_to?(:after_commit)
+            send :after_commit,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
+          else
+            send :after_save,  :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
+          end
+          send :attr_accessor, :"process_#{column}_upload"
 
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            attr_accessor :process_#{column}_upload
+          mod = Module.new
+          include mod
+
+          mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
 
             def set_#{column}_processing
               self.#{column}_processing = true if respond_to?(:#{column}_processing)
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::GirlFriday
-                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
-              elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
-              elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Qu
-                ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Sidekiq
-                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              end
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
 
             def trigger_#{column}_background_processing?
@@ -93,10 +90,16 @@ module CarrierWave
         #   end
         #
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
-          send :after_save, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
+          if self.respond_to?(:after_commit)
+            send :after_commit, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
+          else
+            send :after_save, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
+          end
+          send :attr_accessor, :"process_#{column}_upload"
 
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            attr_accessor :process_#{column}_upload
+          mod = Module.new
+          include mod
+          mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
 
             def write_#{column}_identifier
               super() and return if process_#{column}_upload
@@ -108,17 +111,7 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              if defined? ::GirlFriday
-                CARRIERWAVE_QUEUE << { :worker => #{worker}.new(self.class.name, id, #{column}.mounted_as) }
-              elsif defined? ::Delayed::Job
-                ::Delayed::Job.enqueue #{worker}.new(self.class.name, id, #{column}.mounted_as)
-              elsif defined? ::Resque
-                ::Resque.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Qu
-                ::Qu.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              elsif defined? ::Sidekiq
-                ::Sidekiq::Client.enqueue #{worker}, self.class.name, id, #{column}.mounted_as
-              end
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
 
             def trigger_#{column}_background_storage?
