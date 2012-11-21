@@ -40,6 +40,7 @@ module CarrierWave
           backends << :qu          if defined? ::Qu
           backends << :sidekiq     if defined? ::Sidekiq
           backends << :qc          if defined? ::QC
+          backends << :immediate
           backends
         end
       end
@@ -68,6 +69,8 @@ module CarrierWave
           ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
         when :qc
           ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
+        when :immediate
+          worker.new(class_name, subject_id, mounted_as).perform
         end
       end
 
