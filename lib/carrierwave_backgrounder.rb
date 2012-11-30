@@ -1,14 +1,10 @@
+require 'backgrounder/orm/base'
+require 'backgrounder/delay'
+
 module CarrierWave
   module Backgrounder
 
     Logger = Logger.new(STDOUT)
-
-    autoload :Delay, 'backgrounder/delay'
-    autoload :DelayStorage, 'backgrounder/delay'
-
-    module ORM
-      autoload :Base, 'backgrounder/orm/base'
-    end
 
     class << self
       def backend=(value)
@@ -103,4 +99,3 @@ if defined?(Rails)
     end
   end
 end
-
