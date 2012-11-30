@@ -84,12 +84,14 @@ add_column :users, :avatar_tmp, :string
 
 ## Usage Tips
 
+### Bypass backgrounding
 If you need to process/store the upload immediately:
 
 ```ruby
 @user.process_<column>_upload = true
 ```
 
+### Override worker
 To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
 second argument:
 
