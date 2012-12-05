@@ -53,7 +53,7 @@ module CarrierWave
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
         case backend
         when :girl_friday
-          @girl_friday_queue << { :worker => worker.new(self.class.name, subject_id, mounted_as) }
+          @girl_friday_queue << { :worker => worker.new(class_name, subject_id, mounted_as) }
         when :delayed_job
           ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)
         when :resque
