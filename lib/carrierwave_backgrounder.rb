@@ -8,8 +8,9 @@ module CarrierWave
 
     class << self
       def backend=(value)
-        @backend = value
-        self.configure_backend
+        @backend, options = value
+        options ||= {}
+        self.configure_backend(options)
       end
 
       def backend
@@ -40,10 +41,11 @@ module CarrierWave
         end
       end
 
-      def configure_backend
+      def configure_backend(options)
         if backend == :girl_friday
           require 'girl_friday'
-          @girl_friday_queue = GirlFriday::WorkQueue.new(:carrierwave) do |msg|
+          queue_name = options.delete(:queue) || :carrierwave
+          @girl_friday_queue = GirlFriday::WorkQueue.new(queue_name, options) do |msg|
             worker = msg[:worker]
             worker.perform
           end
