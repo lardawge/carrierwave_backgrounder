@@ -2,9 +2,6 @@ module CarrierWave
   module Backgrounder
 
     module Delay
-
-      ##
-      # Intercept carrierwave#cache_versions! so we can process versions later.
       def cache_versions!(new_file)
         super(new_file) if proceed_with_versioning?
       end
