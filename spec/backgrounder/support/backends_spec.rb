@@ -39,10 +39,10 @@ describe Support::Backends do
       test_module.instance_variable_set('@backend', nil)
     end
 
-    it 'does not set a backend if none are available' do
+    it 'sets the backend to immediate if none available' do
       suppress_warnings do
         test_module.stubs(:available_backends).returns([])
-        test_module.backend.should be_nil
+        expect(test_module.backend).to eql(:immediate)
       end
     end
 
