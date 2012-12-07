@@ -14,7 +14,7 @@ module Support
       def backend
         return @backend unless @backend.nil?
         if available_backends.empty?
-          warn 'WARNING: No queue backends found to use for CarrierWave::Backgrounder. Using the default, :immediate.'
+          warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
           self.backend = :immediate
         elsif available_backends.size == 1
           self.backend = available_backends.first
