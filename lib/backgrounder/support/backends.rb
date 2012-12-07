@@ -9,7 +9,7 @@ module Support
       attr_writer :backend
 
       def backend
-        return @backend unless @backend.nil?
+        return @backend if @backend
         if available_backends.empty?
           warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
           self.backend = :immediate
