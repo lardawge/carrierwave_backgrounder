@@ -37,6 +37,18 @@ describe Support::Backends do
     end
   end
 
+  describe 'setting backend' do
+    it 'using #backend=' do
+      test_module.backend = :delayed_job
+      expect(test_module.backend).to eql(:delayed_job)
+    end
+
+    it 'using #backend' do
+      test_module.backend(:delayed_job)
+      expect(test_module.backend).to eql(:delayed_job)
+    end
+  end
+
   describe 'automatically setting backends' do
     before do
       test_module.instance_variable_set('@backend', nil)

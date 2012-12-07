@@ -8,8 +8,13 @@ module Support
     module ClassMethods
       attr_writer :backend
 
-      def backend
+      ##
+      # config do |c|
+      #   c.backend :delayed_job, { :config => j }
+      # end
+      def backend(queue_name=nil)
         return @backend if @backend
+        @backend = queue_name and return if queue_name
         determine_backend
       end
 
