@@ -32,6 +32,10 @@ describe Support::Backends do
     it 'detects QC' do
       test_module.available_backends.should include(:qc)
     end
+
+    it 'detects Immediate' do
+      test_module.available_backends.should include(:immediate)
+    end
   end
 
   describe 'automatically setting backends' do
