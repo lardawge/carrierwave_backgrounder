@@ -1,13 +1,6 @@
 module CarrierWave
   module Backgrounder
 
-    module DelayStorage
-      def self.included(klass)
-        klass.send :include, Delay
-        Logger.warn "Carrierwave::Backgrounder::DelayStorage is deprecated, use Carrierwave::Backgrounder::Delay instead"
-      end
-    end
-    
     module Delay
 
       ##
