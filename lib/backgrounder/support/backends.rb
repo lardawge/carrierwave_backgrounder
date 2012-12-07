@@ -56,7 +56,7 @@ module Support
         when :resque
           ::Resque.enqueue worker, class_name, subject_id, mounted_as
         when :qu
-          ::Qu.enqueue worker, class_name, subject_id, column.mounted_as
+          ::Qu.enqueue worker, class_name, subject_id, mounted_as
         when :sidekiq
           ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
         when :qc
