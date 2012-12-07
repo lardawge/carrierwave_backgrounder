@@ -47,6 +47,11 @@ describe Support::Backends do
       test_module.backend(:delayed_job)
       expect(test_module.backend).to eql(:delayed_job)
     end
+
+    it 'allows passing of queue_options' do
+      test_module.backend(:delayed_job, queue: :awesome_queue)
+      expect(test_module.queue_options).to eql({queue: :awesome_queue})
+    end
   end
 
   describe 'automatically setting backends' do

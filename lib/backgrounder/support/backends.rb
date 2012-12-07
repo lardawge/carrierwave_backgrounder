@@ -7,13 +7,15 @@ module Support
 
     module ClassMethods
       attr_writer :backend
+      attr_reader :queue_options
 
       ##
       # config do |c|
-      #   c.backend :delayed_job, { :config => j }
+      #   c.backend :delayed_job, :config => 
       # end
-      def backend(queue_name=nil)
+      def backend(queue_name=nil, args={})
         return @backend if @backend
+        @queue_options = args
         @backend = queue_name and return if queue_name
         determine_backend
       end
