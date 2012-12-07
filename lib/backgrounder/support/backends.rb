@@ -10,15 +10,7 @@ module Support
 
       def backend
         return @backend if @backend
-        if available_backends.empty?
-          warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
-          self.backend = :immediate
-        elsif available_backends.size > 1
-          raise ::CarrierWave::Backgrounder::ToManyBackendsAvailableError,
-            "You have to many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
-        else
-          self.backend = available_backends.first
-        end
+        determine_backend
       end
 
       def available_backends
@@ -56,6 +48,20 @@ module Support
           ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
         when :immediate
           worker.new(class_name, subject_id, mounted_as).perform
+        end
+      end
+
+      private
+
+      def determine_backend
+        @backend = if available_backends.empty?
+          warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
+          :immediate
+        elsif available_backends.size > 1
+          raise ::CarrierWave::Backgrounder::ToManyBackendsAvailableError,
+            "You have to many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
+        else
+          available_backends.first
         end
       end
 
