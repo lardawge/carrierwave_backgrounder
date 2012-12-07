@@ -6,10 +6,7 @@ module Support
     end
 
     module ClassMethods
-      def backend=(value)
-        @backend = value
-        self.configure_backend
-      end
+      attr_writer :backend
 
       def backend
         return @backend unless @backend.nil?
@@ -38,19 +35,14 @@ module Support
         end
       end
 
-      def configure_backend
-        if backend == :girl_friday
+      def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
+        case backend
+        when :girl_friday
           require 'girl_friday'
           @girl_friday_queue = GirlFriday::WorkQueue.new(:carrierwave) do |msg|
             worker = msg[:worker]
             worker.perform
-          end
-        end
-      end
-
-      def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
-        case backend
-        when :girl_friday
+          end unless @girl_friday_queue
           @girl_friday_queue << { :worker => worker.new(class_name, subject_id, mounted_as) }
         when :delayed_job
           ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)

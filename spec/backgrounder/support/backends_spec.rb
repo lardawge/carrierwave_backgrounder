@@ -65,12 +65,6 @@ describe Support::Backends do
       test_module.backend = :not_a_backend
       test_module.backend.should eq(:not_a_backend)
     end
-
-    it 'calls configure_backend when setting the backend' do
-      test_module.stubs(:available_backends).returns([ :qu ])
-      test_module.expects(:configure_backend).once
-      test_module.backend.should eq(:qu)
-    end
   end
 end
 
