@@ -19,7 +19,8 @@ module Support
         elsif available_backends.size == 1
           self.backend = available_backends.first
         elsif available_backends.size > 1
-          warn 'WARNING: Multiple queue backends found for CarrierWave::Backgrounder. You need to set one explicitly.'
+          raise ::CarrierWave::Backgrounder::ToManyBackendsAvailableError,
+            "You have to many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
         end
       end
 

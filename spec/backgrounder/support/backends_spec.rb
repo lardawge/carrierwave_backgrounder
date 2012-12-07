@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'backgrounder/support/backends'
 
 describe Support::Backends do
   let(:test_module) { Module.new }
@@ -55,11 +54,11 @@ describe Support::Backends do
       test_module.backend.should eq(:qu)
     end
     
-    it 'does not set a backend if more than one is available' do
-      suppress_warnings do
-        test_module.stubs(:available_backends).returns([:qu, :resque])
-        test_module.backend.should be_nil
-      end
+    it 'raises an error if more than one backend is available' do
+      test_module.stubs(:available_backends).returns([:qu, :resque])
+      expect {
+       test_module.backend
+      }.to raise_error(CarrierWave::Backgrounder::ToManyBackendsAvailableError)
     end
 
     it 'does not clobber a manually set backend' do

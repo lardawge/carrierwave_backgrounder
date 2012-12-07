@@ -6,6 +6,9 @@ module CarrierWave
   module Backgrounder
     include Support::Backends
 
+    class UnsupportedBackendError < StandardError ; end
+    class ToManyBackendsAvailableError < StandardError ; end
+
     Logger = Logger.new(STDOUT)
 
     def self.configure
