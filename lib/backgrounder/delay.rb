@@ -16,6 +16,7 @@ module CarrierWave
         super(new_file) if proceed_with_versioning?
       end
 
+      # Intercept carrierwave#store_versions! so we can store them later
       def store_versions!(*args)
         super(*args) if proceed_with_versioning?
       end
