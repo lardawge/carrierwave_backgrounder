@@ -38,7 +38,7 @@ module Support
           end
           @girl_friday_queue << { :worker => worker.new(class_name, subject_id, mounted_as) }
         when :delayed_job
-          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)
+          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as), :queue => queue_options[:queue]
         when :resque
           worker.instance_variable_set('@queue', queue_options[:queue]) if queue_options[:queue]
           ::Resque.enqueue worker, class_name, subject_id, mounted_as
