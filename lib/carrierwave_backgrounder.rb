@@ -9,8 +9,6 @@ module CarrierWave
     class UnsupportedBackendError < StandardError ; end
     class ToManyBackendsAvailableError < StandardError ; end
 
-    Logger = Logger.new(STDOUT)
-
     def self.configure
       yield self
     end
