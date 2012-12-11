@@ -30,7 +30,6 @@ module Support
           backends << :sidekiq     if defined? ::Sidekiq
           backends << :qc          if defined? ::QC
           backends << :immediate
-          backends
         end
       end
 
