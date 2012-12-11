@@ -42,11 +42,11 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-If you are using :girl_friday, you can pass the queue name in as follows:
+If you would like to use a custom queue name for delayed_job, resque, or girl_friday, pass in the following option
 
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
-  c.backend :girl_friday, queue: :awesome_queue 
+  c.backend :delayed_job, queue: :awesome_queue 
 end
 ```
 
