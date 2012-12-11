@@ -38,7 +38,15 @@ In an initializer:
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
   # :delayed_job, :girl_friday, :sidekiq, :qu, :resque, or :qc
-  c.backend = :delayed_job 
+  c.backend :delayed_job 
+end
+```
+
+If you are using :girl_friday, you can pass the queue name in as follows:
+
+```ruby
+CarrierWave::Backgrounder.configure do |c|
+  c.backend :girl_friday, queue: :awesome_queue 
 end
 ```
 
