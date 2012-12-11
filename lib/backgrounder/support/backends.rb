@@ -36,11 +36,10 @@ module Support
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
         case backend
         when :girl_friday
-          require 'girl_friday'
-          @girl_friday_queue = GirlFriday::WorkQueue.new(:carrierwave) do |msg|
+          @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options[:queue] || :carrierwave) do |msg|
             worker = msg[:worker]
             worker.perform
-          end unless @girl_friday_queue
+          end
           @girl_friday_queue << { :worker => worker.new(class_name, subject_id, mounted_as) }
         when :delayed_job
           ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)
