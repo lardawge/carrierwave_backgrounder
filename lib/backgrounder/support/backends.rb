@@ -9,10 +9,6 @@ module Support
       attr_writer :backend
       attr_reader :queue_options
 
-      ##
-      # config do |c|
-      #   c.backend :delayed_job, :config => 
-      # end
       def backend(queue_name=nil, args={})
         return @backend if @backend
         @queue_options = args
@@ -44,6 +40,7 @@ module Support
         when :delayed_job
           ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)
         when :resque
+          worker.instance_variable_set('@queue', queue_options[:queue]) if queue_options[:queue]
           ::Resque.enqueue worker, class_name, subject_id, mounted_as
         when :qu
           ::Qu.enqueue worker, class_name, subject_id, mounted_as
