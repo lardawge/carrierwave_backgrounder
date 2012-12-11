@@ -45,9 +45,7 @@ module CarrierWave
           callback = self.respond_to?(:after_commit) ? :after_commit : :after_save
           send callback, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
 
-          mod = Module.new
-          include mod
-          mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
+          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
 
             def set_#{column}_processing
               self.#{column}_processing = true if respond_to?(:#{column}_processing)
@@ -92,9 +90,7 @@ module CarrierWave
           callback = self.respond_to?(:after_commit) ? :after_commit : :after_save
           send callback, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
 
-          mod = Module.new
-          include mod
-          mod.module_eval  <<-RUBY, __FILE__, __LINE__ + 1
+          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
 
             def write_#{column}_identifier
               super() and return if process_#{column}_upload
