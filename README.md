@@ -50,6 +50,14 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
+You can also pass additional configuration options to girl_friday
+
+```ruby
+CarrierWave::Backgrounder.configure do |c|
+  c.backend :girl_friday, queue: :awesome_queue, size: 3, store: GirlFriday::Store::Redis
+end
+```
+
 In your CarrierWave uploader file:
 
 ```ruby

@@ -32,7 +32,7 @@ module Support
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
         case backend
         when :girl_friday
-          @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options[:queue] || :carrierwave) do |msg|
+          @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options.delete(:queue) || :carrierwave, queue_options) do |msg|
             worker = msg[:worker]
             worker.perform
           end
