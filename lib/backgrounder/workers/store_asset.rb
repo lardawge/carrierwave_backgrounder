@@ -3,20 +3,11 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-      @queue = :store_asset
-
-      if defined?(::Sidekiq)
-        include ::Sidekiq::Worker
-
-        sidekiq_options :queue => @queue
-      end
-
       def self.perform(*args)
         new(*args).perform
       end
 
-      def perform(*args)
-        set_args(*args) unless args.empty?
+      def perform
         resource = klass.is_a?(String) ? klass.constantize : klass
         record = resource.find id
         if tmp = record.send(:"#{column}_tmp")
@@ -32,11 +23,6 @@ module CarrierWave
           end
         end
       end
-
-      def set_args(klass, id, column)
-        self.klass, self.id, self.column = klass, id, column
-      end
-
     end # StoreAsset
 
   end # Workers

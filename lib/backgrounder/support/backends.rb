@@ -45,6 +45,8 @@ module Support
         when :qu
           ::Qu.enqueue worker, class_name, subject_id, mounted_as
         when :sidekiq
+          worker.extend ::Sidekiq::Worker
+          worker.sidekiq_options queue_options[:queue] || :carrierwave
           ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
         when :qc
           ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
