@@ -42,7 +42,8 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-If you would like to use a custom queue name for delayed_job, resque, or girl_friday, pass in the following option
+If you would like to use a custom queue name for Delayed Job, Resque, Girl Friday, Sidekiq and Qu pass in the following option.
+The queue name will default to carrierwave.
 
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
