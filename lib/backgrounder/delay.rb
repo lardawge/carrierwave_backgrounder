@@ -6,6 +6,10 @@ module CarrierWave
         super if proceed_with_versioning?
       end
 
+      def store_versions!(*args)
+        super if proceed_with_versioning?
+      end
+
       def process!(new_file=nil)
         super if proceed_with_versioning?
       end
