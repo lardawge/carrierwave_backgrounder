@@ -46,9 +46,8 @@ module Support
           worker.instance_variable_set('@queue', queue_options[:queue] || :carrierwave)
           ::Qu.enqueue worker, class_name, subject_id, mounted_as
         when :sidekiq
-          worker.extend ::Sidekiq::Worker
-          worker.sidekiq_options queue_options[:queue] || :carrierwave
-          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
+          ::CarrierWave::Workers::SidekiqWorker.sidekiq_options(:queue => queue_options[:queue] || :carrierwave)
+          ::Sidekiq::Client.enqueue ::CarrierWave::Workers::SidekiqWorker, worker.to_s, class_name, subject_id, mounted_as
         when :qc
           ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
         when :immediate
