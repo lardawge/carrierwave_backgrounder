@@ -3,11 +3,7 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-      if defined?(::Sidekiq)
-        include ::Sidekiq::Worker
-
-        sidekiq_options :queue => @queue
-      end
+      include ::Sidekiq::Worker if defined?(::Sidekiq)
 
       def self.perform(*args)
         new(*args).perform
