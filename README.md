@@ -2,7 +2,7 @@
 
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
-This gem addresses that moving processing or storage/processing to a background task.
+This gem addresses that by offloading processing or storage/processing to a background task.
 We currently support Delayed Job, Resque, Sidekiq, Girl Friday, Qu, and Queue Classic.
 
 ## Background options
