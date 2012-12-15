@@ -38,27 +38,12 @@ In Rails, add the following your Gemfile:
 gem 'carrierwave_backgrounder'
 ```
 
-### Setup
-
-In an initializer:
-
-```ruby
-CarrierWave::Backgrounder.configure do |c|
-  # :delayed_job, :girl_friday, :sidekiq, :qu, :resque, or :qc
-  c.backend :delayed_job 
-end
+Run the generator which will create an initializer in config/initializers.
+```bash
+  rails g carrierwave_backgrounder:install
 ```
 
-If you would like to use a custom queue name for Delayed Job, Resque, Girl Friday, Sidekiq and Qu pass in the following option.
-The queue name will default to carrierwave.
-
-```ruby
-CarrierWave::Backgrounder.configure do |c|
-  c.backend :delayed_job, queue: :awesome_queue 
-end
-```
-
-You can also pass additional configuration options to Girl Friday and Sidekiq:
+You can pass additional configuration options to Girl Friday and Sidekiq:
 
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
