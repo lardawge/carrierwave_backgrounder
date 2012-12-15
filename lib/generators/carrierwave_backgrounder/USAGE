@@ -1,0 +1,8 @@
+Description:
+    To copy CarrierWaveBackgrounder initializer to your Rails App, with some configuration values, run the following:
+
+Example:
+    rails generate carrierwave_backgrounder:install
+
+    This will create:
+        config/initializer/carrierwave_backgrounder.rb
