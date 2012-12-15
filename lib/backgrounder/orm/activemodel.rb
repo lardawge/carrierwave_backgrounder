@@ -13,7 +13,7 @@ module CarrierWave
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def trigger_#{column}_background_processing?
               process_#{column}_upload != true &&
-              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present?)
+              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present? || #{column}_cache.present?)
             end
           RUBY
         end
@@ -24,7 +24,7 @@ module CarrierWave
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def trigger_#{column}_background_storage?
               process_#{column}_upload != true &&
-              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present?)
+              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present? || #{column}_cache.present?)
             end
           RUBY
         end
