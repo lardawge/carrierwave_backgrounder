@@ -58,7 +58,7 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-You can also pass additional configuration options to Girl Friday
+You can also pass additional configuration options to Girl Friday and Sidekiq:
 
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
