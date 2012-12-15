@@ -1,5 +1,19 @@
 require 'spec_helper'
 
+class TestWorker < Struct.new(:klass, :id, :column)
+  def self.perform(*args)
+    new(*args).perform
+  end
+
+  def perform(*args)
+    set_args(*args) unless args.empty?
+  end
+
+  def set_args(klass, id, column)
+    self.klass, self.id, self.column = klass, id, column
+  end
+end
+
 describe Support::Backends do
   let(:test_module) { Module.new }
 
@@ -54,7 +68,7 @@ describe Support::Backends do
     end
   end
 
-  describe 'automatically setting backends' do
+  describe 'auto detect backends' do
     before do
       test_module.instance_variable_set('@backend', nil)
     end
@@ -81,6 +95,26 @@ describe Support::Backends do
     it 'does not clobber a manually set backend' do
       test_module.backend = :not_a_backend
       test_module.backend.should eq(:not_a_backend)
+    end
+  end
+
+  describe '#enqueue_for_backend' do
+    context 'delayed_job' do
+      it 'defaults the queue name to nil if none passed' do
+        test_module.backend :delayed_job
+        worker = TestWorker.new('FakeClass', 1, :image)
+        TestWorker.stubs(:new).returns(worker)
+        Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
+        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+      end
+
+      it 'sets the queue name to the queue arg' do
+        test_module.backend :delayed_job, :queue => :awesome_queue
+        worker = TestWorker.new('FakeClass', 1, :image)
+        TestWorker.stubs(:new).returns(worker)
+        Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
+        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+      end
     end
   end
 end

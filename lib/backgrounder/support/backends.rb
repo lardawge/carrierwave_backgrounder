@@ -31,14 +31,14 @@ module Support
 
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
         case backend
+        when :delayed_job
+          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as), :queue => queue_options[:queue]
         when :girl_friday
           @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options.delete(:queue) || :carrierwave, queue_options) do |msg|
             worker = msg[:worker]
             worker.perform
           end
           @girl_friday_queue << { :worker => worker.new(class_name, subject_id, mounted_as) }
-        when :delayed_job
-          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as), :queue => queue_options[:queue]
         when :resque
           worker.instance_variable_set('@queue', queue_options[:queue] || :carrierwave)
           ::Resque.enqueue worker, class_name, subject_id, mounted_as
