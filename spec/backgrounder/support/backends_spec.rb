@@ -99,21 +99,39 @@ describe Support::Backends do
   end
 
   describe '#enqueue_for_backend' do
+    let(:worker) { TestWorker.new('FakeClass', 1, :image) }
+
     context 'delayed_job' do
+      before do
+        TestWorker.stubs(:new).returns(worker)
+      end
+
       it 'defaults the queue name to nil if none passed' do
         test_module.backend :delayed_job
-        worker = TestWorker.new('FakeClass', 1, :image)
-        TestWorker.stubs(:new).returns(worker)
         Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
         test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
       end
 
-      it 'sets the queue name to the queue arg' do
+      it 'sets the queue name to the queue config' do
         test_module.backend :delayed_job, :queue => :awesome_queue
-        worker = TestWorker.new('FakeClass', 1, :image)
-        TestWorker.stubs(:new).returns(worker)
         Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
         test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+      end
+    end
+
+    context 'resque' do
+      it 'sets a variable with the queue name default :carrierwave' do
+        test_module.backend :resque
+        Resque.expects(:enqueue).with(TestWorker, 'FakeClass', 1, :image)
+        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+        expect(TestWorker.instance_variable_get '@queue').to eql(:carrierwave)
+      end
+
+      it 'sets a variable to the queue config' do
+        test_module.backend :resque, :queue => :awesome_queue
+        Resque.expects(:enqueue).with(TestWorker, 'FakeClass', 1, :image)
+        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+        expect(TestWorker.instance_variable_get '@queue').to eql(:awesome_queue)
       end
     end
   end
