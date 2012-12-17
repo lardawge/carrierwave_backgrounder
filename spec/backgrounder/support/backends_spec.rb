@@ -215,6 +215,17 @@ describe Support::Backends do
         test_module.enqueue_for_backend(TestWorker, 'FakeClass', 1, :image)
       end
     end
+
+    context 'immediate' do
+      it 'instantiates a worker passing the args and calls perform' do
+        worker = mock('Worker')
+        TestWorker.expects(:new).with('FakeClass', 1, :image).returns(worker)
+        worker.expects(:perform)
+        test_module.backend :immediate
+        test_module.enqueue_for_backend(TestWorker, 'FakeClass', 1, :image)
+      end
+    end
+
   end
 end
 
