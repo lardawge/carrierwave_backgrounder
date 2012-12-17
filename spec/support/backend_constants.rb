@@ -15,6 +15,9 @@ module Qu
 end
 
 module Sidekiq
+  module Client
+  end
+
   module Worker
     def self.included(base)
       base.extend(ClassMethods)

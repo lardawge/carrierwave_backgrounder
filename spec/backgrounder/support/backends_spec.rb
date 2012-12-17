@@ -23,31 +23,31 @@ describe Support::Backends do
 
   describe 'enumerating available backends' do
     it 'detects GirlFriday' do
-      test_module.available_backends.should include(:girl_friday)
+      expect(test_module.available_backends).to include(:girl_friday)
     end
 
     it 'detects Delayed::Job' do
-      test_module.available_backends.should include(:delayed_job)
+      expect(test_module.available_backends).to include(:delayed_job)
     end
     
     it 'detects Resque' do
-      test_module.available_backends.should include(:resque)
+      expect(test_module.available_backends).to include(:resque)
     end
     
     it 'detects Qu' do
-      test_module.available_backends.should include(:qu)
+      expect(test_module.available_backends).to include(:qu)
     end
     
     it 'detects Sidekiq' do
-      test_module.available_backends.should include(:sidekiq)
+      expect(test_module.available_backends).to include(:sidekiq)
     end
     
     it 'detects QC' do
-      test_module.available_backends.should include(:qc)
+      expect(test_module.available_backends).to include(:qc)
     end
 
     it 'detects Immediate' do
-      test_module.available_backends.should include(:immediate)
+      expect(test_module.available_backends).to include(:immediate)
     end
   end
 
@@ -82,7 +82,7 @@ describe Support::Backends do
 
     it 'sets a backend automatically if only one is available' do
       test_module.stubs(:available_backends).returns([ :qu ])
-      test_module.backend.should eq(:qu)
+      expect(test_module.backend).to eql(:qu)
     end
     
     it 'raises an error if more than one backend is available' do
@@ -94,25 +94,25 @@ describe Support::Backends do
 
     it 'does not clobber a manually set backend' do
       test_module.backend = :not_a_backend
-      test_module.backend.should eq(:not_a_backend)
+      expect(test_module.backend).to eql(:not_a_backend)
     end
   end
 
   describe '#enqueue_for_backend' do
-    let(:worker) { TestWorker.new('FakeClass', 1, :image) }
+    let!(:worker) { TestWorker.new('FakeClass', 1, :image) }
 
     context 'delayed_job' do
       before do
-        TestWorker.stubs(:new).returns(worker)
+        TestWorker.expects(:new).returns(worker)
       end
 
-      it 'defaults the queue name to nil if none passed' do
+      it 'defaults the queue name to nil if none passed to #backend' do
         test_module.backend :delayed_job
         Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
         test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
       end
 
-      it 'sets the queue name to the queue config' do
+      it 'sets the queue name to the queue name passed to #backend' do
         test_module.backend :delayed_job, :queue => :awesome_queue
         Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
         test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
@@ -120,18 +120,41 @@ describe Support::Backends do
     end
 
     context 'resque' do
-      it 'sets a variable with the queue name default :carrierwave' do
+      let(:args) { [TestWorker, 'FakeClass', 1, :image] }
+      before do
+        Resque.expects(:enqueue).with(*args)
+      end
+
+      it 'sets a variable with the queue name, defaults to :carrierwave' do
         test_module.backend :resque
-        Resque.expects(:enqueue).with(TestWorker, 'FakeClass', 1, :image)
-        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+        test_module.enqueue_for_backend(*args)
         expect(TestWorker.instance_variable_get '@queue').to eql(:carrierwave)
       end
 
-      it 'sets a variable to the queue config' do
+      it 'sets a variable to the queue name passed to #backend' do
         test_module.backend :resque, :queue => :awesome_queue
-        Resque.expects(:enqueue).with(TestWorker, 'FakeClass', 1, :image)
-        test_module.enqueue_for_backend TestWorker, 'FakeClass', 1, :image
+        test_module.enqueue_for_backend(*args)
         expect(TestWorker.instance_variable_get '@queue').to eql(:awesome_queue)
+      end
+    end
+
+    context 'sidekiq' do
+      let(:args) { [TestWorker, 'FakeClass', 1, :image] }
+      before do
+        Sidekiq::Client.expects(:enqueue).with(*args)
+      end
+
+      it 'sets sidekiq_options to empty hash and calls enqueue with passed args' do
+        TestWorker.expects(:sidekiq_options).with({})
+        test_module.backend :sidekiq
+        test_module.enqueue_for_backend(*args)
+      end
+
+      it 'sets sidekiq_options to the options passed to backend' do
+        options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
+        TestWorker.expects(:sidekiq_options).with(options)
+        test_module.backend :sidekiq, options
+        test_module.enqueue_for_backend(*args)
       end
     end
   end

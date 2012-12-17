@@ -36,6 +36,9 @@ module Support
         when :resque
           worker.instance_variable_set('@queue', queue_options[:queue] || :carrierwave)
           ::Resque.enqueue worker, class_name, subject_id, mounted_as
+        when :sidekiq
+          worker.sidekiq_options queue_options
+          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
         when :girl_friday
           @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options.delete(:queue) || :carrierwave, queue_options) do |msg|
             worker = msg[:worker]
@@ -45,9 +48,6 @@ module Support
         when :qu
           worker.instance_variable_set('@queue', queue_options[:queue] || :carrierwave)
           ::Qu.enqueue worker, class_name, subject_id, mounted_as
-        when :sidekiq
-          worker.sidekiq_options queue_options
-          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
         when :qc
           ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
         when :immediate
