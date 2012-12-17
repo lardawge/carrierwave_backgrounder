@@ -36,7 +36,7 @@ In Rails, add the following your Gemfile:
 
 ```ruby
 # IMPORTANT: Be sure to list the backend job processor you intend to use, before carrierwave_backgrounder
-gem 'sidekiq'
+gem 'sidekiq' # or delayed_job, resque, ect...
 gem 'carrierwave_backgrounder'
 ```
 
