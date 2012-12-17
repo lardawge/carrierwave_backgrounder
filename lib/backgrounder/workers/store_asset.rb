@@ -11,8 +11,7 @@ module CarrierWave
 
       def perform(*args)
         set_args(*args) if args.present?
-        resource = klass.is_a?(String) ? klass.constantize : klass
-        record = resource.find id
+        record = constantized_resource.find id
         if tmp = record.send(:"#{column}_tmp")
           asset = record.send(:"#{column}")
           cache_dir  = [asset.root, asset.cache_dir].join("/")
@@ -31,6 +30,11 @@ module CarrierWave
         self.klass, self.id, self.column = klass, id, column
       end
 
+      private
+
+      def constantized_resource
+        klass.is_a?(String) ? klass.constantize : klass
+      end
     end # StoreAsset
 
   end # Workers
