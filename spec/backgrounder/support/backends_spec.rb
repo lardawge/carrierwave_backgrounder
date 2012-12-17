@@ -188,6 +188,25 @@ describe Support::Backends do
         expect(test_module.instance_variable_get '@girl_friday_queue').to eql(expected)
       end
     end
+
+    context 'qu' do
+      let(:args) { [TestWorker, 'FakeClass', 1, :image] }
+      before do
+        Qu.expects(:enqueue).with(*args)
+      end
+
+      it 'sets a variable with the queue name, defaults to :carrierwave' do
+        test_module.backend :qu
+        test_module.enqueue_for_backend(*args)
+        expect(TestWorker.instance_variable_get '@queue').to eql(:carrierwave)
+      end
+
+      it 'sets a variable to the queue name passed to #backend' do
+        test_module.backend :qu, :queue => :awesome_queue
+        test_module.enqueue_for_backend(*args)
+        expect(TestWorker.instance_variable_get '@queue').to eql(:awesome_queue)
+      end
+    end
   end
 end
 
