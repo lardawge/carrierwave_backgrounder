@@ -107,7 +107,21 @@ To overide the worker in cases where additional methods need to be called or you
 second argument:
 
 ```ruby
-process_in_background :avatar, MyAppsAwesomeProcessingWorker
+process_in_background :avatar, MyParanoidWorker
+```
+
+Then create a worker that subclasses carrierwave_backgrounder's worker:
+
+```ruby
+class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
+  # ...or subclass CarrierWave::Workers::StoreAsset if you're using store_in_background
+
+  def error(job, exception)
+    report_job_failure  # or whatever
+  end
+
+  # other hooks you might care about
+end
 ```
 ### Testing with Rspec
 We use the after_commit hook when using active_record. This creates a problem when testing with Rspec because after_commit never gets fired
