@@ -10,7 +10,7 @@ module CarrierWave
       end
 
       def perform(*args)
-        set_args(*args) unless args.empty?
+        set_args(*args) if args.present?
         resource = klass.is_a?(String) ? klass.constantize : klass
         record = resource.find id
 
