@@ -1,6 +1,8 @@
 # Fixture module declarations for backend detection testing
 
 module GirlFriday
+  class WorkQueue
+  end
 end
 
 module Delayed

@@ -157,6 +157,37 @@ describe Support::Backends do
         test_module.enqueue_for_backend(*args)
       end
     end
+
+    context 'girl_friday' do
+      let(:args) { [TestWorker, 'FakeClass', 1, :image] }
+
+      it 'instantiates a GirlFriday work queue if one does not exist' do
+        test_module.backend :girl_friday
+        GirlFriday::WorkQueue.expects(:new).with(:carrierwave, {}).returns([])
+        test_module.enqueue_for_backend(*args)
+      end
+
+      it 'instantiates a GirlFriday work queue passing the args to the queue' do
+        test_module.backend :girl_friday, :queue => :awesome_queue, :size => 3
+        GirlFriday::WorkQueue.expects(:new).with(:awesome_queue, {:size => 3}).returns([])
+        test_module.enqueue_for_backend(*args)
+      end
+
+      it 'does not instantiate a GirlFriday work queue if one exists' do
+        test_module.backend :girl_friday
+        test_module.instance_variable_set('@girl_friday_queue', [])
+        GirlFriday::WorkQueue.expects(:new).never
+        test_module.enqueue_for_backend(*args)
+      end
+
+      it 'add a worker to the girl_friday queue' do
+        expected = [{ :worker => TestWorker.new('FakeClass', 1, :image) }]
+        test_module.backend :girl_friday
+        test_module.instance_variable_set('@girl_friday_queue', [])
+        test_module.enqueue_for_backend(*args)
+        expect(test_module.instance_variable_get '@girl_friday_queue').to eql(expected)
+      end
+    end
   end
 end
 
