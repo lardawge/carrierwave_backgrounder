@@ -207,6 +207,14 @@ describe Support::Backends do
         expect(TestWorker.instance_variable_get '@queue').to eql(:awesome_queue)
       end
     end
+
+    context 'qc' do
+      it 'calls enqueue with the passed args' do
+        QC.expects(:enqueue).with("TestWorker.perform", 'FakeClass', 1, 'image')
+        test_module.backend :qc
+        test_module.enqueue_for_backend(TestWorker, 'FakeClass', 1, :image)
+      end
+    end
   end
 end
 
