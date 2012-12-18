@@ -4,6 +4,7 @@ module CarrierWave
 
     class StoreAsset < Struct.new(:klass, :id, :column)
       include ::Sidekiq::Worker if defined?(::Sidekiq)
+      attr_reader :cache_path, :tmp_directory
 
       def self.perform(*args)
         new(*args).perform
@@ -12,28 +13,33 @@ module CarrierWave
       def perform(*args)
         set_args(*args) if args.present?
         record = constantized_resource.find id
-        if tmp = record.send(:"#{column}_tmp")
-          asset = record.send(:"#{column}")
-          cache_dir  = [asset.root, asset.cache_dir].join("/")
-          cache_path = [cache_dir, tmp].join("/")
-          tmp_dir = [cache_dir, tmp.split("/")[0]].join("/")
+
+        if record.send(:"#{column}_tmp")
+          store_directories(record)
           record.send :"process_#{column}_upload=", true
           record.send :"#{column}_tmp=", nil
           File.open(cache_path) { |f| record.send :"#{column}=", f }
           if record.save!
-            FileUtils.rm_r(tmp_dir, :force => true)
+            FileUtils.rm_r(tmp_directory, :force => true)
           end
         end
       end
+
+      private
 
       def set_args(klass, id, column)
         self.klass, self.id, self.column = klass, id, column
       end
 
-      private
-
       def constantized_resource
         klass.is_a?(String) ? klass.constantize : klass
+      end
+
+      def store_directories(record)
+        asset, asset_tmp = record.send(:"#{column}"), record.send(:"#{column}_tmp")
+        cache_directory  = File.join(asset.root, asset.cache_dir)
+        @cache_path      = File.join(cache_directory, asset_tmp)
+        @tmp_directory   = File.join(cache_directory, asset_tmp.split("/").first)
       end
     end # StoreAsset
 
