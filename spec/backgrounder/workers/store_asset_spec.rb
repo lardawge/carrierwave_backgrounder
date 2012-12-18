@@ -8,18 +8,16 @@ describe CarrierWave::Workers::StoreAsset do
   let(:user) { mock('User') }
   let!(:worker) { worker_class.new(user, '22', :image) }
 
-  context ".perform" do
-
+  describe ".perform" do
     it 'creates a new instance and calls perform' do
       args = [user, '22', :image]
       worker_class.expects(:new).with(*args).returns(worker)
       worker_class.any_instance.expects(:perform)
-
       worker_class.perform(*args)
     end
   end
 
-  context "#perform" do
+  describe "#perform" do
     let(:image)  { mock('UserAsset') }
 
     before do
