@@ -5,10 +5,9 @@ require 'backgrounder/workers/process_asset'
 describe CarrierWave::Workers::ProcessAsset do
   let(:worker_class) { CarrierWave::Workers::ProcessAsset }
   let(:user)   { mock('User') }
-  let(:image)  { mock('UserAsset') }
   let!(:worker) { worker_class.new(user, '22', :image) }
 
-  context ".perform" do
+  describe ".perform" do
     it 'creates a new instance and calls perform' do
       args = [user, '22', :image]
       worker_class.expects(:new).with(*args).returns(worker)
@@ -18,29 +17,54 @@ describe CarrierWave::Workers::ProcessAsset do
     end
   end
 
-  context "#perform" do
-    it 'processes versions with image_processing column' do
+  describe "#perform" do
+    let(:image)  { mock('UserAsset') }
+
+    before do
       user.expects(:find).with('22').returns(user).once
       user.expects(:image).once.returns(image)
       user.expects(:process_image_upload=).with(true).once
-
       image.expects(:recreate_versions!).once.returns(true)
+    end
+
+    it 'processes versions with image_processing column' do
       user.expects(:respond_to?).with(:image_processing).once.returns(true)
-      user.expects(:image_processing=).with(nil).once
-      user.expects(:save!)
+      user.expects(:update_attribute).with(:image_processing, nil).once
       worker.perform
     end
 
     it 'processes versions without image_processing column' do
-      user.expects(:find).with('22').returns(user).once
-      user.expects(:image).once.returns(image)
-      user.expects(:process_image_upload=).with(true).once
-
-      image.expects(:recreate_versions!).once.returns(true)
       user.expects(:respond_to?).with(:image_processing).once.returns(false)
-      user.expects(:image_processing=).never
-      user.expects(:save!).never
+      user.expects(:update_attribute).never
       worker.perform
+    end
+  end
+
+  describe '#perform with args' do
+    let(:admin) { mock('Admin') }
+    let(:avatar)  { mock('AdminAsset') }
+    let(:worker) { worker_class.new }
+
+    before do
+      admin.expects(:find).with('23').returns(admin).once
+      admin.expects(:avatar).once.returns(avatar)
+      admin.expects(:process_avatar_upload=).with(true).once
+      admin.expects(:respond_to?).with(:avatar_processing).once.returns(false)
+      avatar.expects(:recreate_versions!).once.returns(true)
+
+      worker.perform admin, '23', :avatar
+    end
+
+    it 'sets klass' do
+      expect(worker.klass).to eql(admin)
+    end
+
+    it 'sets column' do
+      expect(worker.id).to eql('23')
+    end
+
+    it 'sets id' do
+      expect(worker.column).to eql(:avatar)
     end
   end
 end

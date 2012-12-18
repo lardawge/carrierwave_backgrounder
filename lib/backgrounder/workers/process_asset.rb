@@ -11,20 +11,24 @@ module CarrierWave
 
       def perform(*args)
         set_args(*args) if args.present?
-        resource = klass.is_a?(String) ? klass.constantize : klass
-        record = resource.find id
+        record = constantized_resource.find id
 
         if record
           record.send(:"process_#{column}_upload=", true)
           if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
-            record.send :"#{column}_processing=", nil
-            record.save!
+            record.update_attribute :"#{column}_processing", nil
           end
         end
       end
 
+      private
+
       def set_args(klass, id, column)
         self.klass, self.id, self.column = klass, id, column
+      end
+
+      def constantized_resource
+        klass.is_a?(String) ? klass.constantize : klass
       end
 
     end # ProcessAsset
