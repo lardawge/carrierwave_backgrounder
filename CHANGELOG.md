@@ -1,3 +1,10 @@
+## 0.1.3 (unreleased)
+
+### enhancements
+  * CarrierWave::Workers::ProcessAsset now uses #update_attribute when setting [column]_processing.
+
+### bug fixes
+
 ## 0.1.2
 
 ### enhancements
@@ -7,7 +14,7 @@
 ```
 
 ### bug fixes
-  * Check [column]_cache to make sure we are processessing when a form fails and [column]_cache is used.
+  * Check [column]_cache to make sure we are processing when a form fails and [column]_cache is used.
 
 ## 0.1.1
 
