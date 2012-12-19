@@ -41,12 +41,14 @@ module CarrierWave
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           send :attr_accessor, :"process_#{column}_upload"
 
-          send :before_save, :"set_#{column}_processing", :if => :"trigger_#{column}_background_processing?"
+          send :before_save, :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
           callback = self.respond_to?(:after_commit) ? :after_commit : :after_save
-          send callback, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_processing?"
+          send callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
 
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-
+          mod = Module.new
+          include mod
+          define_shared(mod, column)
+          mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_processing
               self.#{column}_processing = true if respond_to?(:#{column}_processing)
             end
@@ -54,11 +56,6 @@ module CarrierWave
             def enqueue_#{column}_background_job
               CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
-
-            def trigger_#{column}_background_processing?
-              process_#{column}_upload != true
-            end
-
           RUBY
         end
 
@@ -88,10 +85,12 @@ module CarrierWave
           send :attr_accessor, :"process_#{column}_upload"
 
           callback = self.respond_to?(:after_commit) ? :after_commit : :after_save
-          send callback, :"enqueue_#{column}_background_job", :if => :"trigger_#{column}_background_storage?"
+          send callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
 
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-
+          mod = Module.new
+          include mod
+          define_shared(mod, column)
+          mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def write_#{column}_identifier
               super() and return if process_#{column}_upload
               self.#{column}_tmp = _mounter(:#{column}).cache_name if _mounter(:#{column}).cache_name
@@ -104,11 +103,16 @@ module CarrierWave
             def enqueue_#{column}_background_job
               CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
+          RUBY
+        end
 
-            def trigger_#{column}_background_storage?
-              process_#{column}_upload != true
+        private
+
+        def define_shared(mod, column)
+          mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
+            def enqueue_#{column}_background_job?
+              !process_#{column}_upload
             end
-
           RUBY
         end
 

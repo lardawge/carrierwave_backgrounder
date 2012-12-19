@@ -21,20 +21,20 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
 
     it "returns true if process_avatar_upload is false" do
       instance.expects(:process_avatar_upload)
-      expect(instance.trigger_avatar_background_processing?).to be_true
+      expect(instance.enqueue_avatar_background_job?).to be_true
     end
 
     it "calls column_changed?" do
       instance.expects(:process_avatar_upload).returns(false)
       instance.expects(:avatar_changed?)
-      expect(instance.trigger_avatar_background_processing?).to be_true
+      expect(instance.enqueue_avatar_background_job?).to be_true
     end
 
     it "calls previous_changes" do
       instance.expects(:process_avatar_upload).returns(false)
       instance.expects(:avatar_changed?).returns(false)
       instance.expects(:previous_changes).returns({:avatar => true})
-      expect(instance.trigger_avatar_background_processing?).to be_true
+      expect(instance.enqueue_avatar_background_job?).to be_true
     end
 
     it "calls avatar_remote_url" do
@@ -42,7 +42,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
       instance.expects(:avatar_changed?).returns(false)
       instance.expects(:previous_changes).returns({})
       instance.expects(:remote_avatar_url).returns('yup')
-      expect(instance.trigger_avatar_background_processing?).to be_true
+      expect(instance.enqueue_avatar_background_job?).to be_true
     end
 
     it "calls avatar_cache" do
@@ -51,7 +51,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
       instance.expects(:previous_changes).returns({})
       instance.expects(:remote_avatar_url).returns(nil)
       instance.expects(:avatar_cache).returns('yup')
-      expect(instance.trigger_avatar_background_processing?).to be_true
+      expect(instance.enqueue_avatar_background_job?).to be_true
     end
   end
 end
