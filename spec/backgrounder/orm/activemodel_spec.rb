@@ -17,10 +17,41 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
   end
 
   describe '#trigger_column_background_processing?' do
-    it "calls up to processs column upload getter in the base class" do
-      instance = @mock_class.new
+    let(:instance) { @mock_class.new }
+
+    it "returns true if process_avatar_upload is false" do
       instance.expects(:process_avatar_upload)
-      instance.trigger_avatar_background_processing?
+      expect(instance.trigger_avatar_background_processing?).to be_true
+    end
+
+    it "calls column_changed?" do
+      instance.expects(:process_avatar_upload).returns(false)
+      instance.expects(:avatar_changed?)
+      expect(instance.trigger_avatar_background_processing?).to be_true
+    end
+
+    it "calls previous_changes" do
+      instance.expects(:process_avatar_upload).returns(false)
+      instance.expects(:avatar_changed?).returns(false)
+      instance.expects(:previous_changes).returns({:avatar => true})
+      expect(instance.trigger_avatar_background_processing?).to be_true
+    end
+
+    it "calls avatar_remote_url" do
+      instance.expects(:process_avatar_upload).returns(false)
+      instance.expects(:avatar_changed?).returns(false)
+      instance.expects(:previous_changes).returns({})
+      instance.expects(:remote_avatar_url).returns('yup')
+      expect(instance.trigger_avatar_background_processing?).to be_true
+    end
+
+    it "calls avatar_cache" do
+      instance.expects(:process_avatar_upload).returns(false)
+      instance.expects(:avatar_changed?).returns(false)
+      instance.expects(:previous_changes).returns({})
+      instance.expects(:remote_avatar_url).returns(nil)
+      instance.expects(:avatar_cache).returns('yup')
+      expect(instance.trigger_avatar_background_processing?).to be_true
     end
   end
 end
