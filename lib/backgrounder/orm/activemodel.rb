@@ -10,21 +10,24 @@ module CarrierWave
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           super
 
-          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            def enqueue_#{column}_background_job?
-              super &&
-              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present? || #{column}_cache.present?)
-            end
-          RUBY
+          __define_shared(column)
         end
 
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
           super
 
+          __define_shared(column)
+        end
+
+        private
+
+        def __define_shared(column)
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            def enqueue_#{column}_background_job?
-              super &&
-              (#{column}_changed? || previous_changes.has_key?(:#{column}) || remote_#{column}_url.present? || #{column}_cache.present?)
+            def #{column}_updated?
+              #{column}_changed? ||                     # after_save support
+              previous_changes.has_key?(:#{column}) ||  # after_commit support
+              remote_#{column}_url.present? ||          # Remote upload support
+              #{column}_cache.present?                  # Form failure support
             end
           RUBY
         end

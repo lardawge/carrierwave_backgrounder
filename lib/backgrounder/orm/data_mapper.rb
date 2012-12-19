@@ -9,26 +9,12 @@ module CarrierWave
           before :save, :"set_#{column}_processing"
           after  :save, :"enqueue_#{column}_background_job"
 
+          __define_shared(column, worker)
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            attr_accessor :process_#{column}_upload
-            attr_reader :#{column}_changed
-
             def set_#{column}_processing
               @#{column}_changed = attribute_dirty?(:#{column})
               self.#{column}_processing = true if respond_to?(:#{column}_processing) 
             end
-
-            def enqueue_#{column}_background_job
-              if enqueue_#{column}_background_job?
-                CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id, #{column}.mounted_as)
-                @#{column}_changed = false
-              end
-            end
-
-            def enqueue_#{column}_background_job?
-              super && #{column}_changed
-            end
-
           RUBY
         end
 
@@ -36,22 +22,25 @@ module CarrierWave
           before :save, :"set_#{column}_changed"
           after :save, :"enqueue_#{column}_background_job"
 
+          __define_shared(column, worker)
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            attr_accessor :process_#{column}_upload
-            attr_reader :#{column}_changed
-
             def set_#{column}_changed
               @#{column}_changed = attribute_dirty?(:#{column})
             end
 
             def write_#{column}_identifier
-              super() and return if process_#{column}_upload
+              super and return if process_#{column}_upload
               self.#{column}_tmp = _mounter(:#{column}).cache_name
             end
+          RUBY
+        end
 
-            def store_#{column}!
-              super() if process_#{column}_upload
-            end
+        private
+
+        def __define_shared(column, worker)
+          class_eval  <<-RUBY, __FILE__, __LINE__ + 1
+            attr_accessor :process_#{column}_upload
+            attr_reader :#{column}_changed
 
             def enqueue_#{column}_background_job
               if enqueue_#{column}_background_job?
@@ -60,8 +49,8 @@ module CarrierWave
               end
             end
 
-            def enqueue_#{column}_background_job?
-              super && #{column}_changed
+            def #{column}_updated?
+              #{column}_changed
             end
           RUBY
         end

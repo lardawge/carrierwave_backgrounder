@@ -46,14 +46,10 @@ module CarrierWave
 
           mod = Module.new
           include mod
-          define_shared(mod, column)
+          _define_shared(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_processing
               self.#{column}_processing = true if respond_to?(:#{column}_processing)
-            end
-
-            def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
           RUBY
         end
@@ -87,7 +83,7 @@ module CarrierWave
 
           mod = Module.new
           include mod
-          define_shared(mod, column)
+          _define_shared(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def write_#{column}_identifier
               super() and return if process_#{column}_upload
@@ -96,10 +92,6 @@ module CarrierWave
 
             def store_#{column}!
               super() if process_#{column}_upload
-            end
-
-            def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
           RUBY
         end
@@ -110,10 +102,16 @@ module CarrierWave
           respond_to?(:after_commit) ? :after_commit : :after_save
         end
 
-        def define_shared(mod, column)
+        def _define_shared(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
+            def #{column}_updated?; true; end
+
             def enqueue_#{column}_background_job?
-              !process_#{column}_upload
+              !process_#{column}_upload && #{column}_updated?
+            end
+
+            def enqueue_#{column}_background_job
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
             end
           RUBY
         end
