@@ -12,14 +12,14 @@ module CarrierWave
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_processing
               @#{column}_changed = attribute_dirty?(:#{column})
-              self.#{column}_processing = true if respond_to?(:#{column}_processing) 
+              self.#{column}_processing = true if respond_to?(:#{column}_processing)
             end
           RUBY
         end
 
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
           before :save, :"set_#{column}_changed"
-          after :save, :"enqueue_#{column}_background_job"
+          after  :save, :"enqueue_#{column}_background_job"
 
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_changed
