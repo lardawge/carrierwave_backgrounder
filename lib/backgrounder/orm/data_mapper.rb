@@ -9,7 +9,6 @@ module CarrierWave
           before :save, :"set_#{column}_processing"
           after  :save, :"enqueue_#{column}_background_job"
 
-          __define_shared(column, worker)
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_processing
               @#{column}_changed = attribute_dirty?(:#{column})
@@ -22,7 +21,6 @@ module CarrierWave
           before :save, :"set_#{column}_changed"
           after :save, :"enqueue_#{column}_background_job"
 
-          __define_shared(column, worker)
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_changed
               @#{column}_changed = attribute_dirty?(:#{column})
@@ -37,9 +35,9 @@ module CarrierWave
 
         private
 
-        def __define_shared(column, worker)
+        def _define_shared_backgrounder_methods(mod, column, worker)
+          super
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            attr_accessor :process_#{column}_upload
             attr_reader :#{column}_changed
 
             def enqueue_#{column}_background_job
