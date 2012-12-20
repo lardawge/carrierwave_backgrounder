@@ -86,12 +86,12 @@ module CarrierWave
           _define_shared(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def write_#{column}_identifier
-              super() and return if process_#{column}_upload
+              super and return if process_#{column}_upload
               self.#{column}_tmp = _mounter(:#{column}).cache_name if _mounter(:#{column}).cache_name
             end
 
             def store_#{column}!
-              super() if process_#{column}_upload
+              super if process_#{column}_upload
             end
           RUBY
         end
