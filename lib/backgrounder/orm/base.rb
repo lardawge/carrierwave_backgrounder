@@ -41,9 +41,6 @@ module CarrierWave
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           attr_accessor :"process_#{column}_upload"
 
-          before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
-          send supported_after_x_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
-
           mod = Module.new
           include mod
           _define_shared(mod, column, worker)
@@ -79,8 +76,6 @@ module CarrierWave
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
           attr_accessor :"process_#{column}_upload"
 
-          send supported_after_x_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
-
           mod = Module.new
           include mod
           _define_shared(mod, column, worker)
@@ -97,10 +92,6 @@ module CarrierWave
         end
 
         private
-
-        def supported_after_x_callback
-          respond_to?(:after_commit) ? :after_commit : :after_save
-        end
 
         def _define_shared(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1

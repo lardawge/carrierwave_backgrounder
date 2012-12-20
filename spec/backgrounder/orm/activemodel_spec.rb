@@ -13,11 +13,37 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
     end
 
     @mock_class.extend CarrierWave::Backgrounder::ORM::ActiveModel
-    @mock_class.process_in_background :avatar
+  end
+
+  describe '.store_in_background' do
+    context 'setting up callbacks' do
+      it 'creates an after_commit hook' do
+        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        @mock_class.store_in_background :avatar
+      end
+    end
+  end
+
+  describe '.process_in_background' do
+    context 'setting up callbacks' do
+      it 'creates a before_save hook' do
+        @mock_class.expects(:before_save).with(:set_avatar_processing, :if => :enqueue_avatar_background_job?)
+        @mock_class.process_in_background :avatar
+      end
+
+      it 'creates an after_save hook' do
+        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        @mock_class.process_in_background :avatar
+      end
+    end
   end
 
   describe '#trigger_column_background_processing?' do
     let(:instance) { @mock_class.new }
+
+    before do
+      @mock_class.process_in_background :avatar
+    end
 
     it "returns true if process_avatar_upload is false" do
       instance.expects(:process_avatar_upload)
