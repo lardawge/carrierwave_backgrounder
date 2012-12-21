@@ -51,8 +51,8 @@ describe Support::Backends do
     end
 
     it 'allows passing of queue_options' do
-      mock_module.backend(:delayed_job, queue: :awesome_queue)
-      expect(mock_module.queue_options).to eql({queue: :awesome_queue})
+      mock_module.backend(:delayed_job, :queue => :awesome_queue)
+      expect(mock_module.queue_options).to eql({:queue => :awesome_queue})
     end
   end
 
