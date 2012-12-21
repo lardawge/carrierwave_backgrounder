@@ -1,9 +1,7 @@
-## 0.1.3 (unreleased)
+## 0.1.3
 
 ### enhancements
   * CarrierWave::Workers::ProcessAsset now uses #update_attribute when setting [column]_processing.
-
-### bug fixes
 
 ## 0.1.2
 
