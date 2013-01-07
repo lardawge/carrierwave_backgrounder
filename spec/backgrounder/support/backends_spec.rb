@@ -128,22 +128,23 @@ describe Support::Backends do
     end
 
     context 'sidekiq' do
-      let(:args) { [MockWorker, 'FakeClass', 1, :image] }
-      before do
-        Sidekiq::Client.expects(:enqueue).with(*args)
-      end
+      let(:args) { ['FakeClass', 1, :image] }
 
-      it 'sets sidekiq_options to empty hash and calls enqueue with passed args' do
-        MockWorker.expects(:sidekiq_options).with({})
+      it 'invokes client_push on the class with passed args' do
+        MockSidekiqWorker.expects(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
         mock_module.backend :sidekiq
-        mock_module.enqueue_for_backend(*args)
+        mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
       end
 
-      it 'sets sidekiq_options to the options passed to backend' do
+      it 'invokes client_push and includes the options passed to backend' do
+        MockSidekiqWorker.expects(:client_push).with({ 'class' => MockSidekiqWorker, 
+                                                       'retry' => false,
+                                                       'timeout' => 60,
+                                                       'queue' => :awesome_queue,
+                                                       'args' => args })
         options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
-        MockWorker.expects(:sidekiq_options).with(options)
         mock_module.backend :sidekiq, options
-        mock_module.enqueue_for_backend(*args)
+        mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
       end
     end
 
