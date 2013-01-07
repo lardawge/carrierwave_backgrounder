@@ -3,6 +3,9 @@
 ### enhancements
   * CarrierWave::Workers::ProcessAsset now uses #update_attribute when setting [column]_processing.
 
+### bug fixes
+  * Fix determine_backend behavior so that it doesn't throw an exception [petergoldstein].
+
 ## 0.1.2
 
 ### enhancements
