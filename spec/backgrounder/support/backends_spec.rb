@@ -33,10 +33,6 @@ describe Support::Backends do
     it 'detects QC' do
       expect(mock_module.available_backends).to include(:qc)
     end
-
-    it 'detects Immediate' do
-      expect(mock_module.available_backends).to include(:immediate)
-    end
   end
 
   describe 'setting backend' do

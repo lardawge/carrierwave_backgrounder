@@ -25,7 +25,7 @@ module Support
           backends << :qu          if defined? ::Qu
           backends << :sidekiq     if defined? ::Sidekiq
           backends << :qc          if defined? ::QC
-          backends << :immediate
+          backends
         end
       end
 
