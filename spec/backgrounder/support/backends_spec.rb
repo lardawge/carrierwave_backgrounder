@@ -77,7 +77,7 @@ describe Support::Backends do
       mock_module.stubs(:available_backends).returns([:qu, :resque])
       expect {
        mock_module.backend
-      }.to raise_error(CarrierWave::Backgrounder::ToManyBackendsAvailableError)
+      }.to raise_error(CarrierWave::Backgrounder::TooManyBackendsAvailableError)
     end
 
     it 'does not clobber a manually set backend' do
