@@ -40,8 +40,8 @@ module Support
           warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
           :immediate
         elsif available_backends.size > 1
-          raise ::CarrierWave::Backgrounder::ToManyBackendsAvailableError,
-            "You have to many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
+          raise ::CarrierWave::Backgrounder::TooManyBackendsAvailableError,
+            "You have too many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
         else
           available_backends.first
         end
