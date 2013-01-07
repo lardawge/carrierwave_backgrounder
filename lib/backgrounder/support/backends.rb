@@ -25,7 +25,7 @@ module Support
           backends << :qu          if defined? ::Qu
           backends << :sidekiq     if defined? ::Sidekiq
           backends << :qc          if defined? ::QC
-          backends << :immediate
+          backends
         end
       end
 
@@ -40,8 +40,8 @@ module Support
           warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
           :immediate
         elsif available_backends.size > 1
-          raise ::CarrierWave::Backgrounder::ToManyBackendsAvailableError,
-            "You have to many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
+          raise ::CarrierWave::Backgrounder::TooManyBackendsAvailableError,
+            "You have too many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
         else
           available_backends.first
         end
@@ -57,8 +57,12 @@ module Support
       end
 
       def enqueue_sidekiq(worker, *args)
-        worker.sidekiq_options queue_options
-        ::Sidekiq::Client.enqueue worker, *args
+        sidekiq_client_args = { 'class' => worker, 'args' => args }
+        sidekiq_client_args['queue'] = queue_options[:queue] unless queue_options[:queue].nil?
+        sidekiq_client_args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
+        sidekiq_client_args['timeout'] = queue_options[:timeout] unless queue_options[:timeout].nil?
+        sidekiq_client_args['backtrace'] = queue_options[:backtrace] unless queue_options[:backtrace].nil?
+        worker.client_push(sidekiq_client_args)
       end
 
       def enqueue_girl_friday(worker, *args)
