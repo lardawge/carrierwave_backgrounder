@@ -8,7 +8,7 @@ module CarrierWave
     include Support::Backends
 
     class UnsupportedBackendError < StandardError ; end
-    class ToManyBackendsAvailableError < StandardError ; end
+    class TooManyBackendsAvailableError < StandardError ; end
 
     def self.configure
       yield self
