@@ -11,3 +11,7 @@ class MockWorker < Struct.new(:klass, :id, :column)
     self.klass, self.id, self.column = klass, id, column
   end
 end
+
+class MockSidekiqWorker < MockWorker
+  include Sidekiq::Worker
+end
