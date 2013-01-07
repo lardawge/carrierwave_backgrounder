@@ -57,8 +57,12 @@ module Support
       end
 
       def enqueue_sidekiq(worker, *args)
-        worker.sidekiq_options queue_options
-        ::Sidekiq::Client.enqueue worker, *args
+        sidekiq_client_args = { 'class' => worker, 'args' => args }
+        sidekiq_client_args['queue'] = queue_options[:queue] unless queue_options[:queue].nil?
+        sidekiq_client_args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
+        sidekiq_client_args['timeout'] = queue_options[:timeout] unless queue_options[:timeout].nil?
+        sidekiq_client_args['backtrace'] = queue_options[:backtrace] unless queue_options[:backtrace].nil?
+        worker.client_push(sidekiq_client_args)
       end
 
       def enqueue_girl_friday(worker, *args)
