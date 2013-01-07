@@ -28,6 +28,9 @@ module Sidekiq
     module ClassMethods
       def sidekiq_options(opts = {})
       end
+
+      def client_push(item)
+      end
     end
   end
 end
