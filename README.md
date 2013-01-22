@@ -1,4 +1,4 @@
-# CarrierWave Backgrounder 
+# CarrierWave Backgrounder
 
 [![Build Status](https://secure.travis-ci.org/lardawge/carrierwave_backgrounder.png)](http://travis-ci.org/lardawge/carrierwave_backgrounder)
 [![Code Quality](https://codeclimate.com/badge.png)](https://codeclimate.com/github/lardawge/carrierwave_backgrounder)
@@ -130,6 +130,35 @@ end
 We use the after_commit hook when using active_record. This creates a problem when testing with Rspec because after_commit never gets fired
 if you're using trasactional fixtures. One solution to the problem is to use the [TestAfterCommit gem](https://github.com/grosser/test_after_commit).
 There are various other solutions in which case google is your friend.
+
+### Uploaders mounted on mongoid embedded documents
+The workers fetch the document with the mounted uploader using the model class name and id. Uploads on embedded documents
+cannot be obtained this way. If the position of the document in the root document structure is known, a workaround is to override the embedded models
+find method like this:
+
+```ruby
+class SomeRootDocument
+  include Mongoid::Document
+
+  embeds_many :embedded_documents
+end
+
+class EmbeddedDocument
+  include Mongoid::Document
+
+  embedded_in :some_root_document
+
+  mount_uploader :image, ImageUploader
+  process_in_background :image
+
+  def self.find(id)
+    bson_id = Moped::BSON::ObjectId.from_string(id) # needed for Mongoid 3
+
+    root = SomeRootDocument.where('embedded_documents._id' => bson_id).first
+    root.embedded_documents.find(id)
+  end
+end
+```
 
 ## License
 
