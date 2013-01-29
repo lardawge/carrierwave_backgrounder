@@ -3,8 +3,6 @@ module CarrierWave
   module Workers
 
     class ProcessAsset < Struct.new(:klass, :id, :column)
-      include ::Sidekiq::Worker if defined?(::Sidekiq)
-
       def self.perform(*args)
         new(*args).perform
       end
