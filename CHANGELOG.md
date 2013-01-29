@@ -1,17 +1,17 @@
-## 0.1.4 (unreleased)
-
-### enhancements
+## 0.1.4
 
 ### bug fixes
-  * Remove the need to set an order in the Gemfile when using sidekiq [matthewsmart].
+  * [#109] Fix issue where setting Carrierwave.cache_dir to a full path would raise an exception [Sastopher].
+  * [#108] Remove the need to set an order in the Gemfile when using sidekiq [matthewsmart].
 
 ## 0.1.3
 
 ### enhancements
   * CarrierWave::Workers::ProcessAsset now uses #update_attribute when setting [column]_processing.
+  * [#104] Change the Sidekiq integration to use client_push [petergoldstein]
 
 ### bug fixes
-  * Fix determine_backend behavior so that it doesn't throw an exception [petergoldstein].
+  * [#103] Fix determine_backend behavior so that it doesn't throw an exception [petergoldstein].
 
 ## 0.1.2
 
