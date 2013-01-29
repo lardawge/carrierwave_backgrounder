@@ -3,7 +3,6 @@ module CarrierWave
   module Workers
 
     class StoreAsset < Struct.new(:klass, :id, :column)
-      include ::Sidekiq::Worker if defined?(::Sidekiq)
       attr_reader :cache_path, :tmp_directory
 
       def self.perform(*args)
