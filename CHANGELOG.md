@@ -1,3 +1,10 @@
+## 0.1.4 (unreleased)
+
+### enhancements
+
+### bug fixes
+  * Remove the need to set an order in the Gemfile when using sidekiq [matthewsmart].
+
 ## 0.1.3
 
 ### enhancements
