@@ -91,24 +91,48 @@ describe CarrierWave::Workers::StoreAsset do
     let(:record) { mock('Record') }
     let(:root) { '/home/chris/dev/my-rails-project/public' }
 
-    it 'sets the cache_path correctly if a full path is set for the cache_dir' do
-      root = '/home/chris/dev/my-rails-project/public'
-      cache_dir = '/home/chris/dev/my-rails-project/tmp/uploads'
-      asset = mock(:cache_dir => cache_dir, :root => root)
-      record.expects(:image).returns(asset)
-      record.expects(:image_tmp).returns('images/test.jpg')
-      worker.send :store_directories, record
-      expect(worker.cache_path).to eql('/home/chris/dev/my-rails-project/tmp/uploads/images/test.jpg')
+    context 'cache_path' do
+      it 'sets the cache_path correctly if a full path is set for the cache_dir' do
+        root = '/Users/lar/Sites/bunker/public'
+        cache_dir = '/Users/lar/Sites/bunker/tmp/uploads'
+        asset = mock(:cache_dir => cache_dir, :root => root)
+        record.expects(:image).returns(asset)
+        record.expects(:image_tmp).returns('images/test.jpg')
+        worker.send :store_directories, record
+        expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/tmp/uploads/images/test.jpg')
+      end
+
+      it 'sets the cache_path correctly if a partial path is set for cache_dir' do
+        root = '/Users/lar/Sites/bunker/public'
+        cache_dir = 'uploads/tmp'
+        asset = mock(:cache_dir => cache_dir, :root => root)
+        record.expects(:image).returns(asset)
+        record.expects(:image_tmp).returns('images/test.jpg')
+        worker.send :store_directories, record
+        expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images/test.jpg')
+      end
     end
 
-    it 'sets the cache_path correctly if a partial path is set for cache_dir' do
-      root = '/Users/lar/Sites/bunker/public'
-      cache_dir = 'uploads/tmp'
-      asset = mock(:cache_dir => cache_dir, :root => root)
-      record.expects(:image).returns(asset)
-      record.expects(:image_tmp).returns('images/test.jpg')
-      worker.send :store_directories, record
-      expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images/test.jpg')
+    context 'tmp_directory' do
+      it 'sets the tmp_directory correctly if a full path is set for the cache_dir' do
+        root = '/Users/lar/Sites/bunker/public'
+        cache_dir = '/Users/lar/Sites/bunker/tmp/uploads'
+        asset = mock(:cache_dir => cache_dir, :root => root)
+        record.expects(:image).returns(asset)
+        record.expects(:image_tmp).returns('images/test.jpg')
+        worker.send :store_directories, record
+        expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/tmp/uploads/images')
+      end
+
+      it 'sets the tmp_directory correctly if a partial path is set for cache_dir' do
+        root = '/Users/lar/Sites/bunker/public'
+        cache_dir = 'uploads/tmp'
+        asset = mock(:cache_dir => cache_dir, :root => root)
+        record.expects(:image).returns(asset)
+        record.expects(:image_tmp).returns('images/test.jpg')
+        worker.send :store_directories, record
+        expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images')
+      end
     end
   end
 end
