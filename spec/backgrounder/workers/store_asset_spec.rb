@@ -89,7 +89,6 @@ describe CarrierWave::Workers::StoreAsset do
 
   describe '#store_directories' do
     let(:record) { mock('Record') }
-    let(:root) { '/home/chris/dev/my-rails-project/public' }
 
     context 'cache_path' do
       it 'sets the cache_path correctly if a full path is set for the cache_dir' do
