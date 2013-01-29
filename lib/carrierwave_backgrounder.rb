@@ -13,11 +13,11 @@ module CarrierWave
     def self.configure
       yield self
       if @backend == :sidekiq
-        class ::CarrierWave::Workers::ProcessAsset
+        ::CarrierWave::Workers::ProcessAsset.class_eval do
           require 'sidekiq'
           include ::Sidekiq::Worker
         end
-        class ::CarrierWave::Workers::StoreAsset
+        ::CarrierWave::Workers::StoreAsset.class_eval do
           require 'sidekiq'
           include ::Sidekiq::Worker
         end
