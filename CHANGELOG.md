@@ -1,8 +1,12 @@
+## 0.1.5
+
+### bug fixes
+  * [Revert #108] This is a breaking change and will be released in 0.2.0.
+
 ## 0.1.4
 
 ### bug fixes
   * [#109] Fix issue where setting Carrierwave.cache_dir to a full path would raise an exception [Sastopher].
-  * [#108] Remove the need to set an order in the Gemfile when using sidekiq [matthewsmart].
 
 ## 0.1.3
 
