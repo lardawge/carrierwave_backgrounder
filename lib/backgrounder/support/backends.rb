@@ -6,7 +6,6 @@ module Support
     end
 
     module ClassMethods
-      attr_writer :backend
       attr_reader :queue_options
 
       def backend(queue_name=nil, args={})
@@ -14,7 +13,12 @@ module Support
         @queue_options = args
         @backend = queue_name
       end
-
+      
+      def backend=(queue_name)
+        @queue_options = {}
+        @backend = queue_name
+      end
+      
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
         self.send :"enqueue_#{backend}", worker, class_name, subject_id, mounted_as
       end

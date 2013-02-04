@@ -13,6 +13,7 @@ describe Support::Backends do
     it 'using #backend=' do
       mock_module.backend = :delayed_job
       expect(mock_module.backend).to eql(:delayed_job)
+      expect(mock_module.queue_options).to_not be_nil
     end
 
     it 'using #backend' do
