@@ -9,32 +9,6 @@ describe Support::Backends do
     mock_module.send :include, Support::Backends
   end
 
-  describe 'enumerating available backends' do
-    it 'detects GirlFriday' do
-      expect(mock_module.available_backends).to include(:girl_friday)
-    end
-
-    it 'detects Delayed::Job' do
-      expect(mock_module.available_backends).to include(:delayed_job)
-    end
-    
-    it 'detects Resque' do
-      expect(mock_module.available_backends).to include(:resque)
-    end
-    
-    it 'detects Qu' do
-      expect(mock_module.available_backends).to include(:qu)
-    end
-    
-    it 'detects Sidekiq' do
-      expect(mock_module.available_backends).to include(:sidekiq)
-    end
-    
-    it 'detects QC' do
-      expect(mock_module.available_backends).to include(:qc)
-    end
-  end
-
   describe 'setting backend' do
     it 'using #backend=' do
       mock_module.backend = :delayed_job
@@ -49,36 +23,6 @@ describe Support::Backends do
     it 'allows passing of queue_options' do
       mock_module.backend(:delayed_job, :queue => :awesome_queue)
       expect(mock_module.queue_options).to eql({:queue => :awesome_queue})
-    end
-  end
-
-  describe 'auto detect backends' do
-    before do
-      mock_module.instance_variable_set('@backend', nil)
-    end
-
-    it 'sets the backend to immediate if none available' do
-      suppress_warnings do
-        mock_module.stubs(:available_backends).returns([])
-        expect(mock_module.backend).to eql(:immediate)
-      end
-    end
-
-    it 'sets a backend automatically if only one is available' do
-      mock_module.stubs(:available_backends).returns([ :qu ])
-      expect(mock_module.backend).to eql(:qu)
-    end
-    
-    it 'raises an error if more than one backend is available' do
-      mock_module.stubs(:available_backends).returns([:qu, :resque])
-      expect {
-       mock_module.backend
-      }.to raise_error(CarrierWave::Backgrounder::TooManyBackendsAvailableError)
-    end
-
-    it 'does not clobber a manually set backend' do
-      mock_module.backend = :not_a_backend
-      expect(mock_module.backend).to eql(:not_a_backend)
     end
   end
 

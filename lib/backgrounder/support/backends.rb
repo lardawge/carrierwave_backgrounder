@@ -12,21 +12,7 @@ module Support
       def backend(queue_name=nil, args={})
         return @backend if @backend
         @queue_options = args
-        @backend = queue_name and return if queue_name
-        determine_backend
-      end
-
-      def available_backends
-        @available_backends ||= begin
-          backends = []
-          backends << :girl_friday if defined? ::GirlFriday
-          backends << :delayed_job if defined? ::Delayed::Job
-          backends << :resque      if defined? ::Resque
-          backends << :qu          if defined? ::Qu
-          backends << :sidekiq     if defined? ::Sidekiq
-          backends << :qc          if defined? ::QC
-          backends
-        end
+        @backend = queue_name
       end
 
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
@@ -34,18 +20,6 @@ module Support
       end
 
       private
-
-      def determine_backend
-        @backend = if available_backends.empty?
-          warn 'WARNING: No available queue backends found for CarrierWave::Backgrounder. Using the :immediate.'
-          :immediate
-        elsif available_backends.size > 1
-          raise ::CarrierWave::Backgrounder::TooManyBackendsAvailableError,
-            "You have too many backends available: #{available_backends.inspect}. Please specify which one to use in configuration block"
-        else
-          available_backends.first
-        end
-      end
 
       def enqueue_delayed_job(worker, *args)
         ::Delayed::Job.enqueue worker.new(*args), :queue => queue_options[:queue]
