@@ -1,3 +1,11 @@
+## 0.2.0
+
+### enhancements
+  * [Breaking Change] Require configure block to be set in an initializer removing autodetect backend.
+
+### bug fixes
+  * [#108] Remove the need to set an order in the Gemfile when using sidekiq [matthewsmart].
+
 ## 0.1.5
 
 ### bug fixes
