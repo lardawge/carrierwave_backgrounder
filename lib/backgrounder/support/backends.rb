@@ -6,7 +6,6 @@ module Support
     end
 
     module ClassMethods
-      attr_writer :backend
       attr_reader :queue_options
 
       def backend(queue_name=nil, args={})

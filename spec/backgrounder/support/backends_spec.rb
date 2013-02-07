@@ -11,8 +11,9 @@ describe Support::Backends do
 
   describe 'setting backend' do
     it 'using #backend=' do
-      mock_module.backend = :delayed_job
-      expect(mock_module.backend).to eql(:delayed_job)
+      expect {
+        mock_module.backend = :delayed_job
+      }.to raise_error(NoMethodError)
     end
 
     it 'using #backend' do
