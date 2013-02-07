@@ -1,3 +1,8 @@
+## 0.2.1
+
+### bug fixes
+  * [#112] Raise a NoMethodError when using backend= instead of silent failure.
+
 ## 0.2.0
 
 ### enhancements
