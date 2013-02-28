@@ -35,17 +35,22 @@ if defined?(Rails)
         initializer "carrierwave_backgrounder.active_record" do
           ActiveSupport.on_load :active_record do
             require 'backgrounder/orm/activemodel'
+            require 'backgrounder/orm/activemodel_test' if Rails.env.test?
             ::ActiveRecord::Base.extend CarrierWave::Backgrounder::ORM::ActiveModel
           end
         end
 
         initializer "carrierwave_backgrounder.data_mapper", :before =>"data_mapper.add_to_prepare" do
-          require 'backgrounder/orm/data_mapper' if defined?(DataMapper)
+          if defined?(DataMapper)
+            require 'backgrounder/orm/data_mapper'
+            require 'backgrounder/orm/data_mapper_test' if Rails.env.test?
+          end
         end
 
         initializer "carrierwave_backgrounder.mongoid" do
           if defined?(Mongoid)
             require 'backgrounder/orm/activemodel'
+            require 'backgrounder/orm/activemodel_test' if Rails.env.test?
             ::Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::ActiveModel)
           end
         end
