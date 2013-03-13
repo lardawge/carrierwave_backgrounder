@@ -46,6 +46,11 @@ module Support
         @girl_friday_queue << { :worker => worker.new(*args) }
       end
 
+      def enqueue_sucker_punch(worker, *args)
+        @sucker_punch_queue ||= SuckerPunch::Queue[queue_options.delete(:queue) || :carrierwave]
+        @sucker_punch_queue.async.perform(*args)
+      end
+
       def enqueue_qu(worker, *args)
         worker.instance_variable_set('@queue', queue_options[:queue] || :carrierwave)
         ::Qu.enqueue worker, *args

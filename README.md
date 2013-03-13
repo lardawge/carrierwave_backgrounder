@@ -7,7 +7,7 @@
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
 This gem addresses that by offloading processing or storage/processing to a background task.
-We currently support Delayed Job, Resque, Sidekiq, Girl Friday, Qu, and Queue Classic.
+We currently support Delayed Job, Resque, Sidekiq, SuckerPunch, Girl Friday, Qu, and Queue Classic.
 
 ## Background options
 
@@ -54,6 +54,19 @@ CarrierWave::Backgrounder.configure do |c|
   c.backend :girl_friday, queue: :awesome_queue, size: 3, store: GirlFriday::Store::Redis
 end
 ```
+
+For SuckerPunch, you have to configure your queue with a specific worker.
+
+```ruby
+SuckerPunch.config do
+  queue name: :carrierwave, worker: CarrierWave::Workers::StoreAsset, size: 2
+end
+
+CarrierWave::Backgrounder.configure do |c|
+  c.backend :sucker_punch, queue: :carrierwave
+end
+```
+
 
 In your CarrierWave uploader file:
 
