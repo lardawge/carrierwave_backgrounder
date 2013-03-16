@@ -124,6 +124,28 @@ describe Support::Backends do
       end
     end
 
+    context 'sucker_punch' do
+      let(:args) { [MockWorker, 'FakeClass', 1, :image] }
+      let(:mock_sp) { mock('SuckerPunch')}
+
+      before do
+        mock_sp.expects(:async).returns(mock_sp)
+        mock_sp.expects(:perform).with('FakeClass', 1, :image)
+      end
+
+      it 'sets the queue to :carrierwave by default' do
+        SuckerPunch::Queue.expects(:[]).with(:carrierwave).returns(mock_sp)
+        mock_module.backend :sucker_punch
+        mock_module.enqueue_for_backend(*args)
+      end
+
+      it 'sets the queue to backend :queue option' do
+        SuckerPunch::Queue.expects(:[]).with(:awesome_queue).returns(mock_sp)
+        mock_module.backend :sucker_punch, :queue => :awesome_queue
+        mock_module.enqueue_for_backend(*args)
+      end
+    end
+
     context 'qu' do
       let(:args) { [MockWorker, 'FakeClass', 1, :image] }
       before do

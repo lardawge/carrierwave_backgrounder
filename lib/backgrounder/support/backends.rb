@@ -43,7 +43,7 @@ module Support
       end
 
       def enqueue_sucker_punch(worker, *args)
-        @sucker_punch_queue ||= SuckerPunch::Queue[queue_options.delete(:queue) || :carrierwave]
+        @sucker_punch_queue ||= SuckerPunch::Queue[queue_options[:queue] || :carrierwave]
         @sucker_punch_queue.async.perform(*args)
       end
 

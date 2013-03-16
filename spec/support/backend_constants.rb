@@ -37,3 +37,8 @@ end
 
 module QC
 end
+
+module SuckerPunch
+  class Queue
+  end
+end
