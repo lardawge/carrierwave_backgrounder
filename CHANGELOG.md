@@ -1,6 +1,10 @@
 ## 0.2.1
 
+### enhancements
+  * [#119] Add support for SuckerPunch [rewritten].
+
 ### bug fixes
+  * [#115] column_remove! should not trigger a background job
   * [#112] Raise a NoMethodError when using backend= instead of silent failure.
 
 ## 0.2.0
