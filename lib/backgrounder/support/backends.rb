@@ -30,12 +30,8 @@ module Support
       end
 
       def enqueue_sidekiq(worker, *args)
-        sidekiq_client_args = { 'class' => worker, 'args' => args }
-        sidekiq_client_args['queue'] = queue_options[:queue] unless queue_options[:queue].nil?
-        sidekiq_client_args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
-        sidekiq_client_args['timeout'] = queue_options[:timeout] unless queue_options[:timeout].nil?
-        sidekiq_client_args['backtrace'] = queue_options[:backtrace] unless queue_options[:backtrace].nil?
-        worker.client_push(sidekiq_client_args)
+        args = sidekiq_queue_options('class' => worker, 'args' => args)
+        worker.client_push(args)
       end
 
       def enqueue_girl_friday(worker, *args)
@@ -63,6 +59,14 @@ module Support
 
       def enqueue_immediate(worker, *args)
         worker.new(*args).perform
+      end
+
+      def sidekiq_queue_options(args)
+        args['queue'] = queue_options[:queue] if queue_options[:queue]
+        args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
+        args['timeout'] = queue_options[:timeout] if queue_options[:timeout]
+        args['backtrace'] = queue_options[:backtrace] if queue_options[:backtrace]
+        args
       end
     end
   end
