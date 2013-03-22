@@ -8,6 +8,23 @@ module CarrierWave
       end
 
       def perform(*args)
+        if defined?(::ActiveRecord) and defined(::SuckerPunch)
+          # check if we have checked out a connection for this job
+          if args.last == :ar_connection_pool
+            # ok, we have the connection, proceed with the job
+            # removing the connection flag
+            args.pop
+          else
+            # we cannot find the flag, so let's add an additional parameter
+            # to signal that the connection is being checked out
+            args << :ar_connection_pool
+            # and perform again with the new flag added.
+            return ::ActiveRecord::Base.connection_pool.with_connection do
+              perform(*args)
+            end
+          end
+        end
+
         set_args(*args) if args.present?
 
         errors = []
