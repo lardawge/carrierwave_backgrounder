@@ -14,21 +14,19 @@ module CarrierWave
       yield self
       case @backend
       when :sidekiq
+        require 'sidekiq'
         ::CarrierWave::Workers::ProcessAsset.class_eval do
-          require 'sidekiq'
           include ::Sidekiq::Worker
         end
         ::CarrierWave::Workers::StoreAsset.class_eval do
-          require 'sidekiq'
           include ::Sidekiq::Worker
         end
       when :sucker_punch
+        require 'sucker_punch'
         ::CarrierWave::Workers::ProcessAsset.class_eval do
-          require 'sucker_punch'
           include ::SuckerPunch::Worker
         end
         ::CarrierWave::Workers::StoreAsset.class_eval do
-          require 'sucker_punch'
           include ::SuckerPunch::Worker
         end
       end
