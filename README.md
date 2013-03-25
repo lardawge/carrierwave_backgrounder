@@ -58,12 +58,13 @@ end
 For SuckerPunch, you have to configure your queue with a specific worker.
 
 ```ruby
-SuckerPunch.config do
-  queue name: :carrierwave, worker: CarrierWave::Workers::StoreAsset, size: 2
-end
-
 CarrierWave::Backgrounder.configure do |c|
   c.backend :sucker_punch, queue: :carrierwave
+end
+
+# It is important to configure sucker_punch after carrierwave_backgrounder
+SuckerPunch.config do
+  queue name: :carrierwave, worker: CarrierWave::Workers::StoreAsset, size: 2
 end
 ```
 
