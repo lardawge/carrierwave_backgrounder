@@ -10,7 +10,18 @@ module CarrierWave
       def perform(*args)
         set_args(*args) if args.present?
 
-        record = constantized_resource.find_by_id(id)
+        if defined?(::Mongoid)
+          errors = []
+          errors << ::Mongoid::Errors::DocumentNotFound if defined?(::Mongoid)
+
+          record = begin
+            constantized_resource.find(id)
+          rescue *errors
+            nil
+          end
+        else
+          record = constantized_resource.find_by_id(id)
+        end
 
         if record
           record.send(:"process_#{column}_upload=", true)
