@@ -10,14 +10,17 @@ module CarrierWave
       def perform(*args)
         set_args(*args) if args.present?
 
-        errors = []
-        errors << ::ActiveRecord::RecordNotFound      if defined?(::ActiveRecord)
-        errors << ::Mongoid::Errors::DocumentNotFound if defined?(::Mongoid)
+        if defined?(::Mongoid)
+          errors = []
+          errors << ::Mongoid::Errors::DocumentNotFound if defined?(::Mongoid)
 
-        record = begin
-          constantized_resource.find(id)
-        rescue *errors
-          nil
+          record = begin
+            constantized_resource.find(id)
+          rescue *errors
+            nil
+          end
+        else
+          record = constantized_resource.find_by_id(id)
         end
 
         if record
