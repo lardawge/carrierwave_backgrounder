@@ -11,6 +11,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
       def remote_avatar_url; OpenStruct.new(:present? => true); end
       def remove_avatar?; false; end
       def previous_changes; {}; end
+      def self.uploader_options; {}; end
     end
 
     @mock_class.extend CarrierWave::Backgrounder::ORM::ActiveModel
@@ -44,6 +45,18 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
 
     before do
       @mock_class.process_in_background :avatar
+    end
+
+    context 'mount_on option is set' do
+      before do
+        options_hash = {:avatar => {:mount_on => :some_other_column}}
+        @mock_class.expects(:uploader_options).returns(options_hash)
+      end
+
+      it "returns true if alternate column is changed" do
+        instance.expects(:some_other_column_changed?).returns(true)
+        expect(instance.avatar_updated?).to be_true
+      end
     end
 
     it "returns true if process_avatar_upload is false" do
