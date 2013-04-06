@@ -118,6 +118,15 @@ If you need to process/store the upload immediately:
 @user.process_<column>_upload = true
 ```
 
+This must be set before you assign an upload:
+
+```ruby
+# In a controller
+@user = User.new
+@user.process_avatar_upload = true
+@user.attributes = params[:user]
+```
+
 ### Override worker
 To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
 second argument:
