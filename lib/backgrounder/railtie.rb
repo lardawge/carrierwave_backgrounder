@@ -14,7 +14,7 @@ module CarrierWave
       end
 
       initializer "carrierwave_backgrounder.mongoid" do
-        if defined?(::Mongoid)
+        if defined?(Mongoid)
           require 'backgrounder/orm/activemodel'
           ::Mongoid::Document::ClassMethods.send(:include, ::CarrierWave::Backgrounder::ORM::ActiveModel)
         end

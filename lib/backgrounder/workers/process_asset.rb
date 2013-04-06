@@ -9,17 +9,7 @@ module CarrierWave
 
       def perform(*args)
         set_args(*args) if args.present?
-
-        errors = []
-        errors << ::ActiveRecord::RecordNotFound      if defined?(::ActiveRecord)
-        errors << ::Mongoid::Errors::DocumentNotFound if defined?(::Mongoid)
-
-        record = begin
-          constantized_resource.find(id)
-        rescue *errors
-          Rails.logger.warn "#{self} could not find #{constantized_resource} instance with id: #{id}"
-          nil
-        end
+        record = constantized_resource.find id
 
         if record
           record.send(:"process_#{column}_upload=", true)
