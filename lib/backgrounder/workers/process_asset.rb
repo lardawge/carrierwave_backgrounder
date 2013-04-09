@@ -17,6 +17,7 @@ module CarrierWave
         record = begin
           constantized_resource.find(id)
         rescue *errors
+          Rails.logger.warn "#{self} could not find #{constantized_resource} instance with id: #{id}"
           nil
         end
 
