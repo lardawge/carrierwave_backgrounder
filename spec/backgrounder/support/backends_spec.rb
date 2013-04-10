@@ -39,16 +39,43 @@ describe Support::Backends do
         MockWorker.expects(:new).returns(worker)
       end
 
-      it 'defaults the queue name to nil if none passed to #backend' do
-        mock_module.backend :delayed_job
-        Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
-        mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+      context 'queue column exists' do
+        it 'defaults the queue name to nil if none passed to #backend' do
+          mock_module.backend :delayed_job
+          Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
+          mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+        end
+
+        it 'sets the queue name to the queue name passed to #backend' do
+          mock_module.backend :delayed_job, :queue => :awesome_queue
+          Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
+          mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+        end
       end
 
-      it 'sets the queue name to the queue name passed to #backend' do
-        mock_module.backend :delayed_job, :queue => :awesome_queue
-        Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
-        mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+      context 'queue column does not exist' do
+        before do
+          column_names = Delayed::Job.column_names.tap { |cn| cn.delete('queue') }
+          Delayed::Job.stubs(:column_names).returns(column_names)
+          Delayed::Job.class_eval { remove_method(:queue) }
+        end
+
+        after do
+          Delayed::Job.class_eval { define_method(:queue) { nil } }
+        end
+
+        it 'does not pass a queue name if none passed to #backend' do
+          mock_module.backend :delayed_job
+          Delayed::Job.expects(:enqueue).with(worker)
+          mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+        end
+
+        it 'does not pass a queue name and logs a warning message if a queue name is passed to #backend' do
+          mock_module.backend :delayed_job, :queue => :awesome_queue
+          Delayed::Job.expects(:enqueue).with(worker)
+          Rails.logger.expects(:warn).with(instance_of(String))
+          mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+        end
       end
     end
 

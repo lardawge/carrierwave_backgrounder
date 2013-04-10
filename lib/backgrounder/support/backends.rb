@@ -21,7 +21,14 @@ module Support
       private
 
       def enqueue_delayed_job(worker, *args)
-        ::Delayed::Job.enqueue worker.new(*args), :queue => queue_options[:queue]
+        if ::Delayed::Job.column_names.include?('queue')
+          ::Delayed::Job.enqueue worker.new(*args), :queue => queue_options[:queue]
+        else
+          ::Delayed::Job.enqueue worker.new(*args)
+          if queue_options[:queue]
+            ::Rails.logger.warn("Queue name given but no queue column exists for Delayed::Job")
+          end
+        end
       end
 
       def enqueue_resque(worker, *args)
