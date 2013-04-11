@@ -21,7 +21,7 @@ module Support
       private
 
       def enqueue_delayed_job(worker, *args)
-        if ::Delayed::Job.column_names.include?('queue')
+        if ::Delayed::Job.new.respond_to?(:queue)
           ::Delayed::Job.enqueue worker.new(*args), :queue => queue_options[:queue]
         else
           ::Delayed::Job.enqueue worker.new(*args)
