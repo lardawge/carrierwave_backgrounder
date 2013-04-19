@@ -6,7 +6,14 @@ module GirlFriday
 end
 
 module Delayed
-  module Job
+  class Job
+    def self.column_names
+      %w(id priority attempts handler queue last_error run_at locked_at failed_at locked_by created_at updated_at)
+    end
+
+    column_names.each do |column_name|
+      define_method(column_name) { nil }
+    end
   end
 end
 
@@ -40,5 +47,11 @@ end
 
 module SuckerPunch
   class Queue
+  end
+end
+
+module Rails
+  def self.logger
+    @logger ||= Object.new
   end
 end
