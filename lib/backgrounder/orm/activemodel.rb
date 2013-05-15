@@ -14,6 +14,7 @@ module CarrierWave
         end
 
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
+          before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
           send _supported_am_after_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
           super
         end

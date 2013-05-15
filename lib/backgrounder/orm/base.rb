@@ -44,9 +44,7 @@ module CarrierWave
           mod = Module.new
           include mod
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            def set_#{column}_processing
-              self.#{column}_processing = true if respond_to?(:#{column}_processing)
-            end
+            
           RUBY
 
           _define_shared_backgrounder_methods(mod, column, worker)
@@ -88,6 +86,7 @@ module CarrierWave
             def store_#{column}!
               super if process_#{column}_upload
             end
+
           RUBY
 
           _define_shared_backgrounder_methods(mod, column, worker)
@@ -98,6 +97,10 @@ module CarrierWave
         def _define_shared_backgrounder_methods(mod, column, worker)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def #{column}_updated?; true; end
+
+            def set_#{column}_processing
+              self.#{column}_processing = true if respond_to?(:#{column}_processing)
+            end
 
             def enqueue_#{column}_background_job?
               !remove_#{column}? && !process_#{column}_upload && #{column}_updated?
