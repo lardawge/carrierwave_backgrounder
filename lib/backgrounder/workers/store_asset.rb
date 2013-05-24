@@ -26,6 +26,7 @@ module CarrierWave
           store_directories(record)
           record.send :"process_#{column}_upload=", true
           record.send :"#{column}_tmp=", nil
+          record.send :"#{column}_processing=", nil if record.respond_to?(:"#{column}_processing")
           File.open(cache_path) { |f| record.send :"#{column}=", f }
           if record.save!
             FileUtils.rm_r(tmp_directory, :force => true)
