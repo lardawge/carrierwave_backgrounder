@@ -7,9 +7,6 @@ module CarrierWave
   module Backgrounder
     include Support::Backends
 
-    class UnsupportedBackendError < StandardError ; end
-    class TooManyBackendsAvailableError < StandardError ; end
-
     def self.configure
       yield self
       case @backend
