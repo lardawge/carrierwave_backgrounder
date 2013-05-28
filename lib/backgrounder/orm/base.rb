@@ -43,9 +43,6 @@ module CarrierWave
 
           mod = Module.new
           include mod
-          mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            
-          RUBY
 
           _define_shared_backgrounder_methods(mod, column, worker)
         end
