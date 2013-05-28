@@ -9,19 +9,19 @@ module CarrierWave
 
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
-          send _supported_am_after_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
+          send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
           super
         end
 
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
           before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
-          send _supported_am_after_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
+          send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
           super
         end
 
         private
 
-        def _supported_am_after_callback
+        def _supported_callback
           respond_to?(:after_commit) ? :after_commit : :after_save
         end
 
@@ -29,8 +29,9 @@ module CarrierWave
           super
 
           define_method :"#{column}_updated?" do
-            options = self.class.uploader_options[column]
-            serialization_column = options && options[:mount_on] || column
+            options = self.class.uploader_options[column] || {}
+            serialization_column = options[:mount_on] || column
+
             send(:"#{serialization_column}_changed?") ||              # after_save support
             previous_changes.has_key?(:"#{serialization_column}") ||  # after_commit support
             send(:"remote_#{column}_url").present? ||                 # Remote upload support
