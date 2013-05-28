@@ -7,25 +7,12 @@ module CarrierWave
       module ActiveModel
         include CarrierWave::Backgrounder::ORM::Base
 
-        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
-          before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
-          send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
-          super
-        end
-
-        def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
-          before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
-          send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
-          super
-        end
-
         private
 
-        def _supported_callback
-          respond_to?(:after_commit) ? :after_commit : :after_save
-        end
-
         def _define_shared_backgrounder_methods(mod, column, worker)
+          before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
+          send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
+
           super
 
           define_method :"#{column}_updated?" do
@@ -38,9 +25,12 @@ module CarrierWave
             send(:"#{column}_cache").present?                         # Form failure support
           end
         end
+
+        def _supported_callback
+          respond_to?(:after_commit) ? :after_commit : :after_save
+        end
       end # ActiveModel
 
     end # ORM
   end # Backgrounder
 end # CarrierWave
-

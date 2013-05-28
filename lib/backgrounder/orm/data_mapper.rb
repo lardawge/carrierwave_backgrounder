@@ -6,8 +6,7 @@ module CarrierWave
         include CarrierWave::Backgrounder::ORM::Base
 
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
-          before :save, :"set_#{column}_processing"
-          after  :save, :"enqueue_#{column}_background_job"
+          super
 
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_processing
@@ -18,8 +17,7 @@ module CarrierWave
         end
 
         def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
-          before :save, :"set_#{column}_changed"
-          after  :save, :"enqueue_#{column}_background_job"
+          super
 
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def set_#{column}_changed
@@ -36,7 +34,11 @@ module CarrierWave
         private
 
         def _define_shared_backgrounder_methods(mod, column, worker)
+          before :save, :"set_#{column}_changed"
+          after  :save, :"enqueue_#{column}_background_job"
+
           super
+
           class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             attr_reader :#{column}_changed
 

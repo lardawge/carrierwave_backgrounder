@@ -108,7 +108,6 @@ module CarrierWave
             end
           RUBY
         end
-
       end # Base
 
     end #ORM
