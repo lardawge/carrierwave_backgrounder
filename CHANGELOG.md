@@ -1,3 +1,14 @@
+
+## 0.3.0
+
+### enhancements
+  * [#123] Fail silently when record not found in worker.
+
+## 0.2.2
+
+### bug fixes
+  * [#141] Fix naming collisions of support module by namespacing.
+
 ## 0.2.1
 
 ### enhancements
