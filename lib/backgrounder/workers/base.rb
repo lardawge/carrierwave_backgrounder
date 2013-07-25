@@ -7,10 +7,9 @@ module CarrierWave
       end
 
       def perform(*args)
-        begin
-          yield if block_given?
-        rescue *not_found_errors
-        end
+        set_args(*args) if args.present?
+        constantized_resource.find id
+      rescue *not_found_errors
       end
 
       private
