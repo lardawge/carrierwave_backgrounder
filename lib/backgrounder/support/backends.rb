@@ -52,8 +52,7 @@ module CarrierWave
           end
 
           def enqueue_sucker_punch(worker, *args)
-            @sucker_punch_queue ||= SuckerPunch::Queue[queue_options[:queue] || :carrierwave]
-            @sucker_punch_queue.async.perform(*args)
+            worker.async.perform(*args)
           end
 
           def enqueue_qu(worker, *args)
