@@ -5,6 +5,8 @@ module CarrierWave
     class ProcessAsset < Base
 
       def perform(*args)
+        original_search_path = ActiveRecord::Base.connection.schema_search_path
+        ActiveRecord::Base.connection.schema_search_path = "practice#{schema_id},public"
         record = super(*args)
 
         if record
@@ -13,6 +15,8 @@ module CarrierWave
             record.update_attribute :"#{column}_processing", nil
           end
         end
+        ensure
+          ActiveRecord::Base.connection.schema_search_path = original_search_path
       end
 
     end # ProcessAsset
