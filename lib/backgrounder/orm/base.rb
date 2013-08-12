@@ -44,7 +44,7 @@ module CarrierWave
           mod = Module.new
           include mod
 
-          _define_shared_backgrounder_methods(mod, column, worker)
+          _define_shared_backgrounder_methods(mod, column, worker, schema_id)
         end
 
         ##
@@ -86,12 +86,12 @@ module CarrierWave
 
           RUBY
 
-          _define_shared_backgrounder_methods(mod, column, worker)
+          _define_shared_backgrounder_methods(mod, column, worker, schema_id)
         end
 
         private
 
-        def _define_shared_backgrounder_methods(mod, column, worker)
+        def _define_shared_backgrounder_methods(mod, column, worker, schema_id)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def #{column}_updated?; true; end
 
@@ -104,7 +104,7 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as, #{schema_id})
             end
           RUBY
         end

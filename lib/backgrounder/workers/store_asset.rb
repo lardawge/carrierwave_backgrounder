@@ -6,9 +6,9 @@ module CarrierWave
       attr_reader :cache_path, :tmp_directory
 
       def perform(*args)
-        p args
-
         record = super(*args)
+        original_search_path = ::ActiveRecord::Base.connection.schema_search_path
+        ::ActiveRecord::Base.connection.schema_search_path = "practice#{schema_id},public"
 
         if record.send(:"#{column}_tmp")
           store_directories(record)
@@ -20,8 +20,8 @@ module CarrierWave
             FileUtils.rm_r(tmp_directory, :force => true)
           end
         end
-        #ensure
-        #  ActiveRecord::Base.connection.schema_search_path = original_search_path
+        ensure
+          ::ActiveRecord::Base.connection.schema_search_path = original_search_path
       end
 
       private
