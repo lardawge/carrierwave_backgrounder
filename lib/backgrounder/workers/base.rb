@@ -1,12 +1,13 @@
 module CarrierWave
   module Workers
-    class Base < Struct.new(:klass, :id, :column)
+    class Base < Struct.new(:klass, :id, :column,)
 
       def self.perform(*args)
         new(*args).perform
       end
 
       def perform(*args)
+        ActiveRecord::Base.connection.schema_search_path = "practice#{schema_id},public"
         set_args(*args) if args.present?
         constantized_resource.find id
       rescue *not_found_errors

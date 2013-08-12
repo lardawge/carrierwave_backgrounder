@@ -6,9 +6,9 @@ module CarrierWave
       attr_reader :cache_path, :tmp_directory
 
       def perform(*args)
+        p args
 
         record = super(*args)
-        record::ActiveRecord::Base.connection.schema_search_path = "practice#{schema_id},public"
 
         if record.send(:"#{column}_tmp")
           store_directories(record)
