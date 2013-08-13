@@ -55,20 +55,6 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-For SuckerPunch, you have to configure your queue with a specific worker.
-
-```ruby
-CarrierWave::Backgrounder.configure do |c|
-  c.backend :sucker_punch, queue: :carrierwave
-end
-
-# It is important to configure sucker_punch after carrierwave_backgrounder
-SuckerPunch.config do
-  queue name: :carrierwave, worker: CarrierWave::Workers::StoreAsset, size: 2
-end
-```
-
-
 In your CarrierWave uploader file:
 
 ```ruby

@@ -2,3 +2,6 @@
 .bundle
 Gemfile.lock
 pkg/*
+.ruby-gemset
+.ruby-version
+.idea

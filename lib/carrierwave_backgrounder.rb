@@ -20,12 +20,6 @@ module CarrierWave
         end
       when :sucker_punch
         require 'sucker_punch'
-        ::CarrierWave::Workers::ProcessAsset.class_eval do
-          include ::SuckerPunch::Worker
-        end
-        ::CarrierWave::Workers::StoreAsset.class_eval do
-          include ::SuckerPunch::Worker
-        end
       end
     end
 
