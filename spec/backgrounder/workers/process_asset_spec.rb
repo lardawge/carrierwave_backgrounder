@@ -27,16 +27,36 @@ describe CarrierWave::Workers::ProcessAsset do
       image.expects(:recreate_versions!).once.returns(true)
     end
 
-    it 'processes versions with image_processing column' do
-      user.expects(:respond_to?).with(:image_processing).once.returns(true)
-      user.expects(:update_attribute).with(:image_processing, nil).once
-      worker.perform
+    context 'when the filename doesn\'t change' do
+      before do
+        user.expects(:[]).once.returns("image.jpg")
+        image.expects(:filename).once.returns("image.jpg")
+      end
+
+      it 'processes versions with image_processing column' do
+        user.expects(:respond_to?).with(:image_processing).once.returns(true)
+        user.expects(:update_attribute).with(:image_processing, nil).once
+        worker.perform
+      end
+
+      it 'processes versions without image_processing column' do
+        user.expects(:respond_to?).with(:image_processing).once.returns(false)
+        user.expects(:update_attribute).never
+        worker.perform
+      end
     end
 
-    it 'processes versions without image_processing column' do
-      user.expects(:respond_to?).with(:image_processing).once.returns(false)
-      user.expects(:update_attribute).never
-      worker.perform
+    context 'when the filename changes' do
+      before do
+        user.expects(:[]).with(:image).once.returns("previous.jpg")
+        image.expects(:filename).once.returns("next.jpg")
+      end
+
+      it 'stores changed filenames' do
+        user.expects(:respond_to?).with(:image_processing).once.returns(false)
+        user.expects(:save!)
+        worker.perform
+      end
     end
   end
 
@@ -51,6 +71,8 @@ describe CarrierWave::Workers::ProcessAsset do
       admin.expects(:process_avatar_upload=).with(true).once
       admin.expects(:respond_to?).with(:avatar_processing).once.returns(false)
       avatar.expects(:recreate_versions!).once.returns(true)
+      avatar.expects(:filename).once.returns("image.jpg")
+      admin.expects(:[]).with(:avatar).once.returns("image.jpg")
 
       worker.perform admin, '23', :avatar
     end
