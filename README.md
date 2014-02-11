@@ -127,6 +127,18 @@ This must be set before you assign an upload:
 @user.attributes = params[:user]
 ```
 
+You can also bypass backgrounding selectively only for some processors in uploader or
+only for some versions. For that an option :do_not_delay with value true should be used.
+
+```ruby
+# In an uploader
+process :set_metadata, :do_not_delay => true
+
+version :thumb, :do_not_delay => true do
+  # some code
+end
+```
+
 ### Override worker
 To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
 second argument:
