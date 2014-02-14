@@ -66,14 +66,14 @@ module CarrierWave
         end
 
         ##
-        # Returns the parent Uploader unless self is topmost
+        # Returns the uppermost Uploader
         #
         def parent_uploader
           superclass == CarrierWave::Uploader::Base ? self : superclass
         end
 
         ##
-        # Returns the options passed to the :version clause in the uploader.
+        # Returns the options passed to the :version clause in the uploader
         # Here is used the fact that at the moment the method is called
         # the latest version is the current one.
         #
