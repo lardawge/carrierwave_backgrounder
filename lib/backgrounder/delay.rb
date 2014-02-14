@@ -66,9 +66,9 @@ module CarrierWave
         end
 
         ##
-        # Returns the uppermost Uploader
+        # Returns the parent Uploader unless self is topmost
         #
-        def root_uploader
+        def parent_uploader
           superclass == CarrierWave::Uploader::Base ? self : superclass
         end
 
@@ -78,8 +78,26 @@ module CarrierWave
         # the latest version is the current one.
         #
         def version_options
-          version = root_uploader.versions.to_a.last
-          version.nil? ? {} : version.last[:options]
+          parent_uploader.versions.values.last[:options] rescue {}
+        end
+
+        ##
+        # If the uploader belongs to a version, returns negation of its option :do_not_delay.
+        # For the root uploader returns true if any of clauses :process
+        # or any of version has not option :do_not_delay.
+        #
+        def delay?
+          hash = parent_uploader.versions.values.detect do |hash|
+            hash[:uploader] == self
+          end
+          not hash[:options][:do_not_delay]
+        rescue
+          processors.any? do |method, args, condition, do_not_delay|
+            not do_not_delay    # == delay
+          end or
+          versions.values.any? do |hash|
+            not hash[:options][:do_not_delay]   # == delay
+          end
         end
 
         ##
@@ -87,7 +105,7 @@ module CarrierWave
         # For the root uploader returns true if any clause :process has this option.
         #
         def do_not_delay?
-          k, hash = root_uploader.versions.to_a.detect do |k, hash|
+          hash = parent_uploader.versions.values.detect do |hash|
             hash[:uploader] == self
           end
           hash[:options][:do_not_delay]
@@ -112,7 +130,7 @@ module CarrierWave
       def process!(new_file=nil)
         if enable_processing
           self.class.processors.each do |method, args, condition, do_not_delay|
-            next unless proceed_with_versioning?(do_not_delay)
+            next unless proceed_with_versioning?(!!do_not_delay)
             if condition
               next if !(condition.respond_to?(:call) ? condition.call(self, :args => args, :method => method, :file => new_file) : self.send(condition, new_file))
             end
@@ -123,8 +141,14 @@ module CarrierWave
 
       private
 
-      def proceed_with_versioning?(do_not_delay = self.class.do_not_delay?)
-        !model.respond_to?(:"process_#{mounted_as}_upload") || model.send(:"process_#{mounted_as}_upload") ^ do_not_delay
+      def proceed_with_versioning?(do_not_delay = nil)
+        delay, do_not_delay =
+            if do_not_delay.nil?
+              [self.class.delay?, self.class.do_not_delay?]
+            else
+              [!do_not_delay, do_not_delay]
+            end
+        !model.respond_to?(:"process_#{mounted_as}_upload") || model.send(:"process_#{mounted_as}_upload") && delay || !model.send(:"process_#{mounted_as}_upload") && do_not_delay
       end
     end # Delay
 
