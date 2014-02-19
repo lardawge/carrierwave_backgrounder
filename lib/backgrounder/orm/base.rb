@@ -78,7 +78,11 @@ module CarrierWave
             def write_#{column}_identifier
               super and return if process_#{column}_upload
 
-              write_uploader(:#{column}, nil) if remove_#{column}?
+              if remove_#{column}?
+                write_uploader(:#{column}, nil)
+                write_uploader(:#{column}_tmp, nil)        if respond_to?(:#{column}_tmp)
+                write_uploader(:#{column}_processing, nil) if respond_to?(:#{column}_processing)
+              end
               self.#{column}_tmp = _mounter(:#{column}).cache_name if _mounter(:#{column}).cache_name
             end
 
