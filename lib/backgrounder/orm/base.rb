@@ -77,10 +77,14 @@ module CarrierWave
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def write_#{column}_identifier
               super and return if process_#{column}_upload
+
+              write_uploader(:#{column}, nil) if remove_#{column}?
               self.#{column}_tmp = _mounter(:#{column}).cache_name if _mounter(:#{column}).cache_name
             end
 
             def store_#{column}!
+              #{column} && #{column}.remove! if remove_#{column}?
+
               super if process_#{column}_upload
             end
 
