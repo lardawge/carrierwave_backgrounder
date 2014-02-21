@@ -7,6 +7,7 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        return unless record
 
         if record.send(:"#{column}_tmp")
           store_directories(record)
