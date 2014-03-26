@@ -154,22 +154,13 @@ module CarrierWave::Backgrounder
 
       context 'sucker_punch' do
         let(:args) { [MockWorker, 'FakeClass', 1, :image] }
-        let(:mock_sp) { mock('SuckerPunch')}
+        let(:job) { mock('job') }
 
-        before do
-          mock_sp.expects(:async).returns(mock_sp)
-          mock_sp.expects(:perform).with('FakeClass', 1, :image)
-        end
-
-        it 'sets the queue to :carrierwave by default' do
-          SuckerPunch::Queue.expects(:[]).with(:carrierwave).returns(mock_sp)
+        it 'invokes a new worker' do
+          MockWorker.expects(:new).returns(worker)
+          worker.expects(:async).returns(job)
+          job.expects(:perform).with('FakeClass', 1, :image)
           mock_module.backend :sucker_punch
-          mock_module.enqueue_for_backend(*args)
-        end
-
-        it 'sets the queue to backend :queue option' do
-          SuckerPunch::Queue.expects(:[]).with(:awesome_queue).returns(mock_sp)
-          mock_module.backend :sucker_punch, :queue => :awesome_queue
           mock_module.enqueue_for_backend(*args)
         end
       end
