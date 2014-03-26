@@ -46,7 +46,10 @@ module QC
 end
 
 module SuckerPunch
-  class Queue
+  module Job
+    def async
+      self
+    end
   end
 end
 
