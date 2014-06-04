@@ -29,7 +29,7 @@ describe CarrierWave::Workers::ProcessAsset do
 
     it 'processes versions with image_processing column' do
       user.expects(:respond_to?).with(:image_processing).once.returns(true)
-      user.expects(:update_attribute).with(:image_processing, nil).once
+      user.expects(:update_attribute).with(:image_processing, false).once
       worker.perform
     end
 
