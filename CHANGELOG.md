@@ -1,4 +1,9 @@
 
+## 0.4.1
+
+### enhancements
+  * [#179] Set column_processing to false instead of nil [mockdeep]
+
 ## 0.4.0
 
 ### enhancements
