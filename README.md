@@ -78,7 +78,7 @@ Optionally you can add a column to the database which will be set to `true` when
 the background processing is start and to `false` when the background processing is complete.
 
 ```ruby
-add_column :users, :avatar_processing, :boolean, null: false
+add_column :users, :avatar_processing, :boolean, null: false, default: false
 ```
 
 ### To use store_in_background
