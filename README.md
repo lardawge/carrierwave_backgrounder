@@ -81,6 +81,8 @@ the background processing is start and to `false` when the background processing
 add_column :users, :avatar_processing, :boolean, null: false, default: false
 ```
 
+IMPORTANT:  You cannot use process_in_background if the uploader is set to `storage :file`
+
 ### To use store_in_background
 
 In your model:
