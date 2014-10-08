@@ -34,7 +34,7 @@ Backgrounder::ORM::Base::store_in_background
 
 ## Installation and Usage
 
-These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and your queing lib of choice.
+These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and your queuing lib of choice.
 
 In Rails, add the following your Gemfile:
 
