@@ -114,6 +114,8 @@ This must be set before you assign an upload:
 @user.attributes = params[:user]
 ```
 
+You can also use this to [`recreate_versions!`](https://github.com/carrierwaveuploader/carrierwave#recreating-versions) without delay.
+
 ### Override worker
 To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
 second argument:
