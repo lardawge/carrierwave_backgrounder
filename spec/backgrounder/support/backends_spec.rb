@@ -3,7 +3,7 @@ require 'support/backend_constants'
 require 'support/mock_worker'
 
 module CarrierWave::Backgrounder
-  describe Support::Backends do
+  RSpec.describe Support::Backends do
     let(:mock_module) { Module.new }
 
     before do
@@ -37,19 +37,19 @@ module CarrierWave::Backgrounder
             def self.perform(*args); new(*args).perform; end
           end
 
-          MockWorker.expects(:new).returns(worker)
+          allow(MockWorker).to receive(:new).and_return(worker)
         end
 
         context 'queue column exists' do
           it 'defaults the queue name to nil if none passed to #backend' do
             mock_module.backend :delayed_job
-            Delayed::Job.expects(:enqueue).with(worker, :queue => nil)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => nil)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'sets the queue name to the queue name passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
-            Delayed::Job.expects(:enqueue).with(worker, :queue => :awesome_queue)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => :awesome_queue)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -57,7 +57,7 @@ module CarrierWave::Backgrounder
         context 'queue column does not exist' do
           before do
             column_names = Delayed::Job.column_names.tap { |cn| cn.delete('queue') }
-            Delayed::Job.stubs(:column_names).returns(column_names)
+            allow(Delayed::Job).to receive(:column_names).and_return(column_names)
             Delayed::Job.class_eval { remove_method(:queue) }
           end
 
@@ -67,14 +67,14 @@ module CarrierWave::Backgrounder
 
           it 'does not pass a queue name if none passed to #backend' do
             mock_module.backend :delayed_job
-            Delayed::Job.expects(:enqueue).with(worker)
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'does not pass a queue name and logs a warning message if a queue name is passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
-            Delayed::Job.expects(:enqueue).with(worker)
-            Rails.logger.expects(:warn).with(instance_of(String))
+            expect(Rails.logger).to receive(:warn).with(instance_of(String))
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -84,7 +84,7 @@ module CarrierWave::Backgrounder
         let(:args) { [MockWorker, 'FakeClass', 1, :image] }
 
         before do
-          Resque.expects(:enqueue).with(*args)
+          allow(Resque).to receive(:enqueue).with(*args)
         end
 
         it 'sets a variable with the queue name, defaults to :carrierwave' do
@@ -104,17 +104,17 @@ module CarrierWave::Backgrounder
         let(:args) { ['FakeClass', 1, :image] }
 
         it 'invokes client_push on the class with passed args' do
-          MockSidekiqWorker.expects(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
+          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
           mock_module.backend :sidekiq
           mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
         end
 
         it 'invokes client_push and includes the options passed to backend' do
-          MockSidekiqWorker.expects(:client_push).with({ 'class' => MockSidekiqWorker, 
-                                                         'retry' => false,
-                                                         'timeout' => 60,
-                                                         'queue' => :awesome_queue,
-                                                         'args' => args })
+          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker,
+                                                                    'retry' => false,
+                                                                    'timeout' => 60,
+                                                                    'queue' => :awesome_queue,
+                                                                    'args' => args })
           options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
           mock_module.backend :sidekiq, options
           mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
@@ -126,20 +126,20 @@ module CarrierWave::Backgrounder
 
         it 'instantiates a GirlFriday work queue if one does not exist' do
           mock_module.backend :girl_friday
-          GirlFriday::WorkQueue.expects(:new).with(:carrierwave, {}).returns([])
+          expect(GirlFriday::WorkQueue).to receive(:new).with(:carrierwave, {}).and_return([])
           mock_module.enqueue_for_backend(*args)
         end
 
         it 'instantiates a GirlFriday work queue passing the args to the queue' do
           mock_module.backend :girl_friday, :queue => :awesome_queue, :size => 3
-          GirlFriday::WorkQueue.expects(:new).with(:awesome_queue, {:size => 3}).returns([])
+          expect(GirlFriday::WorkQueue).to receive(:new).with(:awesome_queue, {:size => 3}).and_return([])
           mock_module.enqueue_for_backend(*args)
         end
 
         it 'does not instantiate a GirlFriday work queue if one exists' do
           mock_module.backend :girl_friday
           mock_module.instance_variable_set('@girl_friday_queue', [])
-          GirlFriday::WorkQueue.expects(:new).never
+          expect(GirlFriday::WorkQueue).to receive(:new).never
           mock_module.enqueue_for_backend(*args)
         end
 
@@ -154,12 +154,12 @@ module CarrierWave::Backgrounder
 
       context 'sucker_punch' do
         let(:args) { [MockWorker, 'FakeClass', 1, :image] }
-        let(:job) { mock('job') }
+        let(:job) { double('job') }
 
         it 'invokes a new worker' do
-          MockWorker.expects(:new).returns(worker)
-          worker.expects(:async).returns(job)
-          job.expects(:perform).with('FakeClass', 1, :image)
+          expect(MockWorker).to receive(:new).and_return(worker)
+          expect(worker).to receive(:async).and_return(job)
+          expect(job).to receive(:perform).with('FakeClass', 1, :image)
           mock_module.backend :sucker_punch
           mock_module.enqueue_for_backend(*args)
         end
@@ -168,7 +168,7 @@ module CarrierWave::Backgrounder
       context 'qu' do
         let(:args) { [MockWorker, 'FakeClass', 1, :image] }
         before do
-          Qu.expects(:enqueue).with(*args)
+          allow(Qu).to receive(:enqueue).with(*args)
         end
 
         it 'sets a variable with the queue name, defaults to :carrierwave' do
@@ -186,7 +186,7 @@ module CarrierWave::Backgrounder
 
       context 'qc' do
         it 'calls enqueue with the passed args' do
-          QC.expects(:enqueue).with("MockWorker.perform", 'FakeClass', 1, 'image')
+          expect(QC).to receive(:enqueue).with("MockWorker.perform", 'FakeClass', 1, 'image')
           mock_module.backend :qc
           mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image)
         end
@@ -194,14 +194,13 @@ module CarrierWave::Backgrounder
 
       context 'immediate' do
         it 'instantiates a worker passing the args and calls perform' do
-          worker = mock('Worker')
-          MockWorker.expects(:new).with('FakeClass', 1, :image).returns(worker)
-          worker.expects(:perform)
+          worker = double('Worker')
+          expect(MockWorker).to receive(:new).with('FakeClass', 1, :image).and_return(worker)
+          expect(worker).to receive(:perform)
           mock_module.backend :immediate
           mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image)
         end
       end
-
     end
   end
 end

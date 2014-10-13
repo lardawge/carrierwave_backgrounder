@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "carrierwave", ["~> 0.5"]
 
-  s.add_development_dependency "rspec", ["~> 2.12.0"]
-  s.add_development_dependency "mocha", ["~> 0.13.0"]
+  s.add_development_dependency "rspec", ["~> 3.1.0"]
   s.add_development_dependency "rake"
 end

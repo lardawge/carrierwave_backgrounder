@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'ostruct'
 require 'backgrounder/orm/activemodel'
 
-describe CarrierWave::Backgrounder::ORM::ActiveModel do
+RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
   before do
     @mock_class = Class.new do
       def self.before_save(method, opts); nil; end
@@ -20,7 +20,7 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
   describe '.store_in_background' do
     context 'setting up callbacks' do
       it 'creates an after_commit hook' do
-        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
         @mock_class.store_in_background :avatar
       end
     end
@@ -29,12 +29,12 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
   describe '.process_in_background' do
     context 'setting up callbacks' do
       it 'creates a before_save hook' do
-        @mock_class.expects(:before_save).with(:set_avatar_processing, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:before_save).with(:set_avatar_processing, :if => :enqueue_avatar_background_job?)
         @mock_class.process_in_background :avatar
       end
 
       it 'creates an after_save hook' do
-        @mock_class.expects(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
         @mock_class.process_in_background :avatar
       end
     end
@@ -50,48 +50,48 @@ describe CarrierWave::Backgrounder::ORM::ActiveModel do
     context 'mount_on option is set' do
       before do
         options_hash = {:avatar => {:mount_on => :some_other_column}}
-        @mock_class.expects(:uploader_options).returns(options_hash)
+        expect(@mock_class).to receive(:uploader_options).and_return(options_hash)
       end
 
       it "returns true if alternate column is changed" do
-        instance.expects(:some_other_column_changed?).returns(true)
-        expect(instance.avatar_updated?).to be_true
+        expect(instance).to receive(:some_other_column_changed?).and_return(true)
+        expect(instance.avatar_updated?).to be_truthy
       end
     end
 
     it "returns true if process_avatar_upload is false" do
-      instance.expects(:process_avatar_upload)
-      expect(instance.enqueue_avatar_background_job?).to be_true
+      expect(instance).to receive(:process_avatar_upload)
+      expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls column_changed?" do
-      instance.expects(:process_avatar_upload).returns(false)
-      instance.expects(:avatar_changed?)
-      expect(instance.enqueue_avatar_background_job?).to be_true
+      expect(instance).to receive(:process_avatar_upload).and_return(false)
+      expect(instance).to receive(:avatar_changed?)
+      expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls previous_changes" do
-      instance.expects(:process_avatar_upload).returns(false)
-      instance.expects(:avatar_changed?).returns(false)
-      instance.expects(:previous_changes).returns({:avatar => true})
-      expect(instance.enqueue_avatar_background_job?).to be_true
+      expect(instance).to receive(:process_avatar_upload).and_return(false)
+      expect(instance).to receive(:avatar_changed?).and_return(false)
+      expect(instance).to receive(:previous_changes).and_return({:avatar => true})
+      expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls avatar_remote_url" do
-      instance.expects(:process_avatar_upload).returns(false)
-      instance.expects(:avatar_changed?).returns(false)
-      instance.expects(:previous_changes).returns({})
-      instance.expects(:remote_avatar_url).returns('yup')
-      expect(instance.enqueue_avatar_background_job?).to be_true
+      expect(instance).to receive(:process_avatar_upload).and_return(false)
+      expect(instance).to receive(:avatar_changed?).and_return(false)
+      expect(instance).to receive(:previous_changes).and_return({})
+      expect(instance).to receive(:remote_avatar_url).and_return('yup')
+      expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls avatar_cache" do
-      instance.expects(:process_avatar_upload).returns(false)
-      instance.expects(:avatar_changed?).returns(false)
-      instance.expects(:previous_changes).returns({})
-      instance.expects(:remote_avatar_url).returns(nil)
-      instance.expects(:avatar_cache).returns('yup')
-      expect(instance.enqueue_avatar_background_job?).to be_true
+      expect(instance).to receive(:process_avatar_upload).and_return(false)
+      expect(instance).to receive(:avatar_changed?).and_return(false)
+      expect(instance).to receive(:previous_changes).and_return({})
+      expect(instance).to receive(:remote_avatar_url).and_return(nil)
+      expect(instance).to receive(:avatar_cache).and_return('yup')
+      expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
   end
 end
