@@ -19,12 +19,16 @@ describe CarrierWave::Workers::ProcessAsset do
 
   describe "#perform" do
     let(:image)  { mock('UserAsset') }
+    let(:file)   { mock('ImageFile') }
 
     before do
       user.expects(:find).with('22').returns(user).once
-      user.expects(:image).once.returns(image)
+      # First to check file exist, second to call recreate_versions!
+      user.expects(:image).twice.returns(image)
       user.expects(:process_image_upload=).with(true).once
       image.expects(:recreate_versions!).once.returns(true)
+      image.expects(:file).once.returns(file)
+      file.expects(:present?).once.returns(true)
     end
 
     it 'processes versions with image_processing column' do
@@ -43,28 +47,50 @@ describe CarrierWave::Workers::ProcessAsset do
   describe '#perform with args' do
     let(:admin) { mock('Admin') }
     let(:avatar)  { mock('AdminAsset') }
+    let(:file) { mock('AvatarFile') }
     let(:worker) { worker_class.new }
 
-    before do
-      admin.expects(:find).with('23').returns(admin).once
-      admin.expects(:avatar).once.returns(avatar)
-      admin.expects(:process_avatar_upload=).with(true).once
-      admin.expects(:respond_to?).with(:avatar_processing).once.returns(false)
-      avatar.expects(:recreate_versions!).once.returns(true)
+    describe "when asset file is present" do
+      before do
+        admin.expects(:find).with('23').returns(admin).once
+        # First to check file exist, second to call recreate_versions!
+        admin.expects(:avatar).twice.returns(avatar)
+        admin.expects(:process_avatar_upload=).with(true).once
+        admin.expects(:respond_to?).with(:avatar_processing).once.returns(false)
+        avatar.expects(:recreate_versions!).once.returns(true)
+        avatar.expects(:file).once.returns(file)
+        file.expects(:present?).once.returns(true)
 
-      worker.perform admin, '23', :avatar
+        worker.perform admin, '23', :avatar
+      end
+
+      it 'sets klass' do
+        expect(worker.klass).to eql(admin)
+      end
+
+      it 'sets column' do
+        expect(worker.id).to eql('23')
+      end
+
+      it 'sets id' do
+        expect(worker.column).to eql(:avatar)
+      end
     end
 
-    it 'sets klass' do
-      expect(worker.klass).to eql(admin)
-    end
+    describe "when asset file is missing" do
+      before do
+        admin.expects(:find).with('23').returns(admin).once
+        admin.expects(:avatar).once.returns(avatar)
+        avatar.expects(:file).once.returns(file)
+        file.expects(:present?).once.returns(false)
+        # recreate_versions! should not be called
 
-    it 'sets column' do
-      expect(worker.id).to eql('23')
-    end
+        worker.perform admin, '23', :avatar
+      end
 
-    it 'sets id' do
-      expect(worker.column).to eql(:avatar)
+      it 'sets klass' do
+        expect(worker.klass).to eql(admin)
+      end
     end
   end
 end
