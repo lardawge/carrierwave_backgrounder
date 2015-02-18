@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe CarrierWave::Backgrounder::ORM::Base do
+RSpec.describe CarrierWave::Backgrounder::ORM::Base do
   before do
     @mock_class = Class.new do
       def self.before_save(method, opts); nil; end
