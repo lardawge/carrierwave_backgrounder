@@ -26,11 +26,9 @@ module CarrierWave
             worker_args = {}
             if ::Delayed::Job.new.respond_to?(:queue)
               worker_args[:queue] = queue_options[:queue] if queue_options[:queue]
-              # Only include priority if set
               worker_args[:priority] = queue_options[:priority] if queue_options[:priority]
               ::Delayed::Job.enqueue worker.new(*args), worker_args
             else
-              # Only include priority if set
               worker_args[:priority] = queue_options[:priority] if queue_options[:priority]
               ::Delayed::Job.enqueue worker.new(*args), worker_args
               if queue_options[:queue]
