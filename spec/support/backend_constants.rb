@@ -52,6 +52,6 @@ end
 
 module Rails
   def self.logger
-    @logger ||= Object.new
+    @logger ||= Logger.new(STDOUT)
   end
 end
