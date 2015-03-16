@@ -43,6 +43,7 @@ module CarrierWave
           end
 
           def enqueue_sidekiq(worker, *args)
+            queue_options.delete(:queue) if worker.sidekiq_options['queue'] != 'default'
             args = sidekiq_queue_options('class' => worker, 'args' => args)
             worker.client_push(args)
           end
