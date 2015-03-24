@@ -41,15 +41,23 @@ module CarrierWave::Backgrounder
         end
 
         context 'queue column exists' do
-          it 'defaults the queue name to nil if none passed to #backend' do
+          it 'does not pass the queue name if none passed to #backend' do
             mock_module.backend :delayed_job
-            expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => nil)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'sets the queue name to the queue name passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
             expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => :awesome_queue)
+            mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
+          end
+        end
+
+        context 'priority set in config' do
+          it 'sets the priority which is passed to #backend' do
+            mock_module.backend :delayed_job, :priority => 5
+            expect(Delayed::Job).to receive(:enqueue).with(worker, :priority => 5)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -67,14 +75,14 @@ module CarrierWave::Backgrounder
 
           it 'does not pass a queue name if none passed to #backend' do
             mock_module.backend :delayed_job
-            expect(Delayed::Job).to receive(:enqueue).with(worker)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'does not pass a queue name and logs a warning message if a queue name is passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
             expect(Rails.logger).to receive(:warn).with(instance_of(String))
-            expect(Delayed::Job).to receive(:enqueue).with(worker)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end

@@ -23,10 +23,14 @@ module CarrierWave
           private
 
           def enqueue_delayed_job(worker, *args)
+            worker_args = {}
             if ::Delayed::Job.new.respond_to?(:queue)
-              ::Delayed::Job.enqueue worker.new(*args), :queue => queue_options[:queue]
+              worker_args[:queue] = queue_options[:queue] if queue_options[:queue]
+              worker_args[:priority] = queue_options[:priority] if queue_options[:priority]
+              ::Delayed::Job.enqueue worker.new(*args), worker_args
             else
-              ::Delayed::Job.enqueue worker.new(*args)
+              worker_args[:priority] = queue_options[:priority] if queue_options[:priority]
+              ::Delayed::Job.enqueue worker.new(*args), worker_args
               if queue_options[:queue]
                 ::Rails.logger.warn("Queue name given but no queue column exists for Delayed::Job")
               end
