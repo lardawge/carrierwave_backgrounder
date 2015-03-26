@@ -13,5 +13,13 @@ class MockWorker < Struct.new(:klass, :id, :column)
 end
 
 class MockSidekiqWorker < MockWorker
+  include ::Sidekiq::Worker
+end
+
+class CustomSidekiqWorker < MockWorker
   include Sidekiq::Worker
+
+  sidekiq_options({
+    queue: :customized_queue
+  })
 end

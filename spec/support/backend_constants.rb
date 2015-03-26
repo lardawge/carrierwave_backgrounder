@@ -28,12 +28,20 @@ module Sidekiq
   end
 
   module Worker
+
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
+      @options = {}
+
       def sidekiq_options(opts = {})
+        @options = opts.stringify_keys!
+      end
+
+      def sidekiq_options_hash
+        @options
       end
 
       def client_push(item)
