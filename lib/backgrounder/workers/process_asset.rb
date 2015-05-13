@@ -7,7 +7,7 @@ module CarrierWave
       def perform(*args)
         record = super(*args)
 
-        if record
+        if record && !record.send(:"#{column}").blank?
           record.send(:"process_#{column}_upload=", true)
           if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
             record.update_attribute :"#{column}_processing", false
