@@ -22,7 +22,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
 
     before do
       allow(user).to receive(:find).with('22').and_return(user).once
-      allow(user).to receive(:image).once.and_return(image)
+      allow(user).to receive(:image).twice.and_return(image)
       allow(user).to receive(:process_image_upload=).with(true).once
       allow(image).to receive(:recreate_versions!).once.and_return(true)
     end
@@ -47,7 +47,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
 
     before do
       allow(admin).to receive(:find).with('23').and_return(admin).once
-      allow(admin).to receive(:avatar).once.and_return(avatar)
+      allow(admin).to receive(:avatar).twice.and_return(avatar)
       allow(admin).to receive(:process_avatar_upload=).with(true).once
       allow(admin).to receive(:respond_to?).with(:avatar_processing).once.and_return(false)
       allow(avatar).to receive(:recreate_versions!).once.and_return(true)
