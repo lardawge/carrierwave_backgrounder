@@ -31,6 +31,16 @@ module CarrierWave::Backgrounder
     describe '#enqueue_for_backend' do
       let!(:worker) { MockWorker.new('FakeClass', 1, :image) }
 
+      context 'active_job' do
+        let(:args) { ['FakeClass', 1, :image] }
+
+        it 'invokes perform_later with string arguments' do
+          expect(MockWorker).to receive(:perform_later).with('FakeClass', '1', 'image')
+          mock_module.backend :active_job
+          mock_module.enqueue_for_backend(MockWorker, *args)
+        end
+      end
+
       context 'delayed_job' do
         before do
           @mock_worker = Class.new do

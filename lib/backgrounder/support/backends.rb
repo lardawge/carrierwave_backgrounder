@@ -22,6 +22,10 @@ module CarrierWave
 
           private
 
+          def enqueue_active_job(worker, *args)
+            worker.perform_later(*args.map(&:to_s))
+          end
+
           def enqueue_delayed_job(worker, *args)
             worker_args = {}
             if ::Delayed::Job.new.respond_to?(:queue)

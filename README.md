@@ -135,6 +135,33 @@ class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
   # other hooks you might care about
 end
 ```
+
+### ActiveJob
+Use overriden worker that inherits from ActiveJob::Base and includes relevant worker mixin:
+```ruby
+class MyActiveJobWorker < ActiveJob::Base
+  include ::CarrierWave::Workers::ProcessAssetMixin
+  # ... or include ::CarrierWave::Workers::StoreAssetMixin
+
+  after_perform do
+    # your code here
+  end
+
+  # Sometimes job gets performed before the file is uploaded and ready.
+  # You can define how to handle that case by overriding `when_not_ready` method
+  # (by default it does nothing)
+  def when_not_ready
+    retry_job
+  end
+end
+```
+Don't forget to set `active_job` as a backend in the config:
+```ruby
+CarrierWave::Backgrounder.configure do |c|
+  c.backend :active_job, queue: :carrierwave
+end
+```
+
 ### Testing with Rspec
 We use the after_commit hook when using active_record. This creates a problem when testing with Rspec because after_commit never gets fired
 if you're using trasactional fixtures. One solution to the problem is to use the [TestAfterCommit gem](https://github.com/grosser/test_after_commit).
