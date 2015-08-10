@@ -16,8 +16,9 @@ module CarrierWave
             @backend = queue_name
           end
 
-          def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
-            self.send :"enqueue_#{backend}", worker, class_name, subject_id, mounted_as
+          def enqueue_for_backend(worker, class_name, subject_id, mounted_as, cleanup)
+            cleanup = queue_options[:cleanup].nil? ? cleanup : queue_options[:cleanup]
+            self.send :"enqueue_#{backend}", worker, class_name, subject_id, mounted_as, cleanup
           end
 
           private
@@ -65,8 +66,8 @@ module CarrierWave
           end
 
           def enqueue_qc(worker, *args)
-            class_name, subject_id, mounted_as = args
-            ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
+            class_name, subject_id, mounted_as, cleanup = args
+            ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s, cleanup
           end
 
           def enqueue_immediate(worker, *args)

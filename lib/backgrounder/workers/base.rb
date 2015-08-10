@@ -1,6 +1,6 @@
 module CarrierWave
   module Workers
-    class Base < Struct.new(:klass, :id, :column)
+    class Base < Struct.new(:klass, :id, :column, :cleanup)
 
       def self.perform(*args)
         new(*args).perform
@@ -21,8 +21,8 @@ module CarrierWave
         end
       end
 
-      def set_args(klass, id, column)
-        self.klass, self.id, self.column = klass, id, column
+      def set_args(klass, id, column, cleanup)
+        self.klass, self.id, self.column, self.cleanup = klass, id, column, cleanup
       end
 
       def constantized_resource

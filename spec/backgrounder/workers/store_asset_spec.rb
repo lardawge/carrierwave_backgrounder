@@ -6,11 +6,11 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
   let(:fixtures_path) { File.expand_path('../fixtures/images', __FILE__) }
   let(:worker_class) { CarrierWave::Workers::StoreAsset }
   let(:user) { double('User') }
-  let!(:worker) { worker_class.new(user, '22', :image) }
+  let!(:worker) { worker_class.new(user, '22', :image, true) }
 
   describe ".perform" do
     it 'creates a new instance and calls perform' do
-      args = [user, '22', :image]
+      args = [user, '22', :image, true]
       expect(worker_class).to receive(:new).with(*args).and_return(worker)
       expect_any_instance_of(worker_class).to receive(:perform)
       worker_class.perform(*args)
@@ -43,6 +43,13 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
       worker.perform
     end
 
+    it 'does not remove the tmp directory if cleanup is set to false' do
+      worker.cleanup = false
+      expect(FileUtils).to receive(:rm_r).never
+      expect(user).to receive(:save!).once.and_return(true)
+      worker.perform
+    end
+
     it 'sets the cache_path' do
       expect(user).to receive(:save!).once.and_return(false)
       worker.perform
@@ -71,7 +78,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
       allow(admin).to receive(:avatar=).once
       allow(admin).to receive(:avatar_tmp=).with(nil).once
       allow(admin).to receive(:save!).once.and_return(false)
-      worker.perform admin, '23', :avatar
+      worker.perform admin, '23', :avatar, true
     end
 
     it 'sets klass' do
