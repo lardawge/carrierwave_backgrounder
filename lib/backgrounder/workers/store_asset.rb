@@ -14,7 +14,7 @@ module CarrierWave
           record.send :"#{column}_tmp=", nil
           record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
           File.open(cache_path) { |f| record.send :"#{column}=", f }
-          if record.save!
+          if record.save! && cleanup
             FileUtils.rm_r(tmp_directory, :force => true)
           end
         end

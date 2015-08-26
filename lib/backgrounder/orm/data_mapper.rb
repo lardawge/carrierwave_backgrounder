@@ -33,7 +33,7 @@ module CarrierWave
 
         private
 
-        def _define_shared_backgrounder_methods(mod, column, worker)
+        def _define_shared_backgrounder_methods(mod, column, worker, cleanup)
           before :save, :"set_#{column}_changed"
           after  :save, :"enqueue_#{column}_background_job"
 

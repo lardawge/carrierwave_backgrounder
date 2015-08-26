@@ -9,7 +9,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
 
   describe ".perform" do
     it 'creates a new instance and calls perform' do
-      args = [user, '22', :image]
+      args = [user, '22', :image, true]
       expect(worker_class).to receive(:new).with(*args).and_return(worker)
       expect_any_instance_of(worker_class).to receive(:perform)
 
@@ -52,7 +52,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
       allow(admin).to receive(:respond_to?).with(:avatar_processing).once.and_return(false)
       allow(avatar).to receive(:recreate_versions!).once.and_return(true)
 
-      worker.perform admin, '23', :avatar
+      worker.perform admin, '23', :avatar, true
     end
 
     it 'sets klass' do
