@@ -111,21 +111,36 @@ module CarrierWave::Backgrounder
       context 'sidekiq' do
         let(:args) { ['FakeClass', 1, :image] }
 
-        it 'invokes client_push on the class with passed args' do
-          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
-          mock_module.backend :sidekiq
-          mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
+        context 'default queue' do
+          it 'invokes client_push on the class with passed args' do
+            expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
+            mock_module.backend :sidekiq
+            mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
+          end
+
+          it 'invokes client_push and includes the options passed to backend' do
+            expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker,
+                                                                      'retry' => false,
+                                                                      'timeout' => 60,
+                                                                      'queue' => :awesome_queue,
+                                                                      'args' => args })
+            options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
+            mock_module.backend :sidekiq, options
+            mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
+          end
         end
 
-        it 'invokes client_push and includes the options passed to backend' do
-          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker,
-                                                                    'retry' => false,
-                                                                    'timeout' => 60,
-                                                                    'queue' => :awesome_queue,
-                                                                    'args' => args })
-          options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
-          mock_module.backend :sidekiq, options
-          mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
+        context 'customized queue' do
+          it 'invokes client_push and includes the options passed to backend with the customized queue' do
+            expect(CustomSidekiqWorker).to receive(:client_push).with({ 'class' => CustomSidekiqWorker,
+                                                                      'retry' => false,
+                                                                      'timeout' => 60,
+                                                                      'queue' => :customized_queue,
+                                                                      'args' => args })
+            options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
+            mock_module.backend :sidekiq, options
+            mock_module.enqueue_for_backend(CustomSidekiqWorker, *args)
+          end
         end
       end
 

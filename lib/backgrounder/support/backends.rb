@@ -75,6 +75,7 @@ module CarrierWave
 
           def sidekiq_queue_options(args)
             args['queue'] = queue_options[:queue] if queue_options[:queue]
+            args['queue'] = args['class'].sidekiq_options_hash['queue'] if args['class'].try(:sidekiq_options_hash).present? && args['class'].sidekiq_options_hash['queue'] != 'default'
             args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
             args['timeout'] = queue_options[:timeout] if queue_options[:timeout]
             args['backtrace'] = queue_options[:backtrace] if queue_options[:backtrace]
