@@ -1,4 +1,13 @@
 
+## 0.4.2
+
+### enhancements
+  * Allow overridden worker to set a queue name
+  * [#190] Respect Carrierwave's enable_processing flag if set to false [jherdman]
+
+### bug fixes
+  * [#216] Fix for NoMethodError: undefined method `read' for nil:NilClass [kntmrkm]
+
 ## 0.4.1
 
 ### enhancements
@@ -88,4 +97,3 @@
 ### bug fixes
   * Girl Friday incorrectly referenses class #92
   * Add documentation for testing with rspec #84.
-
