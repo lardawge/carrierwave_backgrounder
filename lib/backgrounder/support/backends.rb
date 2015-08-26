@@ -43,7 +43,8 @@ module CarrierWave
           end
 
           def enqueue_sidekiq(worker, *args)
-            args = sidekiq_queue_options('class' => worker, 'args' => args)
+            override_queue_name = worker.sidekiq_options['queue'] == 'default' || worker.sidekiq_options['queue'].nil?
+            args = sidekiq_queue_options(override_queue_name, 'class' => worker, 'args' => args)
             worker.client_push(args)
           end
 
@@ -73,8 +74,10 @@ module CarrierWave
             worker.new(*args).perform
           end
 
-          def sidekiq_queue_options(args)
-            args['queue'] = queue_options[:queue] if queue_options[:queue] && args['class'].sidekiq_options['queue'] == 'default'
+          def sidekiq_queue_options(override_queue_name, args)
+            if override_queue_name && queue_options[:queue]
+              args['queue'] = queue_options[:queue]
+            end
             args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
             args['timeout'] = queue_options[:timeout] if queue_options[:timeout]
             args['backtrace'] = queue_options[:backtrace] if queue_options[:backtrace]

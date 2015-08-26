@@ -15,3 +15,8 @@ end
 class MockSidekiqWorker < MockWorker
   include Sidekiq::Worker
 end
+
+class MockNamedSidekiqWorker < MockWorker
+  include Sidekiq::Worker
+  sidekiq_options queue: :even_better_name
+end

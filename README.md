@@ -115,7 +115,7 @@ This must be set before you assign an upload:
 ```
 
 ### Override worker
-To overide the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
+To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
 second argument:
 
 ```ruby
