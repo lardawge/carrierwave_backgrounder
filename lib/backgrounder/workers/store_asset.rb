@@ -7,6 +7,7 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        return unless record
 
         if record && record.send(:"#{column}_tmp")
           store_directories(record)
@@ -14,7 +15,7 @@ module CarrierWave
           record.send :"#{column}_tmp=", nil
           record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
           File.open(cache_path) { |f| record.send :"#{column}=", f }
-          if record.save!
+          if record.save!(validate: false)
             FileUtils.rm_r(tmp_directory, :force => true)
           end
         end
