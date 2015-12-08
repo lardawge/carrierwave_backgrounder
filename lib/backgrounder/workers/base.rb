@@ -1,14 +1,18 @@
+# encoding: utf-8
 module CarrierWave
   module Workers
-    class Base < Struct.new(:klass, :id, :column)
 
-      def self.perform(*args)
-        new(*args).perform
+    module Base
+      attr_accessor :klass, :id, :column, :record
+
+      def initialize(*args)
+        super(*args) unless self.class.superclass == Object
+        set_args(*args) if args.present?
       end
 
       def perform(*args)
         set_args(*args) if args.present?
-        constantized_resource.find id
+        self.record = constantized_resource.find id
       rescue *not_found_errors
       end
 
@@ -29,6 +33,10 @@ module CarrierWave
         klass.is_a?(String) ? klass.constantize : klass
       end
 
-    end
-  end
-end
+      def when_not_ready
+      end
+
+    end # Base
+
+  end # Workers
+end # CarrierWave
