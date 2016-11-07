@@ -33,8 +33,15 @@ module Sidekiq
     end
 
     module ClassMethods
+      # Sidekiq::Worker#sidekiq_options returns nil instead of the options hash
+      # since 7e094567a585578fad0bfd0c8669efb46643f853
       def sidekiq_options(opts = {})
-        opts
+        @opts = opts
+        nil
+      end
+
+      def get_sidekiq_options
+        @opts || {}
       end
 
       def client_push(item)

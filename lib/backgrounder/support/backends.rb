@@ -47,7 +47,9 @@ module CarrierWave
           end
 
           def enqueue_sidekiq(worker, *args)
-            override_queue_name = worker.sidekiq_options['queue'] == 'default' || worker.sidekiq_options['queue'].nil?
+            override_queue_name =
+              worker.get_sidekiq_options['queue'] == 'default' \
+                || worker.get_sidekiq_options['queue'].nil?
             args = sidekiq_queue_options(override_queue_name, 'class' => worker, 'args' => args)
             worker.client_push(args)
           end
