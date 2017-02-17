@@ -14,6 +14,7 @@ module CarrierWave
         set_args(*args) if args.present?
         self.record = constantized_resource.find id
       rescue *not_found_errors
+        when_not_found
       end
 
       private
@@ -31,6 +32,9 @@ module CarrierWave
 
       def constantized_resource
         klass.is_a?(String) ? klass.constantize : klass
+      end
+
+      def when_not_found
       end
 
       def when_not_ready
