@@ -89,6 +89,10 @@ module CarrierWave
               super if process_#{column}_upload
             end
 
+            def remove_#{column}!
+              #{column}_tmp = nil
+              super
+            end
           RUBY
 
           _define_shared_backgrounder_methods(mod, column, worker)
