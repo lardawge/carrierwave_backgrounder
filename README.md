@@ -171,7 +171,7 @@ end
 
 ### Testing with Rspec
 We use the after_commit hook when using active_record. This creates a problem when testing with Rspec because after_commit never gets fired
-if you're using trasactional fixtures. One solution to the problem is to use the [TestAfterCommit gem](https://github.com/grosser/test_after_commit).
+if you're using transactional fixtures. One solution to the problem is to use the [TestAfterCommit gem](https://github.com/grosser/test_after_commit).
 There are various other solutions in which case google is your friend.
 
 ### Uploaders mounted on mongoid embedded documents
