@@ -9,7 +9,7 @@ module CarrierWave
 
         private
 
-        def _define_shared_backgrounder_methods(mod, column, worker)
+        def _define_shared_backgrounder_methods(mod, column, worker, callback)
           before_save :"set_#{column}_processing", :if => :"enqueue_#{column}_background_job?"
           send _supported_callback, :"enqueue_#{column}_background_job", :if => :"enqueue_#{column}_background_job?"
 

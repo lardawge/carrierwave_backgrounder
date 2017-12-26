@@ -1,4 +1,4 @@
-class MockWorker < Struct.new(:klass, :id, :column)
+class MockWorker < Struct.new(:klass, :id, :column, :callback)
   def self.perform(*args)
     new(*args).perform
   end
@@ -7,8 +7,8 @@ class MockWorker < Struct.new(:klass, :id, :column)
     set_args(*args) unless args.empty?
   end
 
-  def set_args(klass, id, column)
-    self.klass, self.id, self.column = klass, id, column
+  def set_args(klass, id, column, callback = nil)
+    self.klass, self.id, self.column, self.callback = klass, id, column, callback
   end
 end
 

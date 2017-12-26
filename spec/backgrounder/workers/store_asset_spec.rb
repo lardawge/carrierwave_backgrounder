@@ -6,7 +6,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
   let(:fixtures_path) { File.expand_path('../fixtures/images', __FILE__) }
   let(:worker_class) { CarrierWave::Workers::StoreAsset }
   let(:user) { double('User') }
-  let!(:worker) { worker_class.new(user, '22', :image) }
+  let!(:worker) { worker_class.new(user, '22', :image, :callback_method) }
 
   describe ".perform" do
     it 'creates a new instance and calls perform' do
