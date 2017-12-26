@@ -3,7 +3,7 @@ module CarrierWave
   module Workers
 
     module Base
-      attr_accessor :klass, :id, :column, :record
+      attr_accessor :klass, :id, :column, :record, :callback
 
       def initialize(*args)
         super(*args) unless self.class.superclass == Object
@@ -25,8 +25,8 @@ module CarrierWave
         end
       end
 
-      def set_args(klass, id, column)
-        self.klass, self.id, self.column = klass, id, column
+      def set_args(klass, id, column, callback=nil)
+        self.klass, self.id, self.column, self.callback = klass, id, column, callback
       end
 
       def constantized_resource

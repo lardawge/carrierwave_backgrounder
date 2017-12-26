@@ -28,7 +28,13 @@ module CarrierWave
         #
         #   class User < ActiveRecord::Base
         #     mount_uploader :avatar, AvatarUploader
-        #     process_in_background :avatar, CustomWorker
+        #     process_in_background :avatar, worker: CustomWorker, after_store: :do_something_cool
+
+        #     private
+        #
+        #     def do_something_cool
+        #       ...
+        #     end
         #   end
         #
         # In addition you can also add a column to the database appended by _processing with a type of boolean
@@ -38,13 +44,15 @@ module CarrierWave
         #     add_column :users, :avatar_processing, :boolean
         #   end
         #
-        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
+        def process_in_background(column, options={})
           attr_accessor :"process_#{column}_upload"
+
+          worker = options[:worker] || ::CarrierWave::Workers::ProcessAsset
 
           mod = Module.new
           include mod
 
-          _define_shared_backgrounder_methods(mod, column, worker)
+          _define_shared_backgrounder_methods(mod, column, worker, options[:after_store])
         end
 
         ##
@@ -69,8 +77,10 @@ module CarrierWave
         #     store_in_background :avatar, CustomWorker
         #   end
         #
-        def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
+        def store_in_background(column, options={})
           attr_accessor :"process_#{column}_upload"
+
+          worker = options[:worker] || ::CarrierWave::Workers::StoreAsset
 
           mod = Module.new
           include mod
@@ -91,12 +101,12 @@ module CarrierWave
 
           RUBY
 
-          _define_shared_backgrounder_methods(mod, column, worker)
+          _define_shared_backgrounder_methods(mod, column, worker, options[:after_store])
         end
 
         private
 
-        def _define_shared_backgrounder_methods(mod, column, worker)
+        def _define_shared_backgrounder_methods(mod, column, worker, callback)
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
             def #{column}_updated?; true; end
 
@@ -109,7 +119,7 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as, #{callback})
             end
           RUBY
         end

@@ -29,13 +29,13 @@ module CarrierWave::Backgrounder
     end
 
     describe '#enqueue_for_backend' do
-      let!(:worker) { MockWorker.new('FakeClass', 1, :image) }
+      let!(:worker) { MockWorker.new('FakeClass', 1, :image, :callback) }
 
       context 'active_job' do
-        let(:args) { ['FakeClass', 1, :image] }
+        let(:args) { ['FakeClass', 1, :image, :callback] }
 
         it 'invokes perform_later with string arguments' do
-          expect(MockWorker).to receive(:perform_later).with('FakeClass', '1', 'image')
+          expect(MockWorker).to receive(:perform_later).with('FakeClass', '1', 'image', 'callback')
           mock_module.backend :active_job
           mock_module.enqueue_for_backend(MockWorker, *args)
         end
@@ -99,7 +99,7 @@ module CarrierWave::Backgrounder
       end
 
       context 'resque' do
-        let(:args) { [MockWorker, 'FakeClass', 1, :image] }
+        let(:args) { [MockWorker, 'FakeClass', 1, :image, nil] }
 
         before do
           allow(Resque).to receive(:enqueue).with(*args)
@@ -119,7 +119,7 @@ module CarrierWave::Backgrounder
       end
 
       context 'sidekiq' do
-        let(:args) { ['FakeClass', 1, :image] }
+        let(:args) { ['FakeClass', 1, :image, :callback] }
 
         it 'invokes client_push on the class with passed args' do
           expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
@@ -181,20 +181,20 @@ module CarrierWave::Backgrounder
       end
 
       context 'sucker_punch' do
-        let(:args) { [MockWorker, 'FakeClass', 1, :image] }
+        let(:args) { [MockWorker, 'FakeClass', 1, :image, :callback] }
         let(:job) { double('job') }
 
         it 'invokes a new worker' do
           expect(MockWorker).to receive(:new).and_return(worker)
           expect(worker).to receive(:async).and_return(job)
-          expect(job).to receive(:perform).with('FakeClass', 1, :image)
+          expect(job).to receive(:perform).with('FakeClass', 1, :image, :callback)
           mock_module.backend :sucker_punch
           mock_module.enqueue_for_backend(*args)
         end
       end
 
       context 'qu' do
-        let(:args) { [MockWorker, 'FakeClass', 1, :image] }
+        let(:args) { [MockWorker, 'FakeClass', 1, :image, :callback] }
         before do
           allow(Qu).to receive(:enqueue).with(*args)
         end
@@ -214,19 +214,19 @@ module CarrierWave::Backgrounder
 
       context 'qc' do
         it 'calls enqueue with the passed args' do
-          expect(QC).to receive(:enqueue).with("MockWorker.perform", 'FakeClass', 1, 'image')
+          expect(QC).to receive(:enqueue).with("MockWorker.perform", 'FakeClass', 1, 'image', :callback)
           mock_module.backend :qc
-          mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image)
+          mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image, :callback)
         end
       end
 
       context 'immediate' do
         it 'instantiates a worker passing the args and calls perform' do
           worker = double('Worker')
-          expect(MockWorker).to receive(:new).with('FakeClass', 1, :image).and_return(worker)
+          expect(MockWorker).to receive(:new).with('FakeClass', 1, :image, :callback).and_return(worker)
           expect(worker).to receive(:perform)
           mock_module.backend :immediate
-          mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image)
+          mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image, :callback)
         end
       end
     end
