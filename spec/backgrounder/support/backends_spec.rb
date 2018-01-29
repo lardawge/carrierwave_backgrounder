@@ -23,8 +23,8 @@ module CarrierWave::Backgrounder
       end
 
       it 'allows passing of queue_options' do
-        mock_module.backend(:delayed_job, :queue => :awesome_queue)
-        expect(mock_module.queue_options).to eql({:queue => :awesome_queue})
+        mock_module.backend(:delayed_job, queue: :awesome_queue)
+        expect(mock_module.queue_options).to eql({ queue: :awesome_queue })
       end
     end
 
@@ -58,16 +58,16 @@ module CarrierWave::Backgrounder
           end
 
           it 'sets the queue name to the queue name passed to #backend' do
-            mock_module.backend :delayed_job, :queue => :awesome_queue
-            expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => :awesome_queue)
+            mock_module.backend :delayed_job, queue: :awesome_queue
+            expect(Delayed::Job).to receive(:enqueue).with(worker, queue: :awesome_queue)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
 
         context 'priority set in config' do
           it 'sets the priority which is passed to #backend' do
-            mock_module.backend :delayed_job, :priority => 5
-            expect(Delayed::Job).to receive(:enqueue).with(worker, :priority => 5)
+            mock_module.backend :delayed_job, priority: 5
+            expect(Delayed::Job).to receive(:enqueue).with(worker, priority: 5)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -206,7 +206,7 @@ module CarrierWave::Backgrounder
         end
 
         it 'sets a variable to the queue name passed to #backend' do
-          mock_module.backend :qu, :queue => :awesome_queue
+          mock_module.backend :qu, queue: :awesome_queue
           mock_module.enqueue_for_backend(*args)
           expect(MockWorker.instance_variable_get '@queue').to eql(:awesome_queue)
         end
@@ -214,7 +214,7 @@ module CarrierWave::Backgrounder
 
       context 'qc' do
         it 'calls enqueue with the passed args' do
-          expect(QC).to receive(:enqueue).with("MockWorker.perform", 'FakeClass', 1, 'image')
+          expect(QC).to receive(:enqueue).with('MockWorker.perform', 'FakeClass', 1, 'image')
           mock_module.backend :qc
           mock_module.enqueue_for_backend(MockWorker, 'FakeClass', 1, :image)
         end

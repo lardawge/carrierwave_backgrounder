@@ -1,12 +1,10 @@
-# encoding: utf-8
 module CarrierWave
   module Workers
-
     module Base
       attr_accessor :klass, :id, :column, :record
 
       def initialize(*args)
-        super(*args) unless self.class.superclass == Object
+        super(*args) unless self.class.superclass.eql?(Object)
         set_args(*args) if args.present?
       end
 
@@ -33,10 +31,7 @@ module CarrierWave
         klass.is_a?(String) ? klass.constantize : klass
       end
 
-      def when_not_ready
-      end
-
-    end # Base
-
-  end # Workers
-end # CarrierWave
+      def when_not_ready; end
+    end
+  end
+end

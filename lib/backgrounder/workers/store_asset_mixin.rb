@@ -1,7 +1,5 @@
-# encoding: utf-8
 module CarrierWave
   module Workers
-
     module StoreAssetMixin
       include CarrierWave::Workers::Base
 
@@ -21,7 +19,7 @@ module CarrierWave
           record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
           File.open(cache_path) { |f| record.send :"#{column}=", f }
           if record.save!
-            FileUtils.rm_r(tmp_directory, :force => true)
+            FileUtils.rm_r(tmp_directory, force: true)
           end
         else
           when_not_ready
@@ -34,10 +32,8 @@ module CarrierWave
         asset, asset_tmp = record.send(:"#{column}"), record.send(:"#{column}_tmp")
         cache_directory  = File.expand_path(asset.cache_dir, asset.root)
         @cache_path      = File.join(cache_directory, asset_tmp)
-        @tmp_directory   = File.join(cache_directory, asset_tmp.split("/").first)
+        @tmp_directory   = File.join(cache_directory, asset_tmp.split('/').first)
       end
-
-    end # StoreAssetMixin
-
-  end # Workers
-end # Backgrounder
+    end
+  end
+end

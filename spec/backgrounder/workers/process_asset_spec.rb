@@ -4,10 +4,10 @@ require 'backgrounder/workers/process_asset'
 
 RSpec.describe CarrierWave::Workers::ProcessAsset do
   let(:worker_class) { CarrierWave::Workers::ProcessAsset }
-  let(:user)   { double('User') }
-  let!(:worker) { worker_class.new(user, '22', :image) }
+  let(:user)         { double('User') }
+  let!(:worker)      { worker_class.new(user, '22', :image) }
 
-  describe ".perform" do
+  describe '.perform' do
     it 'creates a new instance and calls perform' do
       args = [user, '22', :image]
       expect(worker_class).to receive(:new).with(*args).and_return(worker)
@@ -17,7 +17,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
     end
   end
 
-  describe "#perform" do
+  describe '#perform' do
     let(:image)  { double('UserAsset') }
 
     before do

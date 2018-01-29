@@ -4,16 +4,16 @@ module CarrierwaveBackgrounder
       source_root File.expand_path('../templates', __FILE__)
 
       def copy_config
-        template "config/initializers/carrierwave_backgrounder.rb"
+        template 'config/initializers/carrierwave_backgrounder.rb'
       end
 
       def info_config
-        puts <<-EOF
+        puts <<-INFO
 
         \e[33mBy default :delayed_job is used as the backend for carrierwave_backgrounder with :carrierwave as the queue name.
         To change this, edit config/initializers/carrierwave_backgrounder.rb.\e[0m
 
-        EOF
+        INFO
       end
     end
   end

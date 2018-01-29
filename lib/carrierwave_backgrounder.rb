@@ -28,7 +28,6 @@ module CarrierWave
         end
       end
     end
-
   end
 end
 

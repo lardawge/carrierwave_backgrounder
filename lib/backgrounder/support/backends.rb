@@ -36,7 +36,7 @@ module CarrierWave
               worker_args[:priority] = queue_options[:priority] if queue_options[:priority]
               ::Delayed::Job.enqueue worker.new(*args), worker_args
               if queue_options[:queue]
-                ::Rails.logger.warn("Queue name given but no queue column exists for Delayed::Job")
+                ::Rails.logger.warn('Queue name given but no queue column exists for Delayed::Job')
               end
             end
           end
@@ -47,17 +47,21 @@ module CarrierWave
           end
 
           def enqueue_sidekiq(worker, *args)
-            override_queue_name = worker.sidekiq_options['queue'] == 'default' || worker.sidekiq_options['queue'].nil?
+            override_queue_name = worker.sidekiq_options['queue'].eql?('default') ||
+                                  worker.sidekiq_options['queue'].nil?
             args = sidekiq_queue_options(override_queue_name, 'class' => worker, 'args' => args)
             worker.client_push(args)
           end
 
           def enqueue_girl_friday(worker, *args)
-            @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options.delete(:queue) || :carrierwave, queue_options) do |msg|
-              worker = msg[:worker]
-              worker.perform
-            end
-            @girl_friday_queue << { :worker => worker.new(*args) }
+            @girl_friday_queue ||=
+              GirlFriday::WorkQueue.new(queue_options.delete(:queue) ||
+                                        :carrierwave, queue_options) do |msg|
+                worker = msg[:worker]
+                worker.perform
+              end
+
+            @girl_friday_queue << { worker: worker.new(*args) }
           end
 
           def enqueue_sucker_punch(worker, *args)
@@ -82,8 +86,9 @@ module CarrierWave
             if override_queue_name && queue_options[:queue]
               args['queue'] = queue_options[:queue]
             end
-            args['retry'] = queue_options[:retry] unless queue_options[:retry].nil?
-            args['timeout'] = queue_options[:timeout] if queue_options[:timeout]
+
+            args['retry']     = queue_options[:retry] unless queue_options[:retry].nil?
+            args['timeout']   = queue_options[:timeout] if queue_options[:timeout]
             args['backtrace'] = queue_options[:backtrace] if queue_options[:backtrace]
             args
           end
