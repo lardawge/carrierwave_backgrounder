@@ -13,8 +13,9 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        return if record.nil?
 
-        if record && record.send(:"#{column}_tmp")
+        if record.send(:"#{column}_tmp")
           store_directories(record)
           record.send :"process_#{column}_upload=", true
           record.send :"#{column}_tmp=", nil

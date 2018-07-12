@@ -11,8 +11,9 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        return if record.nil?
 
-        if record && record.send(:"#{column}").present?
+        if record.send(:"#{column}?")
           record.send(:"process_#{column}_upload=", true)
           if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
             record.update_attribute :"#{column}_processing", false
