@@ -15,10 +15,15 @@ module CarrierWave
       end
 
       private
-
+      
       def proceed_with_versioning?
-        !model.respond_to?(:"process_#{mounted_as}_upload") && enable_processing ||
-          !!(model.send(:"process_#{mounted_as}_upload") && enable_processing)
+        if !model.respond_to?(:"process_#{mounted_as}_upload")
+          return enable_processing
+        else
+          return !!(model.send(:"process_#{mounted_as}_upload") && enable_processing)
+        end
+
+        false
       end
     end # Delay
 
