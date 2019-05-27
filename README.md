@@ -1,3 +1,7 @@
+# Reason of creation this fork
+This fork was created due to original gem is not supported for long time. 
+Will be used fix issue with dependencies of mime-types gem.
+
 # CarrierWave Backgrounder
 
 [![Build Status](https://secure.travis-ci.org/lardawge/carrierwave_backgrounder.png)](http://travis-ci.org/lardawge/carrierwave_backgrounder)
