@@ -54,6 +54,14 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
+**IMPORTANT FOR SIDEKIQ BACKEND** - Custom queue should be defined inside the Sidekiq configuration otherwise jobs won't be processed:
+
+```yml
+:queues:
+  - [awesome_queue, 1]
+  - default
+```
+
 In your CarrierWave uploader file:
 
 ```ruby
