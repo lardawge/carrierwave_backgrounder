@@ -40,6 +40,7 @@ module CarrierWave
         #
         def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
           attr_accessor :"process_#{column}_upload"
+          attr_accessor :"processing_#{column}_delayed"
 
           mod = Module.new
           include mod

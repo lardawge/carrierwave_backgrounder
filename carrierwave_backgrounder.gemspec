@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "carrierwave", [">= 0.5", "< 2.2"]
+  s.add_dependency "activesupport", ">= 4.0.0"
 
   s.add_development_dependency "rspec", ["~> 3.10.0"]
   s.add_development_dependency "rake"

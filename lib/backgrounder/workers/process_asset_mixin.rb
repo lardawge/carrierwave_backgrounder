@@ -13,6 +13,7 @@ module CarrierWave
         record = super(*args)
 
         if record && record.send(:"#{column}").present?
+          record.send(:"processing_#{column}_delayed=", true)
           record.send(:"process_#{column}_upload=", true)
           if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
             record.update_attribute :"#{column}_processing", false
