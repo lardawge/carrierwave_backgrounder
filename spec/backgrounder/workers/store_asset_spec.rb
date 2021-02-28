@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 require 'backgrounder/workers/store_asset'
+require 'fileutils'
 
 RSpec.describe CarrierWave::Workers::StoreAsset do
   let(:fixtures_path) { File.expand_path('../fixtures/images', __FILE__) }
