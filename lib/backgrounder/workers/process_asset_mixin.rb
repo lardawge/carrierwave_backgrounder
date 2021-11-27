@@ -14,11 +14,19 @@ module CarrierWave
 
         if record && record.send(:"#{column}").present?
           record.send(:"process_#{column}_upload=", true)
-          if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+          if recreate_versions && record.respond_to?(:"#{column}_processing")
             record.update_attribute :"#{column}_processing", false
           end
         else
           when_not_ready
+        end
+      end
+
+      def recreate_versions
+        if record.send(:"#{column}").is_a? Array
+          record.send(:"#{column}").all? &:recreate_versions!
+        else
+          record.send(:"#{column}").recreate_versions!
         end
       end
 
