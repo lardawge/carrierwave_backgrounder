@@ -47,9 +47,8 @@ module CarrierWave
           end
 
           def enqueue_sidekiq(worker, *args)
-            override_queue_name = worker.sidekiq_options['queue'] == 'default' || worker.sidekiq_options['queue'].nil?
-            args = sidekiq_queue_options(override_queue_name, 'class' => worker, 'args' => args)
-            worker.client_push(args)
+            queue_name = queue_options[:queue] || worker.sidekiq_options['queue'] || :default
+            Sidekiq::Client.enqueue_to_in(queue_name, 5.seconds, worker, *args)
           end
 
           def enqueue_girl_friday(worker, *args)
