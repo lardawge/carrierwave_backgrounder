@@ -1,3 +1,7 @@
+# Required for the same problem as below
+# https://github.com/r7kamura/weneedfeed/issues/19
+require 'active_support'
+
 require 'active_support/core_ext/object'
 require 'backgrounder/support/backends'
 require 'backgrounder/orm/base'
