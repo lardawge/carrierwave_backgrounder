@@ -32,7 +32,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
     end
 
     it 'removes tmp directory on success' do
-      expect(FileUtils).to receive(:rm_r).with(fixtures_path, :force => true).once
+      expect(FileUtils).to receive(:rm_r).with(fixtures_path, { force: true }).once
       expect(user).to receive(:save!).once.and_return(true)
       worker.perform
     end

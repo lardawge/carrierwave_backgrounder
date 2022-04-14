@@ -20,7 +20,7 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
   describe '.store_in_background' do
     context 'setting up callbacks' do
       it 'creates an after_commit hook' do
-        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job,  { if: :enqueue_avatar_background_job? })
         @mock_class.store_in_background :avatar
       end
     end
@@ -29,12 +29,12 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
   describe '.process_in_background' do
     context 'setting up callbacks' do
       it 'creates a before_save hook' do
-        expect(@mock_class).to receive(:before_save).with(:set_avatar_processing, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:before_save).with(:set_avatar_processing, { if: :enqueue_avatar_background_job? })
         @mock_class.process_in_background :avatar
       end
 
       it 'creates an after_save hook' do
-        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job, :if => :enqueue_avatar_background_job?)
+        expect(@mock_class).to receive(:after_commit).with(:enqueue_avatar_background_job, { if: :enqueue_avatar_background_job? })
         @mock_class.process_in_background :avatar
       end
     end

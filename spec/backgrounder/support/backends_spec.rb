@@ -59,7 +59,7 @@ module CarrierWave::Backgrounder
 
           it 'sets the queue name to the queue name passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
-            expect(Delayed::Job).to receive(:enqueue).with(worker, :queue => :awesome_queue)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, { queue: :awesome_queue })
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -67,7 +67,7 @@ module CarrierWave::Backgrounder
         context 'priority set in config' do
           it 'sets the priority which is passed to #backend' do
             mock_module.backend :delayed_job, :priority => 5
-            expect(Delayed::Job).to receive(:enqueue).with(worker, :priority => 5)
+            expect(Delayed::Job).to receive(:enqueue).with(worker, { priority: 5 })
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
