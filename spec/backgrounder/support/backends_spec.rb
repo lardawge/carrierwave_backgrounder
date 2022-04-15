@@ -53,13 +53,13 @@ module CarrierWave::Backgrounder
         context 'queue column exists' do
           it 'does not pass the queue name if none passed to #backend' do
             mock_module.backend :delayed_job
-            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'sets the queue name to the queue name passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
-            expect(Delayed::Job).to receive(:enqueue).with(worker, { queue: :awesome_queue })
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -67,7 +67,7 @@ module CarrierWave::Backgrounder
         context 'priority set in config' do
           it 'sets the priority which is passed to #backend' do
             mock_module.backend :delayed_job, :priority => 5
-            expect(Delayed::Job).to receive(:enqueue).with(worker, { priority: 5 })
+            expect(Delayed::Job).to receive(:enqueue).with(worker, priority: 5)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -85,14 +85,14 @@ module CarrierWave::Backgrounder
 
           it 'does not pass a queue name if none passed to #backend' do
             mock_module.backend :delayed_job
-            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
 
           it 'does not pass a queue name and logs a warning message if a queue name is passed to #backend' do
             mock_module.backend :delayed_job, :queue => :awesome_queue
             expect(Rails.logger).to receive(:warn).with(instance_of(String))
-            expect(Delayed::Job).to receive(:enqueue).with(worker, {})
+            expect(Delayed::Job).to receive(:enqueue).with(worker)
             mock_module.enqueue_for_backend MockWorker, 'FakeClass', 1, :image
           end
         end
@@ -154,13 +154,13 @@ module CarrierWave::Backgrounder
 
         it 'instantiates a GirlFriday work queue if one does not exist' do
           mock_module.backend :girl_friday
-          expect(GirlFriday::WorkQueue).to receive(:new).with(:carrierwave, {}).and_return([])
+          expect(GirlFriday::WorkQueue).to receive(:new).with(:carrierwave).and_return([])
           mock_module.enqueue_for_backend(*args)
         end
 
         it 'instantiates a GirlFriday work queue passing the args to the queue' do
           mock_module.backend :girl_friday, :queue => :awesome_queue, :size => 3
-          expect(GirlFriday::WorkQueue).to receive(:new).with(:awesome_queue, {:size => 3}).and_return([])
+          expect(GirlFriday::WorkQueue).to receive(:new).with(:awesome_queue, size: 3).and_return([])
           mock_module.enqueue_for_backend(*args)
         end
 
