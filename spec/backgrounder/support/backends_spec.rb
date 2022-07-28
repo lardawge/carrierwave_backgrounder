@@ -122,7 +122,7 @@ module CarrierWave::Backgrounder
         let(:args) { ['FakeClass', 1, :image] }
 
         it 'invokes client_push on the class with passed args' do
-          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args })
+          expect(MockSidekiqWorker).to receive(:client_push).with({ 'class' => MockSidekiqWorker, 'args' => args.map(&:to_s) })
           mock_module.backend :sidekiq
           mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
         end
@@ -132,7 +132,7 @@ module CarrierWave::Backgrounder
                                                                     'retry' => false,
                                                                     'timeout' => 60,
                                                                     'queue' => :awesome_queue,
-                                                                    'args' => args })
+                                                                    'args' => args.map(&:to_s) })
           options = {:retry => false, :timeout => 60, :queue => :awesome_queue}
           mock_module.backend :sidekiq, options
           mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
@@ -142,7 +142,7 @@ module CarrierWave::Backgrounder
           expect(MockNamedSidekiqWorker).to receive(:client_push).with({ 'class' => MockNamedSidekiqWorker,
                                                                     'retry' => false,
                                                                     'timeout' => 60,
-                                                                    'args' => args })
+                                                                    'args' => args.map(&:to_s) })
           options = {:retry => false, :timeout => 60}
           mock_module.backend :sidekiq, options
           mock_module.enqueue_for_backend(MockNamedSidekiqWorker, *args)
