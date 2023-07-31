@@ -1,4 +1,10 @@
 
+## 0.4.3
+
+### enhancements
+  * [#307] Add support for Sidekiq 7 [holstvoogd]
+  * [#278] Add sidekiq queue config [IlkhamGaysin]
+
 ## 0.4.2
 
 ### enhancements
