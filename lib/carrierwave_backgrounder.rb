@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'active_support/core_ext/object'
 require 'backgrounder/support/backends'
 require 'backgrounder/orm/base'
