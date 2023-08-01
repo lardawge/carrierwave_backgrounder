@@ -77,8 +77,8 @@ end
 In your model:
 
 ```ruby
-mount_uploader :avatar, AvatarUploader
 process_in_background :avatar
+mount_uploader :avatar, AvatarUploader
 ```
 
 Optionally you can add a column to the database which will be set to `true` when
@@ -93,8 +93,8 @@ add_column :users, :avatar_processing, :boolean, null: false, default: false
 In your model:
 
 ```ruby
-mount_uploader :avatar, AvatarUploader
 store_in_background :avatar
+mount_uploader :avatar, AvatarUploader
 ```
 
 Add a column to the model you want to background which will store the temp file location:
@@ -191,8 +191,8 @@ class EmbeddedDocument
 
   embedded_in :some_root_document
 
-  mount_uploader :image, ImageUploader
   process_in_background :image
+  mount_uploader :image, ImageUploader
 
   def self.find(id)
     bson_id = Moped::BSON::ObjectId.from_string(id) # needed for Mongoid 3
