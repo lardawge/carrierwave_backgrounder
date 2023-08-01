@@ -141,37 +141,6 @@ module CarrierWave::Backgrounder
         end
       end
 
-      context 'girl_friday' do
-        let(:args) { [MockWorker, 'FakeClass', 1, :image] }
-
-        it 'instantiates a GirlFriday work queue if one does not exist' do
-          mock_module.backend :girl_friday
-          expect(GirlFriday::WorkQueue).to receive(:new).with(:carrierwave, {}).and_return([])
-          mock_module.enqueue_for_backend(*args)
-        end
-
-        it 'instantiates a GirlFriday work queue passing the args to the queue' do
-          mock_module.backend :girl_friday, :queue => :awesome_queue, :size => 3
-          expect(GirlFriday::WorkQueue).to receive(:new).with(:awesome_queue, {:size => 3}).and_return([])
-          mock_module.enqueue_for_backend(*args)
-        end
-
-        it 'does not instantiate a GirlFriday work queue if one exists' do
-          mock_module.backend :girl_friday
-          mock_module.instance_variable_set('@girl_friday_queue', [])
-          expect(GirlFriday::WorkQueue).to receive(:new).never
-          mock_module.enqueue_for_backend(*args)
-        end
-
-        it 'add a worker to the girl_friday queue' do
-          expected = [{ :worker => MockWorker.new('FakeClass', 1, :image) }]
-          mock_module.backend :girl_friday
-          mock_module.instance_variable_set('@girl_friday_queue', [])
-          mock_module.enqueue_for_backend(*args)
-          expect(mock_module.instance_variable_get '@girl_friday_queue').to eql(expected)
-        end
-      end
-
       context 'sucker_punch' do
         let(:args) { [MockWorker, 'FakeClass', 1, :image] }
         let(:job) { double('job') }

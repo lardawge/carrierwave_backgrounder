@@ -6,7 +6,10 @@
 I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
 
 This gem addresses that by offloading processing or storage/processing to a background task.
-We currently support Delayed Job, Resque, Sidekiq, SuckerPunch, Girl Friday, Qu, and Queue Classic.
+We currently support ActiveJob, Sidekiq, Delayed Job, Resque, SuckerPunch, Qu, and Queue Classic.
+
+*** In version 1.0. we will only support ActiveJob and Sidekiq. Sidekiq is required to support some of the features of Sidekiq Pro. You will always be able to extend our library to support any custom needs but ActiveJob does most of this already. 
+
 
 ## Background options
 
@@ -15,18 +18,17 @@ There are currently two offerings for backgrounding upload tasks which are as fo
 ```ruby
 # This stores the original file with no processing/versioning.
 # It will upload the original file to s3.
-# This was developed to use where you do not have control over the cache location such as Heroku.
+# This was developed to use in cases where you do not have access to the cached location such as Heroku.
 
 Backgrounder::ORM::Base::process_in_background
 ```
 
 ```ruby
-# This does nothing to the file after it is cached which makes it super fast.
+# This does nothing to the file after it is cached which makes it fast.
 # It requires a column in the database which stores the cache location set by carrierwave so the background job can access it.
 # The drawback to using this method is the need for a central location to store the cached files.
-# Heroku may deploy workers on separate servers from where your dyno cached the files.
 #
-# IMPORTANT: Only use this method if you have full control over your tmp storage directory.
+# IMPORTANT: Only use this method if you have full control over your tmp storage directory and can mount it on every deployed server.
 
 Backgrounder::ORM::Base::store_in_background
 ```
@@ -46,11 +48,11 @@ Run the generator which will create an initializer in config/initializers.
   rails g carrierwave_backgrounder:install
 ```
 
-You can pass additional configuration options to Girl Friday and Sidekiq:
+You can pass additional configuration options to Sidekiq:
 
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
-  c.backend :girl_friday, queue: :awesome_queue, size: 3, store: GirlFriday::Store::Redis
+  c.backend :sidekiq, queue: :awesome_queue, size: 3
 end
 ```
 

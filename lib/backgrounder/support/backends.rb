@@ -52,14 +52,6 @@ module CarrierWave
             worker.client_push(args)
           end
 
-          def enqueue_girl_friday(worker, *args)
-            @girl_friday_queue ||= GirlFriday::WorkQueue.new(queue_options.delete(:queue) || :carrierwave, queue_options) do |msg|
-              worker = msg[:worker]
-              worker.perform
-            end
-            @girl_friday_queue << { :worker => worker.new(*args) }
-          end
-
           def enqueue_sucker_punch(worker, *args)
             worker.new.async.perform(*args)
           end
