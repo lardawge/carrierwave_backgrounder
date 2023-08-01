@@ -10,7 +10,7 @@ module CarrierwaveBackgrounder
       def info_config
         puts <<-EOF
 
-        \e[33mBy default :delayed_job is used as the backend for carrierwave_backgrounder with :carrierwave as the queue name.
+        \e[33mBy default :active_job is used as the backend for carrierwave_backgrounder with :carrierwave as the queue name.
         To change this, edit config/initializers/carrierwave_backgrounder.rb.\e[0m
 
         EOF
