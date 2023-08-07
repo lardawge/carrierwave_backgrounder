@@ -1,3 +1,5 @@
+require 'sidekiq'
+
 class MockWorker < Struct.new(:klass, :id, :column)
   def self.perform(*args)
     new(*args).perform
