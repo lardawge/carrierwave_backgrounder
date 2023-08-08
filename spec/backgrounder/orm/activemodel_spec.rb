@@ -54,7 +54,7 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
       end
 
       it "returns true if alternate column is changed" do
-        expect(instance).to receive(:some_other_column_changed?).and_return(true)
+        expect(instance).to receive(:previous_changes).and_return({:some_other_column => true})
         expect(instance.avatar_updated?).to be_truthy
       end
     end
@@ -66,20 +66,17 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
 
     it "calls column_changed?" do
       expect(instance).to receive(:process_avatar_upload).and_return(false)
-      expect(instance).to receive(:avatar_changed?)
       expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls previous_changes" do
       expect(instance).to receive(:process_avatar_upload).and_return(false)
-      expect(instance).to receive(:avatar_changed?).and_return(false)
       expect(instance).to receive(:previous_changes).and_return({:avatar => true})
       expect(instance.enqueue_avatar_background_job?).to be_truthy
     end
 
     it "calls avatar_remote_url" do
       expect(instance).to receive(:process_avatar_upload).and_return(false)
-      expect(instance).to receive(:avatar_changed?).and_return(false)
       expect(instance).to receive(:previous_changes).and_return({})
       expect(instance).to receive(:remote_avatar_url).and_return('yup')
       expect(instance.enqueue_avatar_background_job?).to be_truthy
@@ -87,7 +84,6 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
 
     it "calls avatar_cache" do
       expect(instance).to receive(:process_avatar_upload).and_return(false)
-      expect(instance).to receive(:avatar_changed?).and_return(false)
       expect(instance).to receive(:previous_changes).and_return({})
       expect(instance).to receive(:remote_avatar_url).and_return(nil)
       expect(instance).to receive(:avatar_cache).and_return('yup')
