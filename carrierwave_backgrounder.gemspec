@@ -17,8 +17,8 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency "carrierwave", [">= 0.5", "~> 3.0"]
-  s.add_dependency "rails", [">= 6.0", "~> 7.0"]
+  s.add_dependency "carrierwave", ["> 2.0", "< 4.0"]
+  s.add_dependency "rails", ["> 6.0", "< 8.0"]
 
   s.add_development_dependency "rspec", ["~> 3.12"]
   s.add_development_dependency "rake"
