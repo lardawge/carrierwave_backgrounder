@@ -2,6 +2,8 @@ require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 
 require_relative 'support/dummy_app/config/environment'
+require_relative 'support/global_macros'
+
 require 'rspec/rails'
 require 'backgrounder/railtie'
 
@@ -12,11 +14,13 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 
 RSpec.configure do |config|
+  config.include GlobalMacros
+
   config.before do
     CarrierWave::Backgrounder::Railtie.initializers.each(&:run)
   end
 
-  config.after(:example, images: true) do
+  config.after(:example, clear_images: true) do
     FileUtils.rm_rf Dir.glob("spec/support/dummy_app/tmp/images/*")
   end
 end
