@@ -3,13 +3,10 @@
 [![Build Status](https://app.travis-ci.com/lardawge/carrierwave_backgrounder.svg?branch=master)](https://app.travis-ci.com/lardawge/carrierwave_backgrounder)
 [![Code Climate](https://codeclimate.com/github/lardawge/carrierwave_backgrounder.png)](https://codeclimate.com/github/lardawge/carrierwave_backgrounder)
 
-I like CarrierWave. That being said, I don't like tying up app instances waiting for images to process.
+I am a fan of CarrierWave. That being said, I don't like tying up requests waiting for images to process.
 
-This gem addresses that by offloading processing or storage/processing to a background task.
-We currently support ActiveJob, Sidekiq, Delayed Job, Resque, SuckerPunch, Qu, and Queue Classic.
-
-*** In version 1.0. we will only support ActiveJob and Sidekiq. Sidekiq is required to support some of the features of Sidekiq Pro. You will always be able to extend our library to support any custom needs but ActiveJob does most of this already. 
-
+This gem addresses that by offloading processing or storaging/processing to a background task.
+We currently support ActiveJob and Sidekiq.
 
 ## Background options
 
@@ -45,7 +42,7 @@ gem 'carrierwave_backgrounder'
 
 Run the generator which will create an initializer in config/initializers.
 ```bash
-  rails g carrierwave_backgrounder:install
+rails g carrierwave_backgrounder:install
 ```
 
 You can pass additional configuration options to Sidekiq:
@@ -56,7 +53,7 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-**IMPORTANT FOR SIDEKIQ BACKEND** - Custom queue should be defined inside the Sidekiq configuration otherwise jobs won't be processed:
+**IMPORTANT FOR SIDEKIQ BACKEND** - Custom queue should be defined inside the Sidekiq configuration otherwise jobs won't process:
 
 ```yml
 :queues:
@@ -71,11 +68,11 @@ class AvatarUploader < CarrierWave::Uploader::Base
   include ::CarrierWave::Backgrounder::Delay
 
   # This is required if you are using S3 or any other remote storage.
-  # CarrierWave default is to store the cached file remotely which is slow and uses bandwidth.
+  # CarrierWave's default is to store the cached file remotely which is slow and uses bandwidth.
   # By setting this to File, it will only store on saving of the record.
   cache_storage CarrierWave::Storage::File
 
-  # It is recommended to set this to a persisted location if you are using `::store_in_background` otherwise optional.
+  # It is recommended to set this to a persisted location if you are using `::store_in_background`.
   def cache_dir
     "path/that/persists"
   end
@@ -94,7 +91,7 @@ process_in_background :avatar
 ```
 
 Optionally you can add a column to the database which will be set to `true` when
-the background processing is started and to `false` when the background processing is complete.
+the background processing has started and to `false` when the background processing is complete.
 
 ```ruby
 add_column :users, :avatar_processing, :boolean, null: false, default: false
@@ -109,7 +106,7 @@ mount_uploader :avatar, AvatarUploader
 store_in_background :avatar
 ```
 
-Add a column to the model you want to background which will store the temp file location:
+Add a column to the model which will store the temp file location:
 
 ```ruby
 add_column :users, :avatar_tmp, :string
@@ -132,7 +129,7 @@ This must be set before you assign an upload:
 @user.attributes = params[:user]
 ```
 
-NOTE: This is useful when operating in the console and is only needed when assigning a new asset not when using `recreate_versions!`.
+Useful in the console and is only needed when assigning a new asset, not when using `recreate_versions!`.
 
 ### Override worker
 To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
