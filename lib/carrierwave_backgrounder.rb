@@ -10,22 +10,13 @@ module CarrierWave
 
     def self.configure
       yield self
-      case @backend
-      when :sidekiq
+      if @backend == :sidekiq
         require 'sidekiq'
         ::CarrierWave::Workers::ProcessAsset.class_eval do
           include ::Sidekiq::Worker
         end
         ::CarrierWave::Workers::StoreAsset.class_eval do
           include ::Sidekiq::Worker
-        end
-      when :sucker_punch
-        require 'sucker_punch'
-        ::CarrierWave::Workers::ProcessAsset.class_eval do
-          include ::SuckerPunch::Job
-        end
-        ::CarrierWave::Workers::StoreAsset.class_eval do
-          include ::SuckerPunch::Job
         end
       end
     end
