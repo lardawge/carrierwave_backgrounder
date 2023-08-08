@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "carrierwave", [">= 0.5", "~> 3.0"]
-  s.add_development_dependency "rails", [">= 6.0", "~> 7.0"]
+  s.add_dependency "rails", [">= 6.0", "~> 7.0"]
 
   s.add_development_dependency "rspec", ["~> 3.12"]
   s.add_development_dependency "rake"
