@@ -16,10 +16,6 @@ end
 RSpec.configure do |config|
   config.include GlobalMacros
 
-  config.before(:all) do
-    CarrierWave::Backgrounder::Railtie.initializers.each(&:run)
-  end
-
   config.after(:example, clear_images: true) do
     Sidekiq::Queues.clear_all
     FileUtils.rm_rf Dir.glob("spec/support/dummy_app/tmp/images/*")

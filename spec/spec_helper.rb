@@ -3,6 +3,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'logger'
 require 'pry'
+require 'rails'
 require 'carrierwave_backgrounder'
 
 module WarningSuppression
