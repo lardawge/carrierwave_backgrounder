@@ -15,7 +15,7 @@ module CarrierWave
         record = super(*args)
 
         if record && record.send(:"#{column}_tmp")
-          store_directories(record)
+          retrieve_store_directories(record)
           record.send :"process_#{column}_upload=", true
           record.send :"#{column}_tmp=", nil
           record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
@@ -24,13 +24,13 @@ module CarrierWave
             FileUtils.rm_r(tmp_directory, :force => true)
           end
         else
-          when_not_ready
+          when_not_ready # Not sure if we need this. There should be no reason the record is not available?
         end
       end
 
       private
 
-      def store_directories(record)
+      def retrieve_store_directories(record)
         asset, asset_tmp = record.send(:"#{column}"), record.send(:"#{column}_tmp")
         cache_directory  = File.expand_path(asset.cache_dir, asset.root)
         @cache_path      = File.join(cache_directory, asset_tmp)

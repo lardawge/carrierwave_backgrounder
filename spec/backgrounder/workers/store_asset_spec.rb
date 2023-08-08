@@ -87,7 +87,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
     end
   end
 
-  describe '#store_directories' do
+  describe '#retrieve_store_directories' do
     let(:record) { double('Record') }
 
     context 'cache_path' do
@@ -97,7 +97,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
         asset = double(:cache_dir => cache_dir, :root => root)
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :store_directories, record
+        worker.send :retrieve_store_directories, record
         expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/tmp/uploads/images/test.jpg')
       end
 
@@ -107,7 +107,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
         asset = double(:cache_dir => cache_dir, :root => root)
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :store_directories, record
+        worker.send :retrieve_store_directories, record
         expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images/test.jpg')
       end
     end
@@ -119,7 +119,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
         asset = double(:cache_dir => cache_dir, :root => root)
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :store_directories, record
+        worker.send :retrieve_store_directories, record
         expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/tmp/uploads/images')
       end
 
@@ -129,7 +129,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
         asset = double(:cache_dir => cache_dir, :root => root)
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :store_directories, record
+        worker.send :retrieve_store_directories, record
         expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images')
       end
     end
