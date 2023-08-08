@@ -70,6 +70,16 @@ In your CarrierWave uploader file:
 class AvatarUploader < CarrierWave::Uploader::Base
   include ::CarrierWave::Backgrounder::Delay
 
+  # This is required if you are using S3 or any other remote storage.
+  # CarrierWave default is to store the cached file remotely which is slow and uses bandwidth.
+  # By setting this to File, it will only store on saving of the record.
+  cache_storage CarrierWave::Storage::File
+
+  # It is recommended to set this to a persisted location if you are using `::store_in_background` otherwise optional.
+  def cache_dir
+    "path/that/persists"
+  end
+
   #etc...
 end
 ```
@@ -79,8 +89,8 @@ end
 In your model:
 
 ```ruby
-process_in_background :avatar
 mount_uploader :avatar, AvatarUploader
+process_in_background :avatar
 ```
 
 Optionally you can add a column to the database which will be set to `true` when
@@ -95,8 +105,8 @@ add_column :users, :avatar_processing, :boolean, null: false, default: false
 In your model:
 
 ```ruby
-store_in_background :avatar
 mount_uploader :avatar, AvatarUploader
+store_in_background :avatar
 ```
 
 Add a column to the model you want to background which will store the temp file location:
@@ -117,11 +127,12 @@ If you need to process/store the upload immediately:
 This must be set before you assign an upload:
 
 ```ruby
-# In a controller
 @user = User.new
 @user.process_avatar_upload = true
 @user.attributes = params[:user]
 ```
+
+NOTE: This is useful when operating in the console and is only needed when assigning a new asset not when using `recreate_versions!`.
 
 ### Override worker
 To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
@@ -146,7 +157,7 @@ end
 ```
 
 ### ActiveJob
-Use overriden worker that inherits from ActiveJob::Base and includes relevant worker mixin:
+Use overridden worker that inherits from ActiveJob::Base and includes relevant worker mixin:
 ```ruby
 class MyActiveJobWorker < ActiveJob::Base
   include ::CarrierWave::Workers::ProcessAssetMixin
@@ -164,6 +175,7 @@ class MyActiveJobWorker < ActiveJob::Base
   end
 end
 ```
+
 Don't forget to set `active_job` as a backend in the config:
 ```ruby
 CarrierWave::Backgrounder.configure do |c|
