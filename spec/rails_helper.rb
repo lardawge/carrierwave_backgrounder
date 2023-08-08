@@ -16,7 +16,7 @@ end
 RSpec.configure do |config|
   config.include GlobalMacros
 
-  config.before do
+  config.before(:all) do
     CarrierWave::Backgrounder::Railtie.initializers.each(&:run)
   end
 

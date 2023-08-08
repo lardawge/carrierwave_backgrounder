@@ -32,6 +32,8 @@ module CarrierWave
             worker.client_push(args)
           end
 
+          private
+
           def sidekiq_queue_options(override_queue_name, args)
             if override_queue_name && queue_options[:queue]
               args['queue'] = queue_options[:queue]
