@@ -75,13 +75,8 @@ module CarrierWave
           mod = Module.new
           include mod
           mod.class_eval  <<-RUBY, __FILE__, __LINE__ + 1
-            def remove_#{column}=(value)
-              super
-              self.process_#{column}_upload = true
-            end
-
             def write_#{column}_identifier
-              super and return if process_#{column}_upload
+              super and return if process_#{column}_upload || remove_#{column}
               self.#{column}_tmp = #{column}_cache if #{column}_cache
             end
 

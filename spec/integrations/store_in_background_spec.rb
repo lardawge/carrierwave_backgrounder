@@ -61,4 +61,21 @@ RSpec.describe '::store_in_background', clear_images: true do
       expect { user.reload.save }.to_not change(Sidekiq::Queues["carrierwave"], :size)
     end
   end
+
+  context 'when setting a column for removal' do
+    let!(:user) {
+      Sidekiq::Testing.inline! do
+        User.create(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+      end
+    }
+
+    it 'removes the attachment' do
+      expect(user.reload.avatar.file.nil?).to be(false)
+
+      user.remove_avatar = true
+      user.save!
+
+      expect(user.avatar.file.nil?).to be(true)
+    end
+  end
 end
