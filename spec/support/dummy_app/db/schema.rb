@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_07_165013) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_08_233036) do
   create_table "users", force: :cascade do |t|
     t.string "avatar"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "avatar_tmp"
+    t.boolean "avatar_processing", default: false, null: false
   end
 
 end

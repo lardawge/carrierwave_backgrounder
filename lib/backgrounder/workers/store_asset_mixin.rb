@@ -24,7 +24,7 @@ module CarrierWave
             FileUtils.rm_r(tmp_directory, :force => true)
           end
         else
-          when_not_ready # Not sure if we need this. There should be no reason the record is not available?
+          when_not_ready
         end
       end
 

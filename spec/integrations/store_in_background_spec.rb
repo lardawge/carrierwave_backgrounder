@@ -6,8 +6,7 @@ RSpec.describe '::store_in_background', clear_images: true do
   context 'when assigning an asset' do
     before(:each) do
       expect(file_count('spec/support/dummy_app/tmp/images')).to eql(0)
-      user.avatar = load_file('spec/support/fixtures/images/test-1.jpg')
-      user.save
+      user.update(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
     end
 
     it 'creates a temp file and stores the path' do
@@ -17,6 +16,37 @@ RSpec.describe '::store_in_background', clear_images: true do
 
     it 'creates a background job in carrierwave queue' do
       expect(Sidekiq::Queues["carrierwave"].size).to eql(1)
+    end
+
+    it 'sets the <column>_processing flag to true' do
+      expect(user.avatar_processing).to be(true)
+    end
+  end
+
+  context 'when processing the worker' do
+    before do
+      user.update(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+      expect(user.avatar_processing).to be(true)
+      process_latest_sidekiq_job
+      user.reload
+    end
+
+    it 'creates the versions' do
+      version_paths = user.avatar.versions.keys.map { |key| user.avatar.send(key).current_path }
+
+      version_paths.each { |path| expect(File.exist? path).to be(true) }
+    end
+
+    it 'sets the <column>_tmp to nil' do
+      expect(user.avatar_tmp).to be_nil
+    end
+
+    it 'removes the files tmp directory' do
+      expect(file_count('spec/support/dummy_app/tmp/images')).to eql(0)
+    end
+
+    it 'sets the <column>_processing flag to false' do
+      expect(user.avatar_processing).to be(false)
     end
   end
 
