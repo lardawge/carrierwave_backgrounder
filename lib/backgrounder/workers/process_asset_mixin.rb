@@ -12,12 +12,10 @@ module CarrierWave
       def perform(*args)
         record = super(*args)
 
-        if record && record.send(:"#{column}").present?
-          if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
-            record.update_attribute :"#{column}_processing", false
-          end
-        else
-          when_not_ready
+        return unless record && record.send(:"#{column}").present?
+
+        if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+          record.update_attribute :"#{column}_processing", false
         end
       end
 

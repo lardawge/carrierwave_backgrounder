@@ -18,17 +18,15 @@ module CarrierWave
 
         retrieve_store_directories(record)
         record.send :"process_#{column}_upload=", true
+        record.send :"#{column}_cache=", record.send(:"#{column}_tmp")    # Set the cache path
+        record.send(:"#{column}").cache!                                  # Trigger version creation
+        record.send(:"#{column}").store!                                  # Store the files
         record.send :"#{column}_tmp=", nil
         record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
-        File.open(cache_path) { |f| record.send :"#{column}=", f }
-        clear_tmp_directory! if record.save!
+        record.save!
       end
 
       private
-
-      def clear_tmp_directory!
-        FileUtils.rm_r(tmp_directory, :force => true)
-      end
 
       def retrieve_store_directories(record)
         asset, asset_tmp = record.send(:"#{column}"), record.send(:"#{column}_tmp")
