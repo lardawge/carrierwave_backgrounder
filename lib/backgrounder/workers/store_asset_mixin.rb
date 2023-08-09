@@ -20,15 +20,17 @@ module CarrierWave
           record.send :"#{column}_tmp=", nil
           record.send :"#{column}_processing=", false if record.respond_to?(:"#{column}_processing")
           File.open(cache_path) { |f| record.send :"#{column}=", f }
-          if record.save!
-            FileUtils.rm_r(tmp_directory, :force => true)
-          end
+          clear_tmp_directory! if record.save!
         else
           when_not_ready
         end
       end
 
       private
+
+      def clear_tmp_directory!
+        FileUtils.rm_r(tmp_directory, :force => true)
+      end
 
       def retrieve_store_directories(record)
         asset, asset_tmp = record.send(:"#{column}"), record.send(:"#{column}_tmp")
