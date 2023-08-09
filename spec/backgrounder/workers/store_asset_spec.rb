@@ -76,22 +76,23 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
 
   describe '#retrieve_store_directories' do
     let(:record) { double('Record') }
+    let(:root) { '/Users/lar/Sites/bunker/public' }
+    let(:asset) { double(cache_dir: cache_dir, root: root) }
 
-    context 'cache_path' do
-      it 'sets the cache_path correctly if a full path is set for the cache_dir' do
-        root = '/Users/lar/Sites/bunker/public'
-        cache_dir = '/Users/lar/Sites/bunker/tmp/uploads'
-        asset = double(:cache_dir => cache_dir, :root => root)
+    def cache_dir
+      @cache_dir ||= '/Users/lar/Sites/bunker/tmp/uploads'
+    end
+
+    context '#cache_path sets the cache_path correctly' do
+      it 'when a full path is set for the cache_dir' do
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
         worker.send :retrieve_store_directories, record
         expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/tmp/uploads/images/test.jpg')
       end
 
-      it 'sets the cache_path correctly if a partial path is set for cache_dir' do
-        root = '/Users/lar/Sites/bunker/public'
-        cache_dir = 'uploads/tmp'
-        asset = double(:cache_dir => cache_dir, :root => root)
+      it 'when a partial path is set for cache_dir' do
+        @cache_dir = 'uploads/tmp'
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
         worker.send :retrieve_store_directories, record
@@ -99,11 +100,8 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
       end
     end
 
-    context 'tmp_directory' do
+    context '#tmp_directory sets the tmp_directory correctly' do
       it 'sets the tmp_directory correctly if a full path is set for the cache_dir' do
-        root = '/Users/lar/Sites/bunker/public'
-        cache_dir = '/Users/lar/Sites/bunker/tmp/uploads'
-        asset = double(:cache_dir => cache_dir, :root => root)
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
         worker.send :retrieve_store_directories, record
@@ -111,9 +109,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
       end
 
       it 'sets the tmp_directory correctly if a partial path is set for cache_dir' do
-        root = '/Users/lar/Sites/bunker/public'
-        cache_dir = 'uploads/tmp'
-        asset = double(:cache_dir => cache_dir, :root => root)
+        @cache_dir = 'uploads/tmp'
         expect(record).to receive(:image).and_return(asset)
         expect(record).to receive(:image_tmp).and_return('images/test.jpg')
         worker.send :retrieve_store_directories, record
