@@ -14,7 +14,8 @@ module CarrierWave
 
         return unless record && record.send(:"#{column}").present?
 
-        if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+        record.send(:"#{column}").recreate_versions!
+        if record.respond_to?(:"#{column}_processing")
           record.update_attribute :"#{column}_processing", false
         end
       end

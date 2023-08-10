@@ -4,7 +4,7 @@ module GlobalMacros
   end
 
   def file_count(path)
-    Dir.entries(path).reject { |f| f =~ /\.|\../ }.size
+    Dir.entries(path).reject { |f| f =~ /\.\.$|\.$|\.gitkeep/ }.size
   end
 
   def process_latest_sidekiq_job
