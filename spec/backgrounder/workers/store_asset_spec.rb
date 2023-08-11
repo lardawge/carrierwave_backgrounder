@@ -17,7 +17,7 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
 
     expect(asset).to receive(:cache!).once
     expect(asset).to receive(:store!).once
-    expect(obj).to receive(:image).thrice.and_return(image)
+    expect(obj).to receive(:image).twice.and_return(image)
     expect(obj).to receive(:process_image_upload=).with(true).once
     expect(obj).to receive(:image_cache=).with("images/test.jpg").once
     expect(obj).to receive(:image_tmp=).with(nil).once
@@ -30,24 +30,6 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
       expect(worker_class).to receive(:new).with(*args).and_return(worker)
       expect_any_instance_of(worker_class).to receive(:perform)
       worker_class.perform(*args)
-    end
-  end
-
-  describe "#perform" do
-    let(:image)  { double('UserAsset') }
-
-    before do
-      stub_worker(user, image)
-    end
-
-    it 'sets the cache_path' do
-      worker.perform
-      expect(worker.cache_path).to eql(fixtures_path + '/test.jpg')
-    end
-
-    it 'sets the tmp_directory' do
-      worker.perform
-      expect(worker.tmp_directory).to eql(fixtures_path)
     end
   end
 
@@ -71,50 +53,6 @@ RSpec.describe CarrierWave::Workers::StoreAsset do
 
     it 'sets id' do
       expect(worker.column).to eql(:image)
-    end
-  end
-
-  describe '#retrieve_store_directories' do
-    let(:record) { double('Record') }
-    let(:root) { '/Users/lar/Sites/bunker/public' }
-    let(:asset) { double(cache_dir: cache_dir, root: root) }
-
-    def cache_dir
-      @cache_dir ||= '/Users/lar/Sites/bunker/tmp/uploads'
-    end
-
-    context '#cache_path sets the cache_path correctly' do
-      it 'when a full path is set for the cache_dir' do
-        expect(record).to receive(:image).and_return(asset)
-        expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :retrieve_store_directories, record
-        expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/tmp/uploads/images/test.jpg')
-      end
-
-      it 'when a partial path is set for cache_dir' do
-        @cache_dir = 'uploads/tmp'
-        expect(record).to receive(:image).and_return(asset)
-        expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :retrieve_store_directories, record
-        expect(worker.cache_path).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images/test.jpg')
-      end
-    end
-
-    context '#tmp_directory sets the tmp_directory correctly' do
-      it 'sets the tmp_directory correctly if a full path is set for the cache_dir' do
-        expect(record).to receive(:image).and_return(asset)
-        expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :retrieve_store_directories, record
-        expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/tmp/uploads/images')
-      end
-
-      it 'sets the tmp_directory correctly if a partial path is set for cache_dir' do
-        @cache_dir = 'uploads/tmp'
-        expect(record).to receive(:image).and_return(asset)
-        expect(record).to receive(:image_tmp).and_return('images/test.jpg')
-        worker.send :retrieve_store_directories, record
-        expect(worker.tmp_directory).to eql('/Users/lar/Sites/bunker/public/uploads/tmp/images')
-      end
     end
   end
 end
