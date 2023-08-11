@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/backend_constants'
 require 'support/mock_worker'
 
 module CarrierWave::Backgrounder
