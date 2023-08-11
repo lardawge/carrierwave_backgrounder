@@ -35,16 +35,17 @@ module CarrierWave
         # which can be used to check if processing is complete.
         #
         #   def self.up
-        #     add_column :users, :avatar_processing, :boolean
+        #     add_column :users, :avatar_processing, :boolean, null: false, default: false
         #   end
         #
-        def process_in_background(column, worker=::CarrierWave::Workers::ProcessAsset)
+        def process_in_background(column, worker_klass=nil)
           attr_accessor :"process_#{column}_upload"
 
+          worker = worker_klass || "#{CarrierWave::Backgrounder.worker_klass}::ProcessAsset"
           mod = Module.new
           include mod
 
-          _define_shared_backgrounder_methods(mod, column, worker)
+          _define_shared_backgrounder_methods(mod, column, worker )
         end
 
         ##
@@ -69,8 +70,10 @@ module CarrierWave
         #     store_in_background :avatar, CustomWorker
         #   end
         #
-        def store_in_background(column, worker=::CarrierWave::Workers::StoreAsset)
+        def store_in_background(column, worker_klass=nil)
           attr_accessor :"process_#{column}_upload"
+
+          worker = worker_klass || "#{CarrierWave::Backgrounder.worker_klass}::StoreAsset"
 
           mod = Module.new
           include mod
