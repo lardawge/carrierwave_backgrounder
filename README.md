@@ -53,15 +53,15 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-**IMPORTANT FOR SIDEKIQ BACKEND** - Custom queue should be defined inside the Sidekiq configuration otherwise jobs won't process:
+**IMPORTANT FOR SIDEKIQ BACKEND** - carrierwave (default queue name) should be added to your queue list or it will not run:
 
 ```yml
 :queues:
-  - [awesome_queue, 1]
+  - [carrierwave, 1]
   - default
 ```
 
-In your CarrierWave uploader file:
+In your CarrierWave uploader file you will need to add a cache directory as well as change cache_storage to File:
 
 ```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
@@ -92,6 +92,8 @@ process_in_background :avatar
 
 Optionally you can add a column to the database which will be set to `true` when
 the background processing has started and to `false` when the background processing is complete.
+
+This is set to true in the after_commit hook when the job is created. It is very useful if you are waiting to notify the user of completion.
 
 ```ruby
 add_column :users, :avatar_processing, :boolean, null: false, default: false
@@ -129,19 +131,32 @@ This must be set before you assign an upload:
 @user.attributes = params[:user]
 ```
 
-Useful in the console and is only needed when assigning a new asset, not when using `recreate_versions!`.
-
 ### Override worker
-To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the
-second argument:
+To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the second argument:
 
 ```ruby
 process_in_background :avatar, MyParanoidWorker
 ```
 
-Then create a worker that subclasses carrierwave_backgrounder's worker:
+Then create a worker that subclasses carrierwave_backgrounder's worker.
+Each method, #store_in_background and #process_in_background has there own worker.
+
+#### For Sidekiq
+`process_in_background` subclass `::CarrierWave::Workers::ProcessAsset`
+`store_in_background` subclass `::CarrierWave::Workers::StoreAsset`
+
+#### For ActiveJob
+`process_in_background` subclass `::CarrierWave::Workers::ActiveJob::ProcessAsset`
+`store_in_background` subclass `::CarrierWave::Workers::ActiveJob::StoreAsset`
 
 ```ruby
+# Sidekiq Example
+
+class User < ActiveRecord::Base
+  mount_uploader :avatar, AvatarUploader
+  process_in_background, :avatar, MyParanoidWorker
+end
+
 class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
   # ...or subclass CarrierWave::Workers::StoreAsset if you're using store_in_background
 
@@ -153,30 +168,18 @@ class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
 end
 ```
 
-### ActiveJob
-Use overridden worker that inherits from ActiveJob::Base and includes relevant worker mixin:
 ```ruby
-class MyActiveJobWorker < ActiveJob::Base
-  include ::CarrierWave::Workers::ProcessAssetMixin
-  # ... or include ::CarrierWave::Workers::StoreAssetMixin
+# ActiveJob Example
 
+class User < ActiveRecord::Base
+  mount_uploader :avatar, AvatarUploader
+  process_in_background, :avatar, MyActiveJobWorker
+end
+
+class MyActiveJobWorker < ::CarrierWave::Workers::ActiveJob::StoreAsset
   after_perform do
     # your code here
   end
-
-  # Sometimes job gets performed before the file is uploaded and ready.
-  # You can define how to handle that case by overriding `when_not_ready` method
-  # (by default it does nothing)
-  def when_not_ready
-    retry_job
-  end
-end
-```
-
-Don't forget to set `active_job` as a backend in the config:
-```ruby
-CarrierWave::Backgrounder.configure do |c|
-  c.backend :active_job, queue: :carrierwave
 end
 ```
 
@@ -184,35 +187,6 @@ end
 We use the after_commit hook when using active_record. This creates a problem when testing with Rspec because after_commit never gets fired
 if you're using transactional fixtures. One solution to the problem is to use the [TestAfterCommit gem](https://github.com/grosser/test_after_commit).
 There are various other solutions in which case google is your friend.
-
-### Uploaders mounted on mongoid embedded documents
-The workers fetch the document with the mounted uploader using the model class name and id. Uploads on embedded documents
-cannot be obtained this way. If the position of the document in the root document structure is known, a workaround is to override the embedded models
-find method like this:
-
-```ruby
-class SomeRootDocument
-  include Mongoid::Document
-
-  embeds_many :embedded_documents
-end
-
-class EmbeddedDocument
-  include Mongoid::Document
-
-  embedded_in :some_root_document
-
-  process_in_background :image
-  mount_uploader :image, ImageUploader
-
-  def self.find(id)
-    bson_id = Moped::BSON::ObjectId.from_string(id) # needed for Mongoid 3
-
-    root = SomeRootDocument.where('embedded_documents._id' => bson_id).first
-    root.embedded_documents.find(id)
-  end
-end
-```
 
 ## License
 
