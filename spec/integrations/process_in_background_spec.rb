@@ -5,7 +5,7 @@ RSpec.describe '::process_in_background', clear_images: true do
 
   context 'when assigning an asset' do
     before(:each) do
-      admin.update(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+      admin.update(avatar: load_file('test-1.jpg'))
     end
 
     it 'stores the original file' do
@@ -24,7 +24,7 @@ RSpec.describe '::process_in_background', clear_images: true do
 
   context 'when processing the worker' do
     before do
-      admin.update(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+      admin.update(avatar: load_file('test-1.jpg'))
       expect(admin.avatar_processing).to be(true)
       process_latest_sidekiq_job
       admin.reload
@@ -47,7 +47,7 @@ RSpec.describe '::process_in_background', clear_images: true do
   context 'when saving a record' do
     let!(:admin) {
       Sidekiq::Testing.inline! do
-        User.create(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+        User.create(avatar: load_file('test-1.jpg'))
       end
     }
 
@@ -59,7 +59,7 @@ RSpec.describe '::process_in_background', clear_images: true do
   context 'when setting a column for removal' do
     let!(:admin) {
       Sidekiq::Testing.inline! do
-        User.create(avatar: load_file('spec/support/fixtures/images/test-1.jpg'))
+        User.create(avatar: load_file('test-1.jpg'))
       end
     }
 

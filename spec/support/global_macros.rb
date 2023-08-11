@@ -1,6 +1,14 @@
 module GlobalMacros
-  def load_file(full_path)
-    File.open(full_path)
+  def load_file(name)
+    File.open("#{image_fixture_path}/#{name}")
+  end
+
+  def load_files(*names)
+    names.map { |name| load_file(name) }
+  end
+
+  def image_fixture_path
+    'spec/support/fixtures/images'
   end
 
   def file_count(path)

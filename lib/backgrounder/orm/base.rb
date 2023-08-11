@@ -100,11 +100,19 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job?
-              !remove_#{column}? && !process_#{column}_upload && #{column}_updated?
+              !remove_#{column}? && !process_#{column}_upload && #{column}_present? && #{column}_updated?
+            end
+
+            def #{column}_mounted_as
+              #{column}.is_a?(Array) ? #{column}.first.mounted_as : #{column}.mounted_as
+            end
+
+            def #{column}_present?
+              #{column}.is_a?(Array) ? #{column}.present? : #{column}.file.present?
             end
 
             def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}_mounted_as)
             end
           RUBY
         end
