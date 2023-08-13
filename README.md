@@ -3,6 +3,11 @@
 [![Build Status](https://app.travis-ci.com/lardawge/carrierwave_backgrounder.svg?branch=master)](https://app.travis-ci.com/lardawge/carrierwave_backgrounder)
 [![Code Climate](https://codeclimate.com/github/lardawge/carrierwave_backgrounder.png)](https://codeclimate.com/github/lardawge/carrierwave_backgrounder)
 
+NOTICE: Version 1.0.0 contains breaking changes if you are coming from an earlier version.
+The most notible change is the removal of queue backend options other than active_job and sidekiq.
+If you are using other backends, switch over to active_job which should support your preference.
+If you are using Sidekiq, there is nothing to change.
+
 I am a fan of CarrierWave. That being said, I don't like tying up requests waiting for images to process.
 
 This gem addresses that by offloading processing or storaging/processing to a background task.
