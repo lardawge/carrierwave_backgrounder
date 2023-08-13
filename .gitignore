@@ -1,5 +1,6 @@
 *.gem
 .bundle
+*.sqlite3
 Gemfile.lock
 pkg/*
 vendor/*

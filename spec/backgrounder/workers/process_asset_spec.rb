@@ -22,9 +22,10 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
 
     before do
       allow(user).to receive(:find).with('22').and_return(user).once
-      allow(user).to receive(:image).twice.and_return(image)
-      allow(user).to receive(:process_image_upload=).with(true).once
-      allow(image).to receive(:recreate_versions!).once.and_return(true)
+      allow(user).to receive(:image).thrice.and_return(image)
+
+      expect(image).to receive(:recreate_versions!).once.and_return(true)
+      expect(image).to receive(:file).and_return(image)
     end
 
     it 'processes versions with image_processing column' do
@@ -48,9 +49,10 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
     before do
       allow(admin).to receive(:find).with('23').and_return(admin).once
       allow(admin).to receive(:avatar).twice.and_return(avatar)
-      allow(admin).to receive(:process_avatar_upload=).with(true).once
-      allow(admin).to receive(:respond_to?).with(:avatar_processing).once.and_return(false)
-      allow(avatar).to receive(:recreate_versions!).once.and_return(true)
+
+      expect(admin).to receive(:respond_to?).with(:avatar_processing).once.and_return(false)
+      expect(avatar).to receive(:recreate_versions!).once.and_return(true)
+      expect(avatar).to receive(:file).and_return(avatar)
 
       worker.perform admin, '23', :avatar
     end
