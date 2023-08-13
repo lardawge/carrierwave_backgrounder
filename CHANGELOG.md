@@ -1,5 +1,9 @@
 ## 1.0.0-beta
 
+### enhancements
+  * Add native support for ActiveJob [lardawge]
+  * Add support for multi-upload [lardawge]
+
 ### breaking changes
   * Remove support for Rails prior to after_commit
   * Remove support for queueing systems other than ActiveJob and Sidekiq.
