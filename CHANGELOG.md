@@ -4,6 +4,9 @@
   * Add native support for ActiveJob [lardawge]
   * Add support for multi-upload [lardawge]
 
+### bugfixes
+  * Fix issue where a new job would be queued when a upload was removed
+
 ### breaking changes
   * Remove support for Rails prior to after_commit
   * Remove support for queueing systems other than ActiveJob and Sidekiq.
