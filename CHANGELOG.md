@@ -3,6 +3,7 @@
 ### enhancements
   * Add native support for ActiveJob [lardawge]
   * Add support for multi-upload [lardawge]
+  * Add rails app for testing so we can replicate real world conditions [lardawge]
 
 ### bugfixes
   * Fix issue where a new job would be queued when a upload was removed

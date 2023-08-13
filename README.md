@@ -34,6 +34,8 @@ Backgrounder::ORM::Base::store_in_background
 
 These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and your queuing lib of choice.
 
+Take a look at the [Rails app](spec/support/dummy_app) to see examples of setup.
+
 In Rails, add the following your Gemfile:
 
 ```ruby
