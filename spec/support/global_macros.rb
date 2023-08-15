@@ -17,7 +17,13 @@ module GlobalMacros
 
   def process_latest_sidekiq_job
     job = Sidekiq::Queues["carrierwave"].pop
-    worker = job['class'].constantize.new(*job['args'])
-    worker.perform
+    worker_class = job['class']
+    worker = worker_class.constantize.new
+
+    if worker_class =~ /JobWrapper/
+      worker.perform job['args'].first
+    else
+      worker.perform(*job['args'])
+    end
   end
 end
