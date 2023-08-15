@@ -1,5 +1,5 @@
 # encoding: utf-8
-require active_job
+require 'backgrounder/workers/process_asset_mixin'
 
 module CarrierWave
   module Workers

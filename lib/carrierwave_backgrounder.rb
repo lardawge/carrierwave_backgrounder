@@ -18,6 +18,19 @@ module CarrierWave
       case backend
       when :active_job
         @worker_klass = "CarrierWave::Workers::ActiveJob"
+
+        require 'active_job'
+        require 'backgrounder/workers/active_job/process_asset'
+        require 'backgrounder/workers/active_job/store_asset'
+
+        queue_name = queue_options['queue'] || 'carrierwave'
+
+        ::CarrierWave::Workers::ActiveJob::ProcessAsset.class_eval do
+          queue_as queue_name
+        end
+        ::CarrierWave::Workers::ActiveJob::StoreAsset.class_eval do
+          queue_as queue_name
+        end
       when :sidekiq
         @worker_klass = "CarrierWave::Workers"
 
