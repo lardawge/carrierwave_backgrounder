@@ -7,6 +7,10 @@ rvm:
  - 3.2
  - ruby-head
 
+env:
+- QUEUE_ADAPTER='sidekiq'
+- QUEUE_ADAPTER='active_job'
+
 before_install:
  - yes | gem update --system --force
  - gem install bundler
