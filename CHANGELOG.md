@@ -9,9 +9,8 @@
   * Fix issue where a new job would be queued when a upload was removed
 
 ### breaking changes
-  * Remove support for Rails prior to after_commit
+  * Remove support for after_save in favor of after_commit
   * Remove support for queueing systems other than ActiveJob and Sidekiq.
-    This will simplify support and offload the heavy lifting to ActiveJob
 
 ## 0.4.3
 
