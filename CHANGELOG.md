@@ -1,3 +1,11 @@
+## 1.0.0-beta.2
+
+### enhancements
+  * Now fully testing using different queue_adapters in CI
+
+### bugfixes
+  * Fix issue loading active_job
+
 ## 1.0.0-beta
 
 ### enhancements
