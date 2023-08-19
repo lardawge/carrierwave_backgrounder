@@ -161,7 +161,7 @@ Each method, #store_in_background and #process_in_background has there own worke
 
 class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
-  process_in_background, :avatar, MyParanoidWorker
+  process_in_background :avatar, MyParanoidWorker
 end
 
 class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
@@ -180,7 +180,7 @@ end
 
 class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
-  process_in_background, :avatar, MyActiveJobWorker
+  process_in_background :avatar, MyActiveJobWorker
 end
 
 class MyActiveJobWorker < ::CarrierWave::Workers::ActiveJob::StoreAsset
