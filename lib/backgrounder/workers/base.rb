@@ -32,10 +32,6 @@ module CarrierWave
       def constantized_resource
         klass.is_a?(String) ? klass.constantize : klass
       end
-
-      def when_not_ready
-      end
-
     end # Base
 
   end # Workers
