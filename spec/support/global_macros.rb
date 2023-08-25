@@ -20,10 +20,6 @@ module GlobalMacros
     worker_class = job['class']
     worker = worker_class.constantize.new
 
-    if worker_class =~ /JobWrapper/
-      worker.perform job['args'].first
-    else
-      worker.perform(*job['args'])
-    end
+    worker.perform(*job['args'])
   end
 end
