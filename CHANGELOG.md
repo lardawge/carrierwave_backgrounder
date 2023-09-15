@@ -1,3 +1,10 @@
+## 1.0.1
+
+### bugfixes
+  * [#315] Fix an issue where the expectation was a string key for config [fero46]
+
+## 1.0.0
+  * No Changes
 ## 1.0.0-beta.2
 
 ### enhancements
