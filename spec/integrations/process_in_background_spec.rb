@@ -34,8 +34,7 @@ RSpec.describe '::process_in_background', clear_images: true do
       version_paths = admin.avatar.versions.keys.map { |key| admin.avatar.send(key).current_path }
       version_paths.each { |path| expect(File.exist?(path)).to be(true) }
       file_sizes = version_paths.map { |path| File.size(path) }
-      unique_file_sizes = file_sizes.uniq
-      expect(unique_file_sizes).to eql(file_sizes)
+      expect(file_sizes.uniq.count).to be(4)
     end
 
     it 'removes the files tmp directory' do

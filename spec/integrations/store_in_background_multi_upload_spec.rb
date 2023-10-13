@@ -33,7 +33,9 @@ RSpec.describe '::store_in_background multi-upload support', clear_images: true 
 
     it 'creates the versions' do
       version_paths = AvatarUploader.versions.keys.map { |key| user.images.map { |i| i.send(key).current_path } }.flatten
-      version_paths.each { |path| expect(File.exist? path).to be(true) }
+      version_paths.each { |path| expect(File.exist?(path)).to be(true) }
+      file_sizes = version_paths.map { |path| File.size(path) }
+      expect(file_sizes.uniq.count).to be(4)
     end
 
     it 'sets the <column>_tmp to nil' do
