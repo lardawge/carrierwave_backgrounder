@@ -11,6 +11,7 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        record.send(:"process_#{column}_upload=", true)
         asset = record.send(:"#{column}")
 
         return unless record && asset_present?(asset)
