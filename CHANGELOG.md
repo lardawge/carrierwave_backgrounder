@@ -1,3 +1,7 @@
+## 1.0.2
+
+### bugfixes
+  * [#317] Fixed an issue where #process_in_backfground would copy files but not create versions [Qqwy]
 ## 1.0.1
 
 ### bugfixes
