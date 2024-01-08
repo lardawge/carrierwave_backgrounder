@@ -14,7 +14,7 @@ module CarrierWave
 
         return unless record && asset_present?(asset)
 
-        process_asset!(asset)
+        process_asset_by_cache!(asset)
         # recreate_asset_versions!(asset)
 
         return unless record.respond_to?(:"#{column}_processing")
@@ -24,8 +24,8 @@ module CarrierWave
 
       private
 
-      def process_asset!(asset)
-        asset.is_a?(Array) ? asset.map(&:process!) : asset.process!
+      def process_asset_by_cache!(asset)
+        asset.is_a?(Array) ? asset.map(&:cache!) : asset.cache!
       end
 
       def recreate_asset_versions!(asset)
