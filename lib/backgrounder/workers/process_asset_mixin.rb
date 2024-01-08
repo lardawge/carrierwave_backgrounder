@@ -1,7 +1,5 @@
-# encoding: utf-8
 module CarrierWave
   module Workers
-
     module ProcessAssetMixin
       include CarrierWave::Workers::Base
 
@@ -16,14 +14,19 @@ module CarrierWave
 
         return unless record && asset_present?(asset)
 
-        recreate_asset_versions!(asset)
+        process_asset!(asset)
+        # recreate_asset_versions!(asset)
 
-        if record.respond_to?(:"#{column}_processing")
-          record.update_attribute :"#{column}_processing", false
-        end
+        return unless record.respond_to?(:"#{column}_processing")
+
+        record.update_attribute :"#{column}_processing", false
       end
 
       private
+
+      def process_asset!(asset)
+        asset.is_a?(Array) ? asset.map(&:process!) : asset.process!
+      end
 
       def recreate_asset_versions!(asset)
         asset.is_a?(Array) ? asset.map(&:recreate_versions!) : asset.recreate_versions!
@@ -33,6 +36,5 @@ module CarrierWave
         asset.is_a?(Array) ? asset.present? : asset.file.present?
       end
     end # ProcessAssetMixin
-
   end # Workers
 end # Backgrounder
