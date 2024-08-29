@@ -16,8 +16,9 @@ module CarrierWave
 
         return unless record && asset_present?(asset)
 
-        recreate_asset_versions!(asset)
-
+        result = recreate_asset_versions!(asset)
+        raise 'Failed to recreate versions' if result.blank?
+        
         if record.respond_to?(:"#{column}_processing")
           record.update_attribute :"#{column}_processing", false
         end
