@@ -71,4 +71,25 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
       expect(worker.column).to eql(:avatar)
     end
   end
+
+  describe '#perform raises errors' do
+    let(:admin) { double('Admin') }
+    let(:avatar)  { double('AdminAsset') }
+    let(:worker) { worker_class.new }
+
+    before do
+      allow(admin).to receive(:find).with('23').and_return(admin).once
+      allow(admin).to receive(:avatar).twice.and_return(avatar)
+
+      expect(admin).to receive(:process_avatar_upload=).with(true).once
+      expect(avatar).to receive(:recreate_versions!).once.and_return(nil)
+      expect(avatar).to receive(:file).and_return(avatar)
+    end
+
+    it 'raises an runtime error' do
+      expect { worker.perform admin, '23', :avatar }.to raise_error(RuntimeError, 'Failed to recreate versions')
+    end
+  end
 end
+
+
