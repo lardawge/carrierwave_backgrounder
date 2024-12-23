@@ -6,5 +6,5 @@ class Admin < ApplicationRecord
   # Multi attachment support
   mount_uploaders :images, AvatarUploader
   process_in_background :images
-  serialize :images, JSON
+  serialize :images, coder: JSON, type: Array
 end

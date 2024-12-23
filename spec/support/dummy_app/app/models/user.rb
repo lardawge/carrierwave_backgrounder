@@ -6,5 +6,5 @@ class User < ApplicationRecord
   # Multi attachment support
   mount_uploaders :images, AvatarUploader
   store_in_background :images
-  serialize :images, JSON
+  serialize :images, coder: JSON, type: Array
 end

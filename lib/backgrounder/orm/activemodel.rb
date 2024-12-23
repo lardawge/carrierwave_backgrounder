@@ -21,7 +21,9 @@ module CarrierWave
 
             previous_changes.has_key?(:"#{serialization_column}") ||  # after_commit support
             remote_url_present? ||                                    # Remote upload support
-            send(:"#{column}_cache").present?                         # Form failure support
+            send(:"#{column}_cache").present? ||                      # Form failure support
+            (defined? CarrierWave::Crop &&
+              send(:"#{serialization_column}_crop_changed?") )
           end
 
           define_method :remote_url_present? do
