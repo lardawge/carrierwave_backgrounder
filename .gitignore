@@ -4,3 +4,5 @@
 Gemfile.lock
 pkg/*
 vendor/*
+spec/support/dummy_app/log/*
+spec/support/dummy_app/tmp/*
