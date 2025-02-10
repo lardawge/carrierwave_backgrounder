@@ -11,13 +11,16 @@ module CarrierWave
 
       def perform(*args)
         record = super(*args)
+        return unless record
+
         record.send(:"process_#{column}_upload=", true)
         asset = record.send(:"#{column}")
 
-        return unless record && asset_present?(asset)
+        return unless asset_present?(asset)
 
-        recreate_asset_versions!(asset)
-
+        result = recreate_asset_versions!(asset)
+        raise 'Failed to recreate versions' if result.blank?
+        
         if record.respond_to?(:"#{column}_processing")
           record.update_attribute :"#{column}_processing", false
         end

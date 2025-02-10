@@ -22,6 +22,11 @@ RSpec.describe '::process_in_background', clear_images: true do
     end
   end
 
+  it 'handles ActiveRecord::RecordNotFound' do
+    worker = CarrierWave::Workers::ProcessAsset.new(Admin, '22', :image)
+    worker.perform
+  end
+
   context 'when processing the worker' do
     before do
       admin.update(avatar: load_file('test-1.jpg'))
