@@ -1,7 +1,7 @@
 ## 1.0.3
 
 ### enhancements
-  * Add support for Rails 8.0 [gstokkink]
+  * Add support for Rails 8.0 [damisul]
 
 ## 1.0.2
 
