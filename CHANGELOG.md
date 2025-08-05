@@ -1,3 +1,8 @@
+## 1.0.3
+
+### enhancements
+  * Add support for Rails 8.0 [gstokkink]
+
 ## 1.0.2
 
 ### bugfixes
