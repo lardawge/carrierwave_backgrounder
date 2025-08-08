@@ -25,7 +25,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
       allow(user).to receive(:image).thrice.and_return(image)
 
       expect(user).to receive(:process_image_upload=).with(true).once
-      expect(image).to receive(:recreate_versions!).once.and_return(true)
+      expect(image).to receive(:cache!).once.and_return(true)
       expect(image).to receive(:file).and_return(image)
     end
 
@@ -53,7 +53,7 @@ RSpec.describe CarrierWave::Workers::ProcessAsset do
 
       expect(admin).to receive(:respond_to?).with(:avatar_processing).once.and_return(false)
       expect(admin).to receive(:process_avatar_upload=).with(true).once
-      expect(avatar).to receive(:recreate_versions!).once.and_return(true)
+      expect(avatar).to receive(:cache!).once.and_return(true)
       expect(avatar).to receive(:file).and_return(avatar)
 
       worker.perform admin, '23', :avatar
