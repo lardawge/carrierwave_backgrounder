@@ -31,6 +31,11 @@ RSpec.describe '::store_in_background', clear_images: true do
       user.reload
     end
 
+    it 'processes the original image' do
+      image = MiniMagick::Image.open(user.avatar.path)
+      expect(image.width).to eql(1960)
+    end
+
     it 'creates the versions' do
       version_paths = user.avatar.versions.keys.map { |key| user.avatar.send(key).current_path }
       version_paths.each { |path| expect(File.exist?(path)).to be(true) }
