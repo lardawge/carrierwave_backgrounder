@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'ostruct'
 require 'backgrounder/orm/activemodel'
 
 RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
@@ -9,7 +8,7 @@ RSpec.describe CarrierWave::Backgrounder::ORM::ActiveModel do
       def self.after_commit(method, opts); nil; end
       def avatar_changed?; nil;  end
       def avatar_present?; true; end
-      def remote_avatar_url; OpenStruct.new(:present? => true); end
+      def remote_avatar_url; true; end
       def remove_avatar?; false; end
       def previous_changes; {}; end
       def self.uploader_options; {}; end
