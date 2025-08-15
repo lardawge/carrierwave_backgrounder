@@ -1,6 +1,6 @@
 # CarrierWave Backgrounder
 
-[![Build Status](https://app.travis-ci.com/lardawge/carrierwave_backgrounder.svg?branch=master)](https://app.travis-ci.com/lardawge/carrierwave_backgrounder)
+[![Build Status](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml/badge.svg)](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml)
 [![Code Climate](https://codeclimate.com/github/lardawge/carrierwave_backgrounder.png)](https://codeclimate.com/github/lardawge/carrierwave_backgrounder)
 
 NOTICE: Version 1.0.0 contains breaking changes if you are coming from an earlier version.

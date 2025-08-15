@@ -1,0 +1,40 @@
+name: Ruby CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['3.0', '3.1', '3.2', '3.4', '3.5', 'ruby-head']
+        queue_adapter: ['sidekiq', 'active_job']
+    continue-on-error: ${{ matrix.ruby == 'ruby-head' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Update RubyGems
+        run: yes | gem update --system --force
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Set QUEUE_ADAPTER env
+        run: echo "QUEUE_ADAPTER=${{ matrix.queue_adapter }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Run tests
+        run: bundle exec rake
