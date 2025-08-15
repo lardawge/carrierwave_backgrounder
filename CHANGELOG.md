@@ -1,3 +1,8 @@
+## 1.1.0
+
+### enhancements
+  * Suppress NotFoundError if a record gets deleted before it is processed. This is configurable and defaults to true. [lardawge]
+
 ## 1.0.3
 
 ### enhancements
