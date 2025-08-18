@@ -9,13 +9,13 @@ module CarrierWave
     include Support::Backends
 
     class << self
-      attr_reader :worker_klass, :surpress_not_found_errors
+      attr_reader :worker_klass, :suppress_not_found_errors
     end
 
     def self.configure
       yield self
 
-      @surpress_not_found_errors ||= true
+      @suppress_not_found_errors ||= true
 
       case backend
       when :active_job
@@ -44,7 +44,7 @@ module CarrierWave
     end
 
     def self.suppress_record_not_found_errors(surpress_errors = true)
-      @surpress_not_found_errors = surpress_errors
+      @suppress_not_found_errors = surpress_errors
     end
   end
 end

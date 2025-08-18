@@ -14,7 +14,7 @@ module CarrierWave
         set_args(*args) if args.present?
         self.record = constantized_resource.find id
       rescue *not_found_errors
-        raise not_found_errors.first unless CarrierWave::Backgrounder.surpress_not_found_errors
+        raise not_found_errors.first unless CarrierWave::Backgrounder.suppress_not_found_errors
       end
 
       private
