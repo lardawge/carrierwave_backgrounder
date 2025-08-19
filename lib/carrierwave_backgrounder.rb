@@ -9,17 +9,17 @@ module CarrierWave
     include Support::Backends
 
     class << self
-      attr_reader :worker_klass
+      attr_reader :worker_klass, :suppress_not_found_errors
     end
 
     def self.configure
       yield self
 
+      @suppress_not_found_errors ||= true
+
       case backend
       when :active_job
         @worker_klass = 'CarrierWave::Workers::ActiveJob'
-
-        require 'active_job'
         require 'backgrounder/workers/active_job/process_asset'
         require 'backgrounder/workers/active_job/store_asset'
 
@@ -34,7 +34,6 @@ module CarrierWave
       when :sidekiq
         @worker_klass = 'CarrierWave::Workers'
 
-        require 'sidekiq'
         ::CarrierWave::Workers::ProcessAsset.class_eval do
           include ::Sidekiq::Worker
         end
@@ -42,6 +41,10 @@ module CarrierWave
           include ::Sidekiq::Worker
         end
       end
+    end
+
+    def self.suppress_record_not_found_errors(surpress_errors = true)
+      @suppress_not_found_errors = surpress_errors
     end
   end
 end

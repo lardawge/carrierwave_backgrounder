@@ -3,11 +3,10 @@
 [![Build Status](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml/badge.svg)](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml)
 [![Code Climate](https://codeclimate.com/github/lardawge/carrierwave_backgrounder.png)](https://codeclimate.com/github/lardawge/carrierwave_backgrounder)
 
-NOTICE: Version 1.0.0 contains breaking changes if you are coming from an earlier version.
-The most notible change is the removal of queue backend options other than active_job and sidekiq.
-If you are using other backends, switch over to active_job which should support your preference.
-If you are using Sidekiq, there is nothing to change.
+---
+NOTICE: Version 1.1.0 contains a change in behavior from previous version. When a record is deleted before the job is picked up, it will no longer raise an error. Prior to this change, when using `process_in_background`, if a record was missing, an error was raised. Some users might have relied on that. By default, this will no longer happen. If you want to maintain that behavior, you must set the `suppress_record_not_found_errors` configuration to `false`. This will raise a RecordNotFound error.
 
+---
 I am a fan of CarrierWave. That being said, I don't like tying up requests waiting for images to process.
 
 This gem addresses that by offloading processing or storaging/processing to a background task.

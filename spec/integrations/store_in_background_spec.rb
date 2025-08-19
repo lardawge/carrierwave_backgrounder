@@ -68,6 +68,35 @@ RSpec.describe '::store_in_background', clear_images: true do
     end
   end
 
+  context 'when a record gets deleted before it is processed' do
+    context 'and suppress_record_not_found_errors is set to true' do
+      before do
+        user.update(avatar: load_file('test-1.jpg'))
+      end
+
+      it 'does not raise an error' do
+        user.delete
+        expect { process_latest_sidekiq_job }.not_to raise_error
+      end
+    end
+
+    context 'and suppress_record_not_found_errors is set to false' do
+      before do
+        user.update(avatar: load_file('test-1.jpg'))
+        CarrierWave::Backgrounder.suppress_record_not_found_errors(false)
+      end
+
+      after do
+        CarrierWave::Backgrounder.suppress_record_not_found_errors(true)
+      end
+
+      it 'raises an error' do
+        user.delete
+        expect { process_latest_sidekiq_job }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   context 'when setting a column for removal' do
     let!(:user) {
       Sidekiq::Testing.inline! do

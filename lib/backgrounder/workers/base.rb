@@ -14,12 +14,13 @@ module CarrierWave
         set_args(*args) if args.present?
         self.record = constantized_resource.find id
       rescue *not_found_errors
+        raise not_found_errors.first unless CarrierWave::Backgrounder.suppress_not_found_errors
       end
 
       private
 
       def not_found_errors
-        [].tap do |errors|
+        @not_found_errors ||= [].tap do |errors|
           errors << ::ActiveRecord::RecordNotFound      if defined?(::ActiveRecord)
           errors << ::Mongoid::Errors::DocumentNotFound if defined?(::Mongoid)
         end
