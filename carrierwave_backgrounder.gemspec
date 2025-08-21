@@ -6,16 +6,19 @@ Gem::Specification.new do |s|
   s.name        = "carrierwave_backgrounder"
   s.version     = CarrierWave::Backgrounder::VERSION
   s.platform    = Gem::Platform::RUBY
+
   s.authors     = ["Larry Sprock"]
   s.email       = ["larry@lucidbleu.com"]
   s.homepage    = "https://github.com/lardawge/carrierwave_backgrounder"
   s.licenses    = ["MIT"]
-  s.summary     = %q{Offload CarrierWave's image processing and storage to a background process using Delayed Job, Resque, Sidekiq, Qu, Queue Classic or Girl Friday}
+  s.summary     = %q{Offload CarrierWave's image processing and storage to a background process using ActiveJob or Sidekiq.}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+
+  s.required_ruby_version = '>= 3.0'
 
   s.add_dependency "carrierwave", ["> 2.0", "< 4.0"]
   s.add_dependency "rails", ["> 6.0", "< 8.1"]
