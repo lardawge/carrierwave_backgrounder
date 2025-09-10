@@ -84,6 +84,5 @@ RSpec.describe '::store_in_background multi-upload support', clear_images: true 
     it 'does not enqueue a new job' do
       expect(Sidekiq::Queues["carrierwave"].size).to be(0)
     end
-
   end
 end
