@@ -143,7 +143,7 @@ module CarrierWave::Backgrounder
           mock_module.enqueue_for_backend(MockSidekiqWorker, *args)
         end
 
-        it 'does not override queue name if set it worker' do
+        it 'does not override queue name if set in worker' do
           expect(MockNamedSidekiqWorker).to receive(:client_push).with({ 'class' => MockNamedSidekiqWorker,
                                                                     'retry' => false,
                                                                     'timeout' => 60,
