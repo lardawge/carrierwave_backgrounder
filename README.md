@@ -50,6 +50,13 @@ Run the generator which will create an initializer in config/initializers.
 rails g carrierwave_backgrounder:install
 ```
 
+You can use ActiveJob enqueue options (refer to `ActiveJob::Enqueuing#enqueue`) in global config:
+```ruby
+CarrierWave::Backgrounder.configure do |c|
+  c.backend :active_job, queue: :awesome_queue, priority: 10
+end
+```
+
 You can pass additional configuration options to Sidekiq:
 
 ```ruby
@@ -182,6 +189,18 @@ class User < ActiveRecord::Base
 end
 
 class MyActiveJobWorker < ::CarrierWave::Workers::ActiveJob::StoreAsset
+  # It's possible to set the queue name per worker:
+  queue_as :awesome_queue # To override :queue option set in global .configure
+  #
+  # ActiveJob allows to pass a block to `queue_as` method to take advantage of `self.arguments` for dynamically defined queue name:
+  # queue_as do
+  #   post = self.arguments.first
+  #   post.paid? ? :paid_feeds : :feeds
+  # end
+  #
+  # To force `default` queue over any :queue option set in global .configure, use a block:
+  # queue_as { 'default' }
+
   after_perform do
     # your code here
   end

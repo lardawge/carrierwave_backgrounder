@@ -23,7 +23,11 @@ module CarrierWave
           private
 
           def enqueue_active_job(worker, *args)
-            worker.perform_later(*args.map(&:to_s))
+            set_options = queue_options
+            override_queue_name = worker.queue_name == 'default' || worker.queue_name.nil?
+            set_options[:queue] = worker.queue_name if !override_queue_name
+
+            worker.set(set_options).perform_later(*args.map(&:to_s))
           end
 
           def enqueue_sidekiq(worker, *args)
