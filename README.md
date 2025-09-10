@@ -172,6 +172,8 @@ end
 class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
   # ...or subclass CarrierWave::Workers::StoreAsset if you're using store_in_background
 
+  sidekiq_options queue: :awesome_queue # To override :queue option set in global .configure
+
   def error(job, exception)
     report_job_failure  # or whatever
   end
