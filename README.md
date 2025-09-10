@@ -13,7 +13,7 @@ We currently support ActiveJob and Sidekiq.
 
 ## Background options
 
-There are currently two offerings for backgrounding upload tasks which are as follows;
+There are currently two offerings for backgrounding upload tasks which are as follows:
 
 ```ruby
 # This stores the original file with no processing/versioning.
@@ -45,7 +45,7 @@ In Rails, add the following your Gemfile:
 gem 'carrierwave_backgrounder'
 ```
 
-Run the generator which will create an initializer in config/initializers.
+Run the generator which will create an initializer in config/initializers:
 ```bash
 rails g carrierwave_backgrounder:install
 ```
@@ -65,7 +65,7 @@ CarrierWave::Backgrounder.configure do |c|
 end
 ```
 
-**IMPORTANT FOR SIDEKIQ BACKEND** - carrierwave (default queue name) should be added to your queue list or it will not run:
+**IMPORTANT FOR SIDEKIQ BACKEND** - `carrierwave` (default queue name) should be added to your queue list or it will not run:
 
 ```yml
 :queues:
@@ -73,7 +73,7 @@ end
   - default
 ```
 
-In your CarrierWave uploader file you will need to add a cache directory as well as change cache_storage to File:
+In your CarrierWave uploader file you will need to add a cache directory as well as change cache_storage to `File`:
 
 ```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
@@ -93,7 +93,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
-### To use process_in_background
+### To use `process_in_background`
 
 In your model:
 
@@ -105,13 +105,13 @@ process_in_background :avatar
 Optionally you can add a column to the database which will be set to `true` when
 the background processing has started and to `false` when the background processing is complete.
 
-This is set to true in the after_commit hook when the job is created. It is very useful if you are waiting to notify the user of completion.
+This is set to true in the `after_commit` hook when the job is created. It is very useful if you are waiting to notify the user of completion.
 
 ```ruby
 add_column :users, :avatar_processing, :boolean, null: false, default: false
 ```
 
-### To use store_in_background
+### To use `store_in_background`
 
 In your model:
 
@@ -151,15 +151,11 @@ process_in_background :avatar, MyParanoidWorker
 ```
 
 Then create a worker that subclasses carrierwave_backgrounder's worker.
-Each method, #store_in_background and #process_in_background has there own worker.
+Each method, #store_in_background and #process_in_background has their own worker.
 
 #### For Sidekiq
 `process_in_background` subclass `::CarrierWave::Workers::ProcessAsset`
 `store_in_background` subclass `::CarrierWave::Workers::StoreAsset`
-
-#### For ActiveJob
-`process_in_background` subclass `::CarrierWave::Workers::ActiveJob::ProcessAsset`
-`store_in_background` subclass `::CarrierWave::Workers::ActiveJob::StoreAsset`
 
 ```ruby
 # Sidekiq Example
@@ -181,6 +177,10 @@ class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
   # other hooks you might care about
 end
 ```
+
+#### For ActiveJob
+`process_in_background` subclass `::CarrierWave::Workers::ActiveJob::ProcessAsset`
+`store_in_background` subclass `::CarrierWave::Workers::ActiveJob::StoreAsset`
 
 ```ruby
 # ActiveJob Example
