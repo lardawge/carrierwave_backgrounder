@@ -13,8 +13,8 @@ RSpec.describe '::process_in_background multi-upload support', clear_images: tru
       expect(admin.images.present?).to be(true)
     end
 
-    it 'creates a background job in carrierwave queue' do
-      expect(Sidekiq::Queues["carrierwave"].size).to eql(1)
+    it 'creates a background job in the default queue' do
+      expect(Sidekiq::Queues[default_queue_name].size).to eql(1)
     end
 
     it 'sets the <column>_processing flag to true' do
@@ -77,7 +77,7 @@ RSpec.describe '::process_in_background multi-upload support', clear_images: tru
     end
 
     it 'does not enqueue a new job' do
-      expect(Sidekiq::Queues["carrierwave"].size).to be(0)
+      expect(Sidekiq::Queues[default_queue_name].size).to be(0)
     end
   end
 end

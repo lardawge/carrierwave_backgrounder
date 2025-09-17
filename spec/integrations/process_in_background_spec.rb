@@ -13,8 +13,8 @@ RSpec.describe '::process_in_background', clear_images: true do
       expect(admin.avatar.file.present?).to be(true)
     end
 
-    it 'creates a background job in carrierwave queue' do
-      expect(Sidekiq::Queues["carrierwave"].size).to eql(1)
+    it 'creates a background job in the default queue' do
+      expect(Sidekiq::Queues[default_queue_name].size).to eql(1)
     end
 
     it 'sets the <column>_processing flag to true' do
@@ -83,7 +83,7 @@ RSpec.describe '::process_in_background', clear_images: true do
     }
 
     it 'does not enqueue a new job' do
-      expect { admin.reload.save }.to_not change(Sidekiq::Queues["carrierwave"], :size)
+      expect { admin.reload.save }.to_not change(Sidekiq::Queues[default_queue_name], :size)
     end
   end
 

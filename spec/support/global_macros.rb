@@ -18,4 +18,8 @@ module GlobalMacros
   def process_latest_sidekiq_job
     Sidekiq::Job.drain_all
   end
+
+  def default_queue_name
+    'carrierwave'
+  end
 end
