@@ -7,4 +7,8 @@ class Admin < ApplicationRecord
   mount_uploaders :images, AvatarUploader
   process_in_background :images
   serialize :images, coder: JSON
+
+  # Override worker
+  mount_uploaders :documents, DocumentUploader
+  process_in_background :documents, DocumentUploaderActiveJob
 end

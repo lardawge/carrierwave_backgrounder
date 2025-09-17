@@ -7,4 +7,8 @@ class User < ApplicationRecord
   mount_uploaders :images, AvatarUploader
   store_in_background :images
   serialize :images, coder: JSON
+
+  # Override worker
+  mount_uploaders :documents, DocumentUploader
+  store_in_background :documents, DocumentUploaderSidekiqJob
 end
