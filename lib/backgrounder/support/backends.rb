@@ -23,11 +23,14 @@ module CarrierWave
           private
 
           def enqueue_active_job(worker, *args)
-            set_options = queue_options
-            override_queue_name = worker.queue_name == 'default' || worker.queue_name.nil?
-            set_options[:queue] = worker.queue_name if !override_queue_name
+            # ActiveJob::QueueName.queue_as sets worker's :queue_name class_attribute,
+            # and it has higher priority than globally-configured queue name.
+            # If :queue_as is not set, :queue_name is ActiveJob::QueueName's default Proc.
+            if !(worker.queue_name == 'default' || worker.queue_name.nil?)
+              queue_options.delete(:queue)
+            end
 
-            worker.set(set_options).perform_later(*args.map(&:to_s))
+            worker.set(queue_options).perform_later(*args.map(&:to_s))
           end
 
           def enqueue_sidekiq(worker, *args)
