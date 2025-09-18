@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ['3.2', '3.4', 'ruby-head']
-        queue_adapter: ['sidekiq', 'active_job']
+        backend: ['sidekiq', 'active_job']
     continue-on-error: ${{ matrix.ruby == 'ruby-head' }}
     steps:
       - uses: actions/checkout@v4
@@ -33,8 +33,8 @@ jobs:
       - name: Install Bundler
         run: gem install bundler
 
-      - name: Set QUEUE_ADAPTER env
-        run: echo "QUEUE_ADAPTER=${{ matrix.queue_adapter }}" >> $GITHUB_ENV
+      - name: Set BACKEND env
+        run: echo "BACKEND=${{ matrix.backend }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
