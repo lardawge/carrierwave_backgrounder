@@ -4,3 +4,6 @@
 Gemfile.lock
 pkg/*
 vendor/*
+tmp/
+log/
+!log/.keep
