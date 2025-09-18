@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml/badge.svg)](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml)
 [![Maintainability](https://qlty.sh/gh/lardawge/projects/carrierwave_backgrounder/maintainability.svg)](https://qlty.sh/gh/lardawge/projects/carrierwave_backgrounder)
 ---
-NOTICE: Version 1.1.0 contains a change in behavior from previous version. When a record is deleted before the job is picked up, it will no longer raise an error. Prior to this change, when using `process_in_background`, if a record was missing, an error was raised. Some users might have relied on that. By default, this will no longer happen. If you want to maintain that behavior, you must set the `suppress_record_not_found_errors` configuration to `false`. This will raise a RecordNotFound error.
+**NOTICE**: Version 1.1.0 contains a change in behavior from previous version. When a record is deleted before the job is picked up, it will no longer raise an error. Prior to this change, when using `process_in_background`, if a record was missing, an error was raised. Some users might have relied on that. By default, this will no longer happen. If you want to maintain that behavior, you must set the `suppress_record_not_found_errors` configuration to `false`. This will raise a RecordNotFound error.
 
 ---
 I am a fan of CarrierWave. That being said, I don't like tying up requests waiting for images to process.
@@ -11,7 +11,7 @@ I am a fan of CarrierWave. That being said, I don't like tying up requests waiti
 This gem addresses that by offloading processing or storaging/processing to a background task.
 We currently support ActiveJob and Sidekiq.
 
-## Background options
+## Background Options
 
 There are currently two offerings for backgrounding upload tasks which are as follows:
 
@@ -33,22 +33,29 @@ Backgrounder::ORM::Base::process_in_background
 Backgrounder::ORM::Base::store_in_background
 ```
 
-## Installation and Usage
+## Installation
 
 These instructions assume you have previously set up [CarrierWave](https://github.com/jnicklas/carrierwave) and your queuing lib of choice.
 
 Take a look at the [Rails app](spec/support/dummy_app) to see examples of setup.
 
-In Rails, add the following your Gemfile:
+In Rails, add the following to your `Gemfile`:
 
 ```ruby
 gem 'carrierwave_backgrounder'
 ```
 
-Run the generator which will create an initializer in config/initializers:
+Run the generator which will create a `carrierwave_backgrounder.rb` initializer in the `config/initializers` folder:
 ```bash
 rails g carrierwave_backgrounder:install
 ```
+
+## Configuration
+
+It's **necessary** to define a backend for background jobs. It defaults to `:active_job` in the generated `carrierwave_backgrounder.rb`.
+Default queue name is `carrierwave`, even if it's not defined in the `carrierwave_backgrounder.rb` initializer.
+
+### ActiveJob Configuration
 
 You can use ActiveJob enqueue options (refer to `ActiveJob::Enqueuing#enqueue`) in global config:
 ```ruby
@@ -56,6 +63,14 @@ CarrierWave::Backgrounder.configure do |c|
   c.backend :active_job, queue: :awesome_queue, priority: 10
 end
 ```
+
+`ActiveJob` requires you to [set up the queueing backend](https://guides.rubyonrails.org/active_job_basics.html#configuring-the-backend) for it, because `ActiveJob` is only a mechanism to declare and execute background jobs on a queing backend such as e.g. Sidekiq:
+```ruby
+# config/application.rb
+config.active_job.queue_adapter = :sidekiq
+```
+
+### Sidekiq Configuration
 
 You can pass additional configuration options to Sidekiq:
 
@@ -73,6 +88,8 @@ end
   - default
 ```
 
+## Usage
+
 In your CarrierWave uploader file you will need to add a cache directory as well as change cache_storage to `File`:
 
 ```ruby
@@ -89,7 +106,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
     "path/that/persists"
   end
 
-  #etc...
+  # etc...
 end
 ```
 
@@ -128,7 +145,7 @@ add_column :users, :avatar_tmp, :string
 
 ## Usage Tips
 
-### Bypass backgrounding
+### Bypass Backgrounding
 If you need to process/store the upload immediately:
 
 ```ruby
@@ -143,71 +160,110 @@ This must be set before you assign an upload:
 @user.attributes = params[:user]
 ```
 
-### Override worker
-To override the worker in cases where additional methods need to be called or you have app specific requirements, pass the worker class as the second argument:
+### Override Worker
+
+To override the worker in cases where additional methods need to be called, or you have app-specific requirements, pass the worker class as the second argument:
 
 ```ruby
 process_in_background :avatar, MyParanoidWorker
 ```
 
-Then create a worker that subclasses carrierwave_backgrounder's worker.
-Each method, #store_in_background and #process_in_background has their own worker.
+Then create the worker that subclasses `carrierwave_backgrounder`'s worker.
 
-#### For Sidekiq
-`process_in_background` subclass `::CarrierWave::Workers::ProcessAsset`
-`store_in_background` subclass `::CarrierWave::Workers::StoreAsset`
+Each method, `#store_in_background` and `#process_in_background`, has its own default worker for each of the supported backends.
 
-```ruby
-# Sidekiq Example
+<details open>
+<summary>ActiveJob</summary>
 
-class User < ActiveRecord::Base
-  mount_uploader :avatar, AvatarUploader
-  process_in_background :avatar, MyParanoidWorker
-end
+  1. `process_in_background` subclass `::CarrierWave::Workers::ActiveJob::ProcessAsset`
+  1. `store_in_background` subclass `::CarrierWave::Workers::ActiveJob::StoreAsset`
 
-class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
-  # ...or subclass CarrierWave::Workers::StoreAsset if you're using store_in_background
+  ```ruby
+  # ActiveJob Example
 
-  sidekiq_options queue: :awesome_queue # To override :queue option set in global .configure
-
-  def error(job, exception)
-    report_job_failure  # or whatever
+  # models/user.rb
+  class User < ActiveRecord::Base
+    mount_uploader :avatar, AvatarUploader
+    process_in_background :avatar, AvatarUploaderJob
   end
 
-  # other hooks you might care about
-end
-```
+  # jobs/avatar_uploader_job.rb
+  class AvatarUploaderJob < ::CarrierWave::Workers::ActiveJob::ProcessAsset
+    # ...or subclass CarrierWave::Workers::ActiveJob::StoreAsset if you're using `store_in_background`
 
-#### For ActiveJob
-`process_in_background` subclass `::CarrierWave::Workers::ActiveJob::ProcessAsset`
-`store_in_background` subclass `::CarrierWave::Workers::ActiveJob::StoreAsset`
+    # It's possible to set the queue name per worker.
+    # This will override :queue option set in the initializer
+    queue_as :awesome_queue
+    #
+    # ActiveJob allows to pass a block to `queue_as` method to take advantage of `self.arguments` for a dynamically defined queue name:
+    # queue_as do
+    #   user = self.arguments.first
+    #   user.premium? ? :high_priority_queue : :default
+    # end
+    #
+    # If :queue was set in the initializer, 'default' and nil passed to :queue_as are ignored.
+    # To force `default` queue over any :queue option set in the initializer, use a block:
+    #   queue_as { 'default' }
+    # or
+    #   queue_as { nil }
 
-```ruby
-# ActiveJob Example
-
-class User < ActiveRecord::Base
-  mount_uploader :avatar, AvatarUploader
-  process_in_background :avatar, MyActiveJobWorker
-end
-
-class MyActiveJobWorker < ::CarrierWave::Workers::ActiveJob::StoreAsset
-  # It's possible to set the queue name per worker:
-  queue_as :awesome_queue # To override :queue option set in global .configure
-  #
-  # ActiveJob allows to pass a block to `queue_as` method to take advantage of `self.arguments` for dynamically defined queue name:
-  # queue_as do
-  #   post = self.arguments.first
-  #   post.paid? ? :paid_feeds : :feeds
-  # end
-  #
-  # To force `default` queue over any :queue option set in global .configure, use a block:
-  # queue_as { 'default' }
-
-  after_perform do
-    # your code here
+    # Any other ActiveJob configuration options are available, e.g. for callbacks, see
+    #   https://api.rubyonrails.org/classes/ActiveJob/Callbacks.html
+    after_perform do
+      # your code here
+    end
   end
-end
-```
+  ```
+
+##### Custom `ApplicationJob`?
+
+  If you have custom logics in your `ApplicationJob`, then you want to subclass `ApplicationJob` and then include:
+  1. `::CarrierWave::Workers::ProcessAssetMixin` for `process_in_background`
+  1. `::CarrierWave::Workers::StoreAssetMixin` for `store_in_background`
+
+  ```ruby
+  # jobs/avatar_uploader_job.rb
+  class AvatarUploaderJob < ApplicationJob
+    include ::CarrierWave::Workers::ProcessAssetMixin
+    ...
+  end
+  ```
+
+</details>
+
+<br/>
+
+<details open>
+<summary>Sidekiq</summary>
+
+  1. `process_in_background` subclass `::CarrierWave::Workers::ProcessAsset`
+  1. `store_in_background` subclass `::CarrierWave::Workers::StoreAsset`
+
+  ```ruby
+  # Sidekiq Example
+
+  class User < ActiveRecord::Base
+    mount_uploader :avatar, AvatarUploader
+    process_in_background :avatar, MyParanoidWorker
+  end
+
+  class MyParanoidWorker < ::CarrierWave::Workers::ProcessAsset
+    # ...or subclass CarrierWave::Workers::StoreAsset if you're using `store_in_background`
+
+    include Sidekiq::Worker
+
+    # This will override :queue option set in the initializer
+    sidekiq_options queue: :awesome_queue
+
+    def error(job, exception)
+      report_job_failure  # or whatever
+    end
+
+    # other hooks you might care about
+  end
+  ```
+
+</details>
 
 ## License
 
