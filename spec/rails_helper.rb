@@ -7,6 +7,19 @@ require 'sidekiq/testing'
 require 'rspec/rails'
 require 'backgrounder/railtie'
 
+if ENV['QUEUE_ADAPTER'] == 'sidekiq'
+  Object.send(:remove_const, :PortraitProcessJob) if defined?(PortraitProcessJob)
+  class PortraitProcessJob
+    include CarrierWave::Workers::ProcessAssetMixin
+    include Sidekiq::Worker
+  end
+else
+  Object.send(:remove_const, :PortraitProcessJob) if defined?(PortraitProcessJob)
+  class PortraitProcessJob < ::ActiveJob::Base
+    include CarrierWave::Workers::ProcessAssetMixin
+  end
+end
+
 begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e

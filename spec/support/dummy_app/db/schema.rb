@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_11_155811) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_26_184915) do
   create_table "admins", force: :cascade do |t|
     t.string "avatar"
     t.boolean "avatar_processing", default: false, null: false
@@ -29,6 +29,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_11_155811) do
     t.string "images"
     t.string "images_tmp"
     t.boolean "images_processing", default: false, null: false
+    t.string "portrait"
+    t.string "portrait_tmp"
+    t.boolean "portrait_processing", default: false, null: false
   end
-
 end
