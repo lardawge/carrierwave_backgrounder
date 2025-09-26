@@ -43,8 +43,8 @@ module CarrierWave
       end
     end
 
-    def self.suppress_record_not_found_errors(surpress_errors = true)
-      @suppress_not_found_errors = surpress_errors
+    def self.suppress_record_not_found_errors(suppress_errors = true)
+      @suppress_not_found_errors = suppress_errors
     end
   end
 end
