@@ -1,6 +1,11 @@
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 
+if ENV['BACKEND'] == 'sidekiq'
+  require 'backgrounder/workers/active_job/process_asset'
+  require 'backgrounder/workers/active_job/store_asset'
+end
+
 require_relative 'support/dummy_app/config/environment'
 require_relative 'support/global_macros'
 require 'sidekiq/testing'

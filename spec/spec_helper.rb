@@ -18,4 +18,10 @@ end
 
 RSpec.configure do |c|
   c.include WarningSuppression
+
+  if ENV['BACKEND'] == 'active_job'
+    c.exclude_pattern = '**/integrations/sidekiq/*'
+  elsif ENV['BACKEND'] == 'sidekiq'
+    c.exclude_pattern = '**/integrations/active_job/*'
+  end
 end

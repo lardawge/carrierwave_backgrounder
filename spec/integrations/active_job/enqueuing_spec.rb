@@ -1,6 +1,10 @@
 require 'rails_helper'
 require 'support/shared_examples_for_sidekiq_queues'
 
+class Admin
+  process_in_background :documents, DocumentUploaderActiveJob
+end
+
 RSpec.describe 'ActiveJob Enqueuing process', sidekiq_queues: true, clear_images: true do
   subject(:enqueue) { admin.update(documents: load_files('test-1.pdf', type: :document)) }
   let(:admin) { Admin.new }
