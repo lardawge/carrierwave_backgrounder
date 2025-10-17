@@ -22,15 +22,6 @@ module CarrierWave
         @worker_klass = 'CarrierWave::Workers::ActiveJob'
         require 'backgrounder/workers/active_job/process_asset'
         require 'backgrounder/workers/active_job/store_asset'
-
-        queue_name = queue_options[:queue] || 'carrierwave'
-
-        ::CarrierWave::Workers::ActiveJob::ProcessAsset.class_eval do
-          queue_as queue_name
-        end
-        ::CarrierWave::Workers::ActiveJob::StoreAsset.class_eval do
-          queue_as queue_name
-        end
       when :sidekiq
         @worker_klass = 'CarrierWave::Workers'
 
@@ -43,8 +34,8 @@ module CarrierWave
       end
     end
 
-    def self.suppress_record_not_found_errors(surpress_errors = true)
-      @suppress_not_found_errors = surpress_errors
+    def self.suppress_record_not_found_errors(suppress_errors = true)
+      @suppress_not_found_errors = suppress_errors
     end
   end
 end

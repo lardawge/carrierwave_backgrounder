@@ -5,6 +5,10 @@ class MockWorker < Struct.new(:klass, :id, :column)
     new(*args).perform
   end
 
+  def self.set(*)
+    self
+  end
+
   def perform(*args)
     set_args(*args) unless args.empty?
   end
@@ -12,6 +16,8 @@ class MockWorker < Struct.new(:klass, :id, :column)
   def set_args(klass, id, column)
     self.klass, self.id, self.column = klass, id, column
   end
+
+  def queue_name; end
 end
 
 class MockSidekiqWorker < MockWorker

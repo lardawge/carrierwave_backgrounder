@@ -10,10 +10,10 @@ module CarrierWave
         module ClassMethods
           attr_reader :queue_options
 
-          def backend(queue_name=nil, args={})
+          def backend(backend_name=nil, args={})
             return @backend if @backend
-            @queue_options = args
-            @backend = queue_name
+            @queue_options = set_queue_name_default(args)
+            @backend = backend_name
           end
 
           def enqueue_for_backend(worker, class_name, subject_id, mounted_as)
@@ -23,16 +23,28 @@ module CarrierWave
           private
 
           def enqueue_active_job(worker, *args)
-            worker.perform_later(*args.map(&:to_s))
+            options = if worker.new.queue_name != 'default'
+              queue_options.except(:queue)
+            else
+              queue_options
+            end
+
+            worker.set(options).perform_later(*args.map(&:to_s))
           end
 
           def enqueue_sidekiq(worker, *args)
-            override_queue_name = worker.sidekiq_options['queue'] == 'default' || worker.sidekiq_options['queue'].nil?
+            override_queue_name = worker.sidekiq_options['queue'] == 'default'
             args = sidekiq_queue_options(override_queue_name, 'class' => worker, 'args' => args.map(&:to_s))
             worker.client_push(args)
           end
 
           private
+
+          def set_queue_name_default(options)
+            options.tap do |opts|
+              opts[:queue] ||= :carrierwave
+            end
+          end
 
           def sidekiq_queue_options(override_queue_name, args)
             if override_queue_name && queue_options[:queue]
