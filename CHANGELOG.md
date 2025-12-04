@@ -1,3 +1,8 @@
+## 1.1.2
+
+### enhancements
+  * Add support for Rails 8.1 [gstokkink]
+
 ## 1.1.0
 
 ### enhancements
