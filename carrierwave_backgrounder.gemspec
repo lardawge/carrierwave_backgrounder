@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 3.0'
 
   s.add_dependency "carrierwave", ["> 2.0", "< 4.0"]
-  s.add_dependency "rails", ["> 6.0", "< 8.1"]
+  s.add_dependency "rails", ["> 6.0", "< 8.2"]
 
   s.add_development_dependency "rspec", ["~> 3.12"]
   s.add_development_dependency "rake"
