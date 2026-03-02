@@ -1,9 +1,17 @@
 # CarrierWave Backgrounder
 
+---
+## Maintenance Notice
+
+I am officially stopping active maintenance on this project after many years. Due to changes in the ecosystem and the availability of alternative solutions, this project is no longer something I plan to evolve further.
+
+It has been a pleasure contributing to the open source community and solving a problem I encountered in my journey as an engineer. I hope this project has been helpful to others over the years.
+
+Cheers!
+---
+
 [![Build Status](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml/badge.svg)](https://github.com/lardawge/carrierwave_backgrounder/actions/workflows/ruby-ci.yml)
 [![Maintainability](https://qlty.sh/gh/lardawge/projects/carrierwave_backgrounder/maintainability.svg)](https://qlty.sh/gh/lardawge/projects/carrierwave_backgrounder)
----
-NOTICE: Version 1.1.0 contains a change in behavior from previous version. When a record is deleted before the job is picked up, it will no longer raise an error. Prior to this change, when using `process_in_background`, if a record was missing, an error was raised. Some users might have relied on that. By default, this will no longer happen. If you want to maintain that behavior, you must set the `suppress_record_not_found_errors` configuration to `false`. This will raise a RecordNotFound error.
 
 ---
 I am a fan of CarrierWave. That being said, I don't like tying up requests waiting for images to process.
